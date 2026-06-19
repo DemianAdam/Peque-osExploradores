@@ -5,5 +5,6 @@ import { childrenValidator } from "./validators";
 const schema = zodOutputToConvex(childrenValidator);
 
 export const childrenSchema = defineTable(schema)
-    .index("index_name_active", ["name","active"])
-    .index("index_group_active",["groupId","active"])
+    .index("index_dni", ["dni"])
+    .index("index_name_active", ["name", "active"])
+    .index("index_group_active", ["groupId", "active"])

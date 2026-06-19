@@ -12,7 +12,7 @@ const internalMutation = customMutation(rawInternalMutation, customCtx(triggersD
 export const zInternalMutation = zCustomMutation(internalMutation, NoOp);
 export const action = zCustomAction(rawAction, NoOp);
 
-export const zUserQuery = zCustomQuery(rawQuery, {
+export const zTeacherQuery = zCustomQuery(rawQuery, {
     args: {},
     input: async (ctx, args) => {
         const currentTeacher = await getCurrentTeacher(ctx);
@@ -23,7 +23,7 @@ export const zUserQuery = zCustomQuery(rawQuery, {
     }
 });
 
-export const zUserMutation = zCustomMutation(mutation, {
+export const zTeacherMutation = zCustomMutation(mutation, {
     args: {},
     input: async (ctx, args) => {
         const currentTeacher = await getCurrentTeacher(ctx);
@@ -34,7 +34,7 @@ export const zUserMutation = zCustomMutation(mutation, {
     }
 });
 
-export const zUserAction = zCustomAction(rawAction, {
+export const zTeacherAction = zCustomAction(rawAction, {
     args: {},
     input: async (ctx, args,) => {
         /* eslint-disable @typescript-eslint/no-explicit-any */
@@ -47,7 +47,7 @@ export const zUserAction = zCustomAction(rawAction, {
 })
 
 
-export const zUserInternalQuery = zCustomQuery(rawInternalQuery, {
+export const zTeacherInternalQuery = zCustomQuery(rawInternalQuery, {
     args: {},
     input: async (ctx, args) => {
         const currentTeacher = await getCurrentTeacher(ctx);
@@ -58,7 +58,7 @@ export const zUserInternalQuery = zCustomQuery(rawInternalQuery, {
     }
 });
 
-export const zUserInternalMutation = zCustomMutation(rawInternalMutation, {
+export const zTeacherInternalMutation = zCustomMutation(rawInternalMutation, {
     args: {},
     input: async (ctx, args) => {
         const currentTeacher = await getCurrentTeacher(ctx);
