@@ -9,6 +9,7 @@
  */
 
 import type * as auth from "../auth.js";
+import type * as childrens_mutations from "../childrens/mutations.js";
 import type * as childrens_types from "../childrens/types.js";
 import type * as childrens_validators from "../childrens/validators.js";
 import type * as common_validators from "../common/validators.js";
@@ -36,6 +37,7 @@ import type {
 
 declare const fullApi: ApiFromModules<{
   auth: typeof auth;
+  "childrens/mutations": typeof childrens_mutations;
   "childrens/types": typeof childrens_types;
   "childrens/validators": typeof childrens_validators;
   "common/validators": typeof common_validators;

@@ -10,7 +10,7 @@ export const zInternalQuery = zCustomQuery(rawInternalQuery, NoOp);
 const mutation = customMutation(rawMutation, customCtx(triggersDB));
 const internalMutation = customMutation(rawInternalMutation, customCtx(triggersDB));
 export const zInternalMutation = zCustomMutation(internalMutation, NoOp);
-export const action = zCustomAction(rawAction, NoOp);
+export const zInternalAction = zCustomAction(rawAction, NoOp);
 
 export const zTeacherQuery = zCustomQuery(rawQuery, {
     args: {},

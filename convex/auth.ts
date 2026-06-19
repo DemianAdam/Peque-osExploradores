@@ -4,8 +4,8 @@ import { Scrypt } from "lucia";
 import { DataModel } from "./_generated/dataModel";
 import { ConvexCredentials } from "@convex-dev/auth/providers/ConvexCredentials";
 import { ConvexError } from "convex/values";
+import { Account } from "./users/types";
 
-type Account = { username: string, password: string }
 const crypto = {
   async hashSecret(password: string) {
     return await new Scrypt().hash(password);
@@ -29,11 +29,11 @@ const customPasswordProvider = ConvexCredentials<DataModel>({
 
     const accountInfo: Account = { username, password }
 
-    if (flow === "signUp") {
-      return await signUpFlow(ctx, accountInfo)
-    }
-    else if (flow === "signIn") {
+    if (flow === "signIn") {
       return await signInFlow(ctx, accountInfo)
+    }
+    else if (flow === "signUp") {
+      throw new ConvexError(`SignUp flow not authorized`);
     }
     else {
       throw new ConvexError(`Auth flow doesnt exist: ${flow}`);
