@@ -18,8 +18,14 @@ import type * as http from "../http.js";
 import type * as invoices_validators from "../invoices/validators.js";
 import type * as payments_validators from "../payments/validators.js";
 import type * as payslips_validators from "../payslips/validators.js";
+import type * as teachers_functions from "../teachers/functions.js";
+import type * as teachers_types from "../teachers/types.js";
 import type * as teachers_validators from "../teachers/validators.js";
+import type * as triggers from "../triggers.js";
+import type * as users_functions from "../users/functions.js";
+import type * as users_types from "../users/types.js";
 import type * as users_validators from "../users/validators.js";
+import type * as zod from "../zod.js";
 
 import type {
   ApiFromModules,
@@ -38,8 +44,14 @@ declare const fullApi: ApiFromModules<{
   "invoices/validators": typeof invoices_validators;
   "payments/validators": typeof payments_validators;
   "payslips/validators": typeof payslips_validators;
+  "teachers/functions": typeof teachers_functions;
+  "teachers/types": typeof teachers_types;
   "teachers/validators": typeof teachers_validators;
+  triggers: typeof triggers;
+  "users/functions": typeof users_functions;
+  "users/types": typeof users_types;
   "users/validators": typeof users_validators;
+  zod: typeof zod;
 }>;
 
 /**
