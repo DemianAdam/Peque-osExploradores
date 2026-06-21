@@ -5,7 +5,7 @@ import { customCtx } from "convex-helpers/server/customFunctions";
 import { triggersDB } from "./triggers";
 import { getCurrentTeacher } from "./teachers/functions";
 
-
+export const zQuery = zCustomQuery(rawQuery, NoOp);
 export const zInternalQuery = zCustomQuery(rawInternalQuery, NoOp);
 const mutation = customMutation(rawMutation, customCtx(triggersDB));
 const internalMutation = customMutation(rawInternalMutation, customCtx(triggersDB));

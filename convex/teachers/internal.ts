@@ -1,11 +1,12 @@
 import { createAccount } from "@convex-dev/auth/server";
-import { zInternalAction } from "../zod";
-import { accountValidator } from "./validators";
+import { zInternalMutation } from "../zod";
+import { accountValidator } from "../users/validators";
+import z from "zod";
 
-export const createUserInternal = zInternalAction({
-    args: accountValidator,
+export const createTeacher = zInternalMutation({
+    args: accountValidator.extend({ name: z.string() }),
     handler: async (ctx, args) => {
-        const account = await createAccount(ctx, {
+        const account = await createAccount(ctx as any, {
             provider: "password",
             account: {
                 id: args.username,
@@ -18,5 +19,9 @@ export const createUserInternal = zInternalAction({
             shouldLinkViaPhone: false
         })
 
+        await ctx.db.insert("teachers", {
+            name: args.name,
+            userId: account.user._id
+        })
     }
 });

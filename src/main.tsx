@@ -5,6 +5,7 @@ import { ConvexReactClient } from "convex/react";
 import { BrowserRouter, Route, Routes } from "react-router";
 import "./index.css";
 import App from "./App.tsx";
+import Test from "./Test.tsx";
 
 const convex = new ConvexReactClient(import.meta.env.VITE_CONVEX_URL as string);
 
@@ -14,6 +15,7 @@ createRoot(document.getElementById("root")!).render(
       <BrowserRouter>
         <Routes>
           <Route index element={<App />} />
+          <Route path="/test" element={<Test />} />
           {/*<Route path="/test" element={<p>Hola</p>} />*/}
         </Routes>
       </BrowserRouter>

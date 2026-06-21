@@ -6,5 +6,5 @@ export const userValidator = z.object({
 
 export const accountValidator = z.object({
      username: z.string(),
-     password: z.string()
+     password: z.string(),
 });

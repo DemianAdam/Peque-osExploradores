@@ -20,7 +20,7 @@ const customPasswordProvider = ConvexCredentials<DataModel>({
   crypto: crypto,
   authorize: async (credentials, ctx) => {
     const flow = credentials.flow as string | undefined;
-    const username = credentials.email as string | undefined;
+    const username = credentials.username as string | undefined;
     const password = credentials.password as string | undefined;
 
     if (!username || !password) {
