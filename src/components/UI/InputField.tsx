@@ -15,6 +15,7 @@ export default function InputField({ label, id, type, placeholder }: InputFieldP
       <input className="w-full px-5 py-3 rounded-full bg-[#F9A8D4] text-gray-800 focus:outline-none focus:ring-2 focus:ring-orange-400 transition-all shadow-inner"
         type={type}
         id={id}
+        name={id}
         placeholder={placeholder}
       />
     </div>
