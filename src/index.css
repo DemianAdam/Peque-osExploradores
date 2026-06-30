@@ -1,1 +1,10 @@
+@import url('https://fonts.googleapis.com/css2?family=Angkor&family=Matemasie&display=swap');
 @import "tailwindcss";
+
+
+.font-angkor {
+  font-family: "Angkor", serif;
+  font-weight: 400;
+  font-style: normal;
+}
+

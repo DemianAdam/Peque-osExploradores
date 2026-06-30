@@ -1,8 +1,11 @@
-import { Authenticated, Unauthenticated } from "convex/react";
+import {  Authenticated, Unauthenticated } from "convex/react";
 import { Route, Routes } from "react-router";
 import { ProtectedLayout } from "./ProtectedLayout";
+
 import Login from './sections/Login';
-import Test from "./Test";
+import Dashboard from "./sections/Dashboard";
+
+
 
 export default function App() {
   return (
@@ -16,10 +19,11 @@ export default function App() {
       <Authenticated>
         <Routes>
           <Route path="/" element={<ProtectedLayout />}>
-            <Route index element={<Test />} />
+            <Route index element={<Dashboard />} />
           </Route>
         </Routes>
       </Authenticated>
+      
     </>
   );
 }
