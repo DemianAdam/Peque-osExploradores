@@ -9,7 +9,10 @@ export const createChildren = zTeacherMutation({
         if (existingChild) {
             throw new ConvexError(`A Children already exists with DNI ${args.dni}`);
         }
-
-        await ctx.db.insert("childrens",args);
+        const newChildren = {
+            ...args,
+            active: true
+        }
+        await ctx.db.insert("childrens", newChildren);
     }
 })

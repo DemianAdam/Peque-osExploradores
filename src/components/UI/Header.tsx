@@ -46,14 +46,14 @@ export const Header = () => {
           <nav className="flex flex-col">
             {/* Definimos una clase base para todos los links */}
             <Link 
-              to="/dashboard" 
+              to="/" 
               onClick={() => setIsMenuOpen(false)} 
               className={menuLinkClass}
             >
               Panel de atajos
             </Link>
             <Link 
-              to="/chicos" 
+              to="/children" 
               onClick={() => setIsMenuOpen(false)} 
               className={menuLinkClass}
             >

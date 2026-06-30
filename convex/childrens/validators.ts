@@ -4,7 +4,7 @@ import z from "zod";
 export const childrenValidator = z.object({
     name: z.string(),
     groupId: zid("groups"),
-    dni: z.string,
+    dni: z.string(),
     active: z.boolean()
 });
 
