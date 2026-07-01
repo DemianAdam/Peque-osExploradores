@@ -52,6 +52,7 @@ export const Header = () => {
             >
               Panel de atajos
             </Link>
+
             <Link 
               to="/children" 
               onClick={() => setIsMenuOpen(false)} 
@@ -59,20 +60,40 @@ export const Header = () => {
             >
               Chicos
             </Link>
+
             <Link 
-              to="/liquidaciones" 
+              to="/payments" 
               onClick={() => setIsMenuOpen(false)} 
               className={menuLinkClass}
             >
-              Liquidaciones
+              Pagos
             </Link>
+
             <Link 
-              to="/gastos" 
+              to="/teachers" 
+              onClick={() => setIsMenuOpen(false)} 
+              className={menuLinkClass}
+            >
+              Señoritas
+            </Link>
+
+            <Link 
+              to="/invoices" 
               onClick={() => setIsMenuOpen(false)} 
               className={menuLinkClass}
             >
               Gastos
             </Link>
+            
+            <Link 
+              to="/payslips" 
+              onClick={() => setIsMenuOpen(false)} 
+              className={menuLinkClass}
+            >
+              Liquidaciones
+            </Link>
+            
+            
           </nav>
         </div>
 
