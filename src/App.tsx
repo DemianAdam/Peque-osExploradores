@@ -4,6 +4,7 @@ import { ProtectedLayout } from "./ProtectedLayout";
 
 import Login from './sections/Login';
 import Dashboard from "./sections/Dashboard";
+import Childrens from "./sections/Childrens";
 
 
 
@@ -20,6 +21,7 @@ export default function App() {
         <Routes>
           <Route path="/" element={<ProtectedLayout />}>
             <Route index element={<Dashboard />} />
+            <Route path="children" element={<Childrens />} />
           </Route>
         </Routes>
       </Authenticated>
