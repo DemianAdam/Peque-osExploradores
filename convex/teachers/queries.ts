@@ -15,3 +15,11 @@ export const getCurrentTeacher = zQuery({
         return currentTeacher;
     }
 })
+
+export const listTeachers = zQuery({
+    args: {},
+    handler: async (ctx, args) => {
+        // Esto trae todos los registros de la tabla 'teachers'
+        return await ctx.db.query("teachers").collect();
+    }
+});
