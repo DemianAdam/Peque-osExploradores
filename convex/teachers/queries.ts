@@ -19,7 +19,23 @@ export const getCurrentTeacher = zQuery({
 export const listTeachers = zQuery({
     args: {},
     handler: async (ctx, args) => {
-        // Esto trae todos los registros de la tabla 'teachers'
-        return await ctx.db.query("teachers").collect();
+        //TODO: Paginate
+        const teachers = await ctx.db.query("teachers").collect();
+        
+        const fullTeachers = await Promise.all(
+            teachers.map(async (teacher) => {
+            const allGroupsIds = await ctx.db.query("group_teachers").withIndex("index_teacher", (q) => q.eq("teacherId", teacher._id)).collect();
+            const groups = [];
+            for (const groupTeacher of allGroupsIds) {
+                const group = await ctx.db.get("groups", groupTeacher.groupId);
+                groups.push(group);
+            }
+            return {
+                ...teacher,
+                groups
+            };
+        }))
+
+        return fullTeachers;
     }
 });
