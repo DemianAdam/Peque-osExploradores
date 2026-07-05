@@ -16,6 +16,9 @@ export const zTeacherQuery = zCustomQuery(rawQuery, {
     args: {},
     input: async (ctx, args) => {
         const currentTeacher = await getCurrentTeacher(ctx);
+        if (!currentTeacher) {
+            throw new Error("No teacher found in context");
+        }
         return {
             ctx: { teacher: currentTeacher },
             args
@@ -27,6 +30,9 @@ export const zTeacherMutation = zCustomMutation(mutation, {
     args: {},
     input: async (ctx, args) => {
         const currentTeacher = await getCurrentTeacher(ctx);
+        if (!currentTeacher) {
+            throw new Error("No teacher found in context");
+        }
         return {
             ctx: { teacher: currentTeacher },
             args
@@ -39,6 +45,9 @@ export const zTeacherAction = zCustomAction(rawAction, {
     input: async (ctx, args,) => {
         /* eslint-disable @typescript-eslint/no-explicit-any */
         const currentTeacher = await getCurrentTeacher(ctx as any);
+        if (!currentTeacher) {
+            throw new Error("No teacher found in context");
+        }
         return {
             ctx: { teacher: currentTeacher },
             args
@@ -51,6 +60,9 @@ export const zTeacherInternalQuery = zCustomQuery(rawInternalQuery, {
     args: {},
     input: async (ctx, args) => {
         const currentTeacher = await getCurrentTeacher(ctx);
+        if (!currentTeacher) {
+            throw new Error("No teacher found in context");
+        }
         return {
             ctx: { teacher: currentTeacher },
             args
@@ -62,6 +74,9 @@ export const zTeacherInternalMutation = zCustomMutation(rawInternalMutation, {
     args: {},
     input: async (ctx, args) => {
         const currentTeacher = await getCurrentTeacher(ctx);
+        if (!currentTeacher) {
+            throw new Error("No teacher found in context");
+        }
         return {
             ctx: { teacher: currentTeacher },
             args
