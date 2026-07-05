@@ -6,5 +6,7 @@ export const invoiceValidator = z.object({
     amount: z.number(),
     date: z.string(),
     teacherId: zid("teachers"),
-    payslipId: zid("payslips")
+    payslipId: zid("payslips").nullable()
 });
+
+export const createInvoiceValidator = invoiceValidator.omit({ payslipId: true, teacherId: true, date: true });
