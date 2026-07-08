@@ -62,6 +62,22 @@ export const Header = () => {
             </Link>
 
             <Link 
+              to="/groups" 
+              onClick={() => setIsMenuOpen(false)} 
+              className={menuLinkClass}
+            >
+              Grupos
+            </Link>
+
+            <Link 
+              to="/fees" 
+              onClick={() => setIsMenuOpen(false)} 
+              className={menuLinkClass}
+            >
+              Cuotas
+            </Link>
+
+            <Link 
               to="/payments" 
               onClick={() => setIsMenuOpen(false)} 
               className={menuLinkClass}

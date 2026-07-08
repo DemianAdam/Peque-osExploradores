@@ -1,25 +1,31 @@
 "use client";
-import { useState } from "react"; // Necesitamos esto para el Modal
+import { useNavigate } from "react-router";
+import { useState } from "react";
 import { List } from "../components/UI/List";
 import { api } from "../../convex/_generated/api";
 import { useQuery } from "convex/react";
 import { Modal } from "../components/UI/Modal";
+import { Eye } from "lucide-react";
 
 export default function Teachers() {
+  const navigate = useNavigate();
+  const groups = ["Blue", "Red", "Green"];
   const [selectedTeacherId, setSelectedTeacherId] = useState<string | null>(null);
   const teachers = useQuery(api.teachers.queries.listTeachers);
 
   const columns = [
+    { header: "N°", accessor: (_: any, index: number) => index + 1 },
     { header: "Nombre", accessor: (t: any) => t.name },
-    { header: "Grupo", accessor: (t: any) => t.nombreGrupo || "Sin grupo" },
+    
     { 
-      header: "Acciones", 
+      header: "Grupos", 
       accessor: (t: any) => (
         <button 
+          key={t._id}
           onClick={() => setSelectedTeacherId(t._id)} // Al hacer clic, guardamos el ID
-          className="text-pink-600 font-bold"
+          className="bg-orange-100 text-pink-600 px-3 py-1 rounded-full font-bold hover:bg-orange-200"
         >
-          Más info
+          <Eye size={18} />
         </button>
       ) 
     }
@@ -41,20 +47,29 @@ export default function Teachers() {
         </div>
 
         {selectedTeacherId && (
-          <Modal 
-            title="Detalle de la Señorita" 
-            isOpen={!!selectedTeacherId} 
-            onClose={() => setSelectedTeacherId(null)}
-          >
-          {/* Aquí pasamos los datos. Sustituir esto por el resultado del useQuery */}
-            <div>
-              <p><strong>Nombre:</strong> Karen</p>
-              <p><strong>Grupos:</strong> Grupo A, Grupo B</p>
-              <p><strong>Pagos Recibidos:</strong> $500, $300</p>
-              <p><strong>Facturas:</strong> Pago de materiales, Salario</p>
+        <Modal 
+          title="Detalle de Grupos" 
+          isOpen={!!selectedTeacherId} 
+          onClose={() => setSelectedTeacherId(null)}
+        >
+          <div className="flex flex-col gap-3">
+            <p className="text-gray-600">Grupos asignados a esta docente:</p>
+          
+            <div className="flex flex-wrap gap-2">
+              {groups?.map((grupo: string) => (
+                <button
+                  key={grupo}
+                  onClick={() => navigate(`/grupos/${grupo}`)} // Redirección al detalle del grupo
+                  className="bg-sky-500 text-white px-4 py-2 rounded-full shadow-md hover:bg-sky-600 transition"
+                >
+                  {grupo}
+                </button>
+              ))}
             </div>
-          </Modal>
-        )}
+          </div>
+        </Modal>
+      )}
+        
       </>
   );
 }
