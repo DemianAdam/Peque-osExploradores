@@ -2,26 +2,60 @@ import { useQuery } from "convex/react";
 import { List } from "../components/UI/List";
 import { api } from "../../convex/_generated/api";
 import { FullChildren } from "../../convex/childrens/types";
+import { useNavigate } from "react-router";
+import { Pencil } from "lucide-react";
 
 export default function Childrens() {
+    
     const childrens = useQuery(api.childrens.queries.getChildrens);
-
+    const navigate = useNavigate();
     const columns = [
+        { header: "N°", accessor: (_: FullChildren, index: number) => index + 1 },
         { header: "Nombre", accessor: (child: FullChildren) => child.name },
-        { header: "Estado", accessor: (child: FullChildren) => child.active ? "Activo" : "Inactivo" },
-        { header: "Grupo", accessor: (child: FullChildren) => child.group },
-        { header: "Acciones", accessor: (child: FullChildren) => <button>Editar</button> }
+        { header: "Estado", accessor: (child: FullChildren) => (
+            <div className={`relative flex items-center w-14 h-7 rounded-full p-1 transition-colors ${child.active ? 'bg-green-500' : 'bg-red-500'}`}>
+      
+                {/* El círculo que se mueve */}
+                <div className={`bg-white w-5 h-5 rounded-full shadow-md transform transition-transform duration-300 ${child.active ? 'translate-x-7' : 'translate-x-0'}`} />
+                
+                {/* El texto con posición absoluta para que no choque con el círculo */}
+                <span className={`absolute text-[10px] text-white font-bold transition-opacity duration-300 ${child.active ? 'left-2' : 'right-2'}`}>
+                    {child.active ? "ON" : "OFF"}
+                </span>
+                
+            </div>
+        )},
+        { header: "Grupo", accessor: (child: FullChildren) => 
+            <button 
+                onClick={() => navigate(`/groups/${child.group}`)}
+                className="bg-sky-500 text-white px-4 py-2 rounded-full shadow-md hover:bg-sky-600 transition text-sm font-semibold"
+            >
+                {child.group}
+            </button>
+         },
+        { header: "Acciones", accessor: (child: FullChildren) => 
+            <button 
+                onClick={() => navigate(`/chicos/editar/${child._id}`)} 
+                className="bg-orange-100 text-pink-600 px-4 py-1 rounded-full font-bold hover:bg-orange-200 transition"
+            >
+                <Pencil size={18} />
+            </button>
+         }
     ];
 
     return (
         <div className="min-h-screen w-full bg-[#C6E5D9] flex flex-col pt-8 px-6">
             <h2 className="font-angkor text-[40px] text-[#1E293B] font-normal mb-2 text-right">LISTA</h2>
             <h3 className="text-4xl font-bold text-orange-500 mb-8 drop-shadow-sm text-right">Chicos</h3>
+            
+            
             <List
                 title="Lista de Chicos"
                 data={childrens}
                 columns={columns}
                 onSearch={(term) => console.log("Searching:", term)}
+                onAdd={() => navigate("/chicos/nuevo")}
+                buttonLabel=""
             />
 
         </div>
