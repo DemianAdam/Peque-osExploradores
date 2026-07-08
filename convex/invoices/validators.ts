@@ -9,4 +9,9 @@ export const invoiceValidator = z.object({
     payslipId: zid("payslips").nullable()
 });
 
-export const createInvoiceValidator = invoiceValidator.omit({ payslipId: true, teacherId: true, date: true });
+export const createInvoiceValidator = invoiceValidator
+    .omit({
+        payslipId: true,
+        teacherId: true,
+        date: true
+    });
