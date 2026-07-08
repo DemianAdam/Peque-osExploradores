@@ -6,7 +6,7 @@ import Login from './sections/Login';
 import Dashboard from "./sections/Dashboard";
 import Childrens from "./sections/Childrens";
 import Payments from "./sections/Payments";
-import Teachers from "./sections/teachers";
+import Teachers from "./sections/Teachers";
 import Invoices from "./sections/Invoices";
 import Payslips from "./sections/Payslips";
 
@@ -30,7 +30,6 @@ export default function App() {
             <Route path="teachers" element={<Teachers />} />
             <Route path="invoices" element={<Invoices />} />
             <Route path="payslips" element={<Payslips />} />
-
           </Route>
         </Routes>
       </Authenticated>
