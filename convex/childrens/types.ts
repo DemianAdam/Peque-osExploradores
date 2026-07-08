@@ -1,7 +1,8 @@
 import { Doc } from "../_generated/dataModel";
+import { Group } from "../groups/types";
 
 export type Children = Doc<"childrens">
 
 export type FullChildren = Children & {
-    group: string
+    group: Group | null
 }

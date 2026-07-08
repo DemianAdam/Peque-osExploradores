@@ -1,6 +1,7 @@
 import { ConvexError } from "convex/values";
 import { zTeacherQuery } from "../zod";
 import { FullChildren } from "./types";
+import { Group } from "../groups/types";
 
 export const getChildrens = zTeacherQuery({
     args: {},
@@ -10,15 +11,15 @@ export const getChildrens = zTeacherQuery({
 
         const fullChildrens = await Promise.all(
             childrens.map(async (children) => {
-                const group = await ctx.db.get(children.groupId);
 
-                if (!group) {
-                    throw new ConvexError("Group of children doesn't exist");
+                let group: Group | null = null;
+                if (children.groupId) {
+                    group = await ctx.db.get("groups", children.groupId);
                 }
 
                 const fullChildren: FullChildren = {
                     ...children,
-                    group: group.name,
+                    group: group,
                 };
                 return fullChildren;
             })

@@ -35,6 +35,6 @@ export const deleteChildren = zTeacherMutation({
         if (!existingChild) {
             throw new ConvexError(`No Children exists with id ${args.id}`);
         }
-        await ctx.db.patch("childrens", args.id, { active: false })
+        await ctx.db.patch("childrens", args.id, { active: false, groupId: null })
     }
 })
