@@ -12,6 +12,7 @@
   },
   "dependencies": {
     "@convex-dev/auth": "^0.0.91",
+    "@convex-dev/sharded-counter": "^0.2.1",
     "convex": "^1.36.1",
     "convex-helpers": "^0.1.112",
     "lucia": "^3.2.2",

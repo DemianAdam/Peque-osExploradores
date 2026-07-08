@@ -8,5 +8,5 @@ export const payslipValidator = z.object({
     totalCollected: z.number(),
     totalSpent: z.number(),
     partnerPercentage: z.number(),
-    techerId: zid("teachers")
+    teacherId: zid("teachers")
 });

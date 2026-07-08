@@ -6,5 +6,5 @@ export const paymentValidator = z.object({
     date: z.string(),
     feeId: zid("fees"),
     teacherId: zid("teachers"),
-    payslipId: zid("payslips")
+    payslipId: zid("payslips").nullable()
 });

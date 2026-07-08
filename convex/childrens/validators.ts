@@ -3,17 +3,25 @@ import z from "zod";
 
 const childrenIdValidator = zid("childrens");
 
-export const childrenValidator = z.object({
-    name: z.string(),
-    groupId: zid("groups"),
-    dni: z.string(),
-    active: z.boolean()
-});
+export const childrenValidator = z.union([
+    z.object({
+        name: z.string(),
+        groupId: zid("groups"),
+        dni: z.string(),
+        active: z.literal(true)
+    }),
+    z.object({
+        name: z.string(),
+        groupId: zid("groups").nullable(),
+        dni: z.string(),
+        active: z.literal(false)
+    })
+]);
 
 
-export const createChildrenValidator = childrenValidator.omit({ active: true })
+export const createChildrenValidator = childrenValidator.options[0].omit({ active: true })
 
-export const updateChildrenValidator = childrenValidator.partial().omit({ active: true }).extend({
+export const updateChildrenValidator = childrenValidator.options[0].partial().omit({ active: true }).extend({
     id: childrenIdValidator
 })
 
