@@ -9,7 +9,7 @@ export const createInvoice = zTeacherMutation({
         const newInvoice = {
             ...args,
             teacherId: ctx.teacher._id,
-            date: new Date().toISOString(),
+            date: Date.now(),
             payslipId: null,
         };
 

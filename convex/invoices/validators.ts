@@ -4,7 +4,7 @@ import z from "zod";
 export const invoiceValidator = z.object({
     description: z.string(),
     amount: z.number(),
-    date: z.string(),
+    date: z.number(),
     teacherId: zid("teachers"),
     payslipId: zid("payslips").nullable()
 });
