@@ -37,8 +37,8 @@ export function List<T>({ title, data, columns, onSearch, onAdd, buttonLabel = "
       />
 
       {/* Table */}
-      <div className="overflow-hidden rounded-2xl border border-gray-100">
-        <table className="w-full text-left border-collapse">
+      <div className="w-full overflow-x-auto rounded-2xl border border-gray-100">
+        <table className="w-full min-w-150 text-left border-collapse">
           <thead>
             <tr className="bg-gray-100">
               {columns.map((col, i) => <th key={i} className="p-4 font-semibold text-gray-700">{col.header}</th>)}

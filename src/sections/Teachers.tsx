@@ -59,7 +59,7 @@ export default function Teachers() {
               {groups?.map((grupo: string) => (
                 <button
                   key={grupo}
-                  onClick={() => navigate(`/grupos/${grupo}`)} // Redirección al detalle del grupo
+                  onClick={() => navigate(`/groups/${grupo}`)} // Redirección al detalle del grupo
                   className="bg-sky-500 text-white px-4 py-2 rounded-full shadow-md hover:bg-sky-600 transition"
                 >
                   {grupo}
