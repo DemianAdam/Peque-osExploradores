@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "convex dev --start \"vite --open\"",
     "predev": "convex init && node setup.mjs --once",
+    "serve": "powershell -NoProfile -ExecutionPolicy Bypass -File serve.ps1",
     "build": "tsc -b && vite build",
     "lint": "tsc && eslint .  --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "preview": "vite preview"

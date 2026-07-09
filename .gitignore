@@ -26,3 +26,4 @@ dist-ssr
 .agents/
 .claude/
 convex/_generated/
+.cert/
