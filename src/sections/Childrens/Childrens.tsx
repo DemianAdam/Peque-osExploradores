@@ -1,7 +1,7 @@
 import { useQuery } from "convex/react";
-import { List } from "../components/UI/List";
-import { api } from "../../convex/_generated/api";
-import { FullChildren } from "../../convex/childrens/types";
+import { List } from "../../components/UI/List";
+import { api } from "../../../convex/_generated/api";
+import { FullChildren } from "../../../convex/childrens/types";
 import { useNavigate } from "react-router";
 import { Pencil } from "lucide-react";
 
@@ -12,6 +12,7 @@ export default function Childrens() {
     const columns = [
         { header: "N°", accessor: (_: FullChildren, index: number) => index + 1 },
         { header: "Nombre", accessor: (child: FullChildren) => child.name },
+        { header: "DNI", accessor: (child: FullChildren) => child.dni },
         { header: "Estado", accessor: (child: FullChildren) => (
             <div className={`relative flex items-center w-14 h-7 rounded-full p-1 transition-colors ${child.active ? 'bg-green-500' : 'bg-red-500'}`}>
       
@@ -25,14 +26,19 @@ export default function Childrens() {
                 
             </div>
         )},
-        { header: "Grupo", accessor: (child: FullChildren) => 
-            <button 
-                onClick={() => navigate(`/groups/${child.group}`)}
-                className="bg-sky-500 text-white px-4 py-2 rounded-full shadow-md hover:bg-sky-600 transition text-sm font-semibold"
-            >
-                {child.group}
-            </button>
-         },
+        { header: "Grupo", accessor: (child: FullChildren) => {
+            const groupName = child.group?.name ?? 'Sin grupo';
+            const groupId = child.group?._id;
+            return (
+                <button 
+                    onClick={() => groupId && navigate(`/groups/${groupId}`)}
+                    className="bg-sky-500 text-white px-4 py-2 rounded-full shadow-md hover:bg-sky-600 transition text-sm font-semibold"
+                    disabled={!groupId}
+                >
+                    {groupName}
+                </button>
+            )
+        }},
         { header: "Acciones", accessor: (child: FullChildren) => 
             <button 
                 onClick={() => navigate(`/chicos/editar/${child._id}`)} 
