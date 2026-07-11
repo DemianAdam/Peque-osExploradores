@@ -21,7 +21,7 @@ export const childrenValidator = z.union([
 
 export const createChildrenValidator = childrenValidator.options[0].omit({ active: true })
 
-export const updateChildrenValidator = childrenValidator.options[0].partial().omit({ active: true }).extend({
+export const updateChildrenValidator = childrenValidator.options[0].partial().extend({
     id: childrenIdValidator
 })
 
