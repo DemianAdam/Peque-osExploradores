@@ -1,11 +1,12 @@
 import { Plus } from "lucide-react";
+import React from "react";
 
 interface Column<T> {
   header: string;
   accessor: (item: T, index: number) => React.ReactNode;
 }
 
-interface ListProps<T> {
+interface ListProps<T extends { _id: string }> {
   title: string;
   data: T[] | undefined;
   columns: Column<T>[];
@@ -14,7 +15,7 @@ interface ListProps<T> {
   buttonLabel?: string; //
 }
 
-export function List<T>({ title, data, columns, onSearch, onAdd, buttonLabel = "Agregar"}: ListProps<T>) {
+export function List<T extends { _id: string }>({ title, data, columns, onSearch, onAdd, buttonLabel = "Agregar"}: ListProps<T>) {
   return (
     <div className="p-6 bg-white rounded-[30px] shadow-sm border border-gray-100">
       <div className="flex justify-between items-center mb-6">
@@ -36,12 +37,13 @@ export function List<T>({ title, data, columns, onSearch, onAdd, buttonLabel = "
         onChange={(e) => onSearch(e.target.value)}
       />
 
+    
       {/* Table */}
-      <div className="w-full overflow-x-auto rounded-2xl border border-gray-100">
-        <table className="w-full min-w-150 text-left border-collapse">
+      <div className="w-full">
+        <table className="hidden md:table w-full text-left">
           <thead>
             <tr className="bg-gray-100">
-              {columns.map((col, i) => <th key={i} className="p-4 font-semibold text-gray-700">{col.header}</th>)}
+              {columns.map((col, i) => <th key={i} className=" p-4 font-semibold text-gray-700">{col.header}</th>)}
             </tr>
           </thead>
           <tbody>
@@ -55,6 +57,19 @@ export function List<T>({ title, data, columns, onSearch, onAdd, buttonLabel = "
             ))}
           </tbody>
         </table>
+          {/* MODO MÓVIL (Tarjetas Dinámicas) */}
+        <div className="md:hidden flex flex-col gap-4">
+          {data?.map((item, i) => (
+            <div key={item._id} className="bg-gray-50 p-4 rounded-xl shadow-sm border border-gray-100 flex flex-col gap-2">
+              {columns.map((col, j) => (
+                <div key={j} className="flex justify-between items-center py-1 border-b border-gray-200 last:border-0">
+                  <span className="font-semibold text-gray-500 text-sm">{col.header}:</span>
+                  <span className="text-right">{col.accessor(item, i)}</span>
+                </div>
+              ))}
+            </div>
+          ))}
+        </div>
       </div>
     </div>
   );
