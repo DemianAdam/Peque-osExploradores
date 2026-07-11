@@ -4,17 +4,18 @@ import { FormLayout } from "./FormLayout";
 import { BaseInput } from "../UI/BaseInput";
 import { BaseSelect } from "../UI/BaseSelect";
 import { BaseSwitch } from "../UI/BaseSwitch";
+import { FullChildren } from "../../../convex/childrens/types";
 
 interface ChildrenFormProps {
   onSubmit: (data: any) => void;
-  initialData?: any;
+  initialData?: FullChildren;
 }
 
 export function ChildrenForm({ onSubmit, initialData }: ChildrenFormProps) {
   const [formData, setFormData] = useState({
     name: initialData?.name || "",
     groupId: initialData?.groupId || "", 
-    isActive: initialData?.isActive ?? true, 
+    active: initialData?.active ?? true, 
     dni: initialData?.dni || "",
   });
 
@@ -46,8 +47,8 @@ export function ChildrenForm({ onSubmit, initialData }: ChildrenFormProps) {
       {/* Switch de Estado */}
       <BaseSwitch 
         label="Estado Activo"
-        checked={formData.isActive}
-        onChange={(checked) => setFormData({ ...formData, isActive: checked })}
+        checked={formData.active}
+        onChange={(checked) => setFormData({ ...formData, active: checked })}
       />
     </FormLayout>
   );
