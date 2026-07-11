@@ -1,8 +1,9 @@
+import { FullTeacher } from "../../../convex/teachers/types";
 import { Modal } from "../UI/Modal";
 import { useNavigate } from "react-router";
 
 interface TeacherDetailModalProps {
-  teacher: any; // O tu tipo FullTeacher
+  teacher: FullTeacher;
   isOpen: boolean;
   onClose: () => void;
 }
@@ -11,22 +12,22 @@ export function TeacherDetailModal({ teacher, isOpen, onClose }: TeacherDetailMo
   const navigate = useNavigate();
 
   return (
-    <Modal 
-      title={`Grupos de ${teacher?.name}`} 
-      isOpen={isOpen} 
+    <Modal
+      title={`Grupos de ${teacher.name}`}
+      isOpen={isOpen}
       onClose={onClose}
     >
       <div className="flex flex-col gap-3">
         <p className="text-gray-600">Grupos asignados:</p>
-        
+
         <div className="flex flex-wrap gap-2">
-          {teacher?.groups?.map((grupo: any) => (
+          {teacher.groups.map((grupo) => (
             <button
               key={grupo._id}
               onClick={() => navigate(`/grupos/${grupo._id}`)}
               className="bg-sky-500 text-white px-4 py-2 rounded-full shadow-md hover:bg-sky-600 transition"
             >
-              {grupo.name} 
+              {grupo.name}
             </button>
           ))}
         </div>

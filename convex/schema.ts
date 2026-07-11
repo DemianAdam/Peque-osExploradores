@@ -9,7 +9,7 @@ import { invoiceSchema } from "./invoices/schema";
 import { groupSchema } from "./groups/schema";
 import { groupTeacherSchema } from "./group_teachers/schema";
 import { feeSchema } from "./fees/schema";
-import { childrenSchema } from "./childrens/schema";
+import { childrenSchema } from "./children/schema";
 
 export default defineSchema({
   ...authTables,
@@ -21,5 +21,5 @@ export default defineSchema({
   groups: groupSchema,
   group_teachers: groupTeacherSchema,
   fees: feeSchema,
-  childrens: childrenSchema
+  children: childrenSchema
 });

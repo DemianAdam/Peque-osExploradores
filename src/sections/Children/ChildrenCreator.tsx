@@ -1,4 +1,4 @@
-// sections/Childrens/ChildrenCreator.tsx
+// sections/Children/ChildrenCreator.tsx
 import { useMutation } from "convex/react";
 
 import { ChildrenForm } from "../../components/Forms/ChildrenForm";
@@ -8,7 +8,7 @@ import { api } from "../../../convex/_generated/api";
 export default function ChildrenCreator() {
   const navigate = useNavigate();
   // Usa la mutación de crear que seguro ya tienes, o agrégala:
-  const createChild = useMutation(api.childrens.mutations.createChildren); 
+  const createChild = useMutation(api.children.mutations.createChild); 
 
   return (
     <div className="p-10 bg-[#C6E5D9] min-h-screen">
