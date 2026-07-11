@@ -24,7 +24,13 @@ export const updateChildren = zTeacherMutation({
         if (!existingChild) {
             throw new ConvexError(`No Children exists with id ${args.id}`);
         }
-        await ctx.db.patch("childrens", args.id, args);
+
+        const updatedChild ={
+            ...args,
+            groupId: args.active === false ? null : args.groupId
+        }
+
+        await ctx.db.patch("childrens", args.id, updatedChild);
     }
 })
 
