@@ -16,9 +16,9 @@ export default function ChildrenCreator() {
       
       <ChildrenForm 
         onSubmit={(data) => {
-            // Pasamos los datos sin ID (porque es nuevo)
-            createChild(data); 
-            navigate("/chicos"); // Volvemos a la lista
+            const { active, ...dataToSend } = data;
+            createChild(dataToSend);
+            navigate("/chicos");
         }} 
       />
     </div>

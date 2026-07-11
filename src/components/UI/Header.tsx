@@ -54,7 +54,7 @@ export const Header = () => {
             </Link>
 
             <Link 
-              to="/children" 
+              to="/chicos" 
               onClick={() => setIsMenuOpen(false)} 
               className={menuLinkClass}
             >
@@ -62,7 +62,7 @@ export const Header = () => {
             </Link>
 
             <Link 
-              to="/groups" 
+              to="/grupos" 
               onClick={() => setIsMenuOpen(false)} 
               className={menuLinkClass}
             >
@@ -70,7 +70,7 @@ export const Header = () => {
             </Link>
 
             <Link 
-              to="/fees" 
+              to="/cuotas" 
               onClick={() => setIsMenuOpen(false)} 
               className={menuLinkClass}
             >
@@ -78,7 +78,7 @@ export const Header = () => {
             </Link>
 
             <Link 
-              to="/payments" 
+              to="/pagos" 
               onClick={() => setIsMenuOpen(false)} 
               className={menuLinkClass}
             >
@@ -86,7 +86,7 @@ export const Header = () => {
             </Link>
 
             <Link 
-              to="/teachers" 
+              to="/seños" 
               onClick={() => setIsMenuOpen(false)} 
               className={menuLinkClass}
             >
@@ -94,7 +94,7 @@ export const Header = () => {
             </Link>
 
             <Link 
-              to="/invoices" 
+              to="/gastos" 
               onClick={() => setIsMenuOpen(false)} 
               className={menuLinkClass}
             >
@@ -102,7 +102,7 @@ export const Header = () => {
             </Link>
             
             <Link 
-              to="/payslips" 
+              to="/liquidaciones" 
               onClick={() => setIsMenuOpen(false)} 
               className={menuLinkClass}
             >
