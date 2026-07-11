@@ -1,18 +1,18 @@
 "use client";
-import { useNavigate } from "react-router";
 import { useState } from "react";
 import { List } from "../components/UI/List";
 import { api } from "../../convex/_generated/api";
 import { useQuery } from "convex/react";
-import { Modal } from "../components/UI/Modal";
+
 import { Eye } from "lucide-react";
+import { TeacherDetailModal } from "@/components/Modals/TeacherDetailModal";
 
 export default function Teachers() {
-  const navigate = useNavigate();
-  const groups = ["Blue", "Red", "Green"];
   const [selectedTeacherId, setSelectedTeacherId] = useState<string | null>(null);
   const teachers = useQuery(api.teachers.queries.listTeachers);
+  const selectedTeacher = teachers?.find((t) => t._id === selectedTeacherId);
 
+  
   const columns = [
     { header: "N°", accessor: (_: any, index: number) => index + 1 },
     { header: "Nombre", accessor: (t: any) => t.name },
@@ -44,31 +44,17 @@ export default function Teachers() {
         />
       
        
-        </div>
+        
 
-        {selectedTeacherId && (
-        <Modal 
-          title="Detalle de Grupos" 
-          isOpen={!!selectedTeacherId} 
-          onClose={() => setSelectedTeacherId(null)}
-        >
-          <div className="flex flex-col gap-3">
-            <p className="text-gray-600">Grupos asignados a esta docente:</p>
-          
-            <div className="flex flex-wrap gap-2">
-              {groups?.map((grupo: string) => (
-                <button
-                  key={grupo}
-                  onClick={() => navigate(`/groups/${grupo}`)} // Redirección al detalle del grupo
-                  className="bg-sky-500 text-white px-4 py-2 rounded-full shadow-md hover:bg-sky-600 transition"
-                >
-                  {grupo}
-                </button>
-              ))}
-            </div>
-          </div>
-        </Modal>
-      )}
+        {/* Solo necesitamos pasar el objeto completo 'selectedTeacher' al modal */}
+        {selectedTeacher && (
+          <TeacherDetailModal 
+            teacher={selectedTeacher}
+            isOpen={!!selectedTeacherId}
+            onClose={() => setSelectedTeacherId(null)}
+          />
+        )}
+      </div>
         
       </>
   );
