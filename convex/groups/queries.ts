@@ -18,7 +18,7 @@ export const getFullGroups = zTeacherQuery({
     return await Promise.all(
       groups.map(async (group) => {
         const children = await ctx.db
-          .query("childrens")
+          .query("children")
           .withIndex("index_group_active", (q) => q.eq("groupId", group._id))
           .collect();
 

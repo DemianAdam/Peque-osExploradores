@@ -1,8 +1,8 @@
 import { zodOutputToConvex } from "convex-helpers/server/zod";
 import { defineTable } from "convex/server";
-import { childrenValidator } from "./validators";
+import { childValidator } from "./validators";
 
-const schema = zodOutputToConvex(childrenValidator);
+const schema = zodOutputToConvex(childValidator);
 
 export const childrenSchema = defineTable(schema)
     .index("index_dni", ["dni"])

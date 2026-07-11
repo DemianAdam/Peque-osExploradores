@@ -12,7 +12,7 @@ export default function Groups() {
   const [selectedGroup, setSelectedGroup] = useState<any>(null); // Estado para el modal
   const navigate = useNavigate();
   const groups = useQuery(api.groups.queries.getGroups);
-  const allChildren = useQuery(api.childrens.queries.getChildrens);
+  const allChildren = useQuery(api.children.queries.getChildren);
   const allGroupTeachers = useQuery(api.groups.queries.getAllGroupTeachers);
   const allTeachers = useQuery(api.teachers.queries.listTeachers);
 

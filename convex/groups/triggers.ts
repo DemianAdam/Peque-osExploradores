@@ -3,7 +3,7 @@ import { subscribeTrigger } from "../triggers";
 subscribeTrigger("groups", {
     delete: async (ctx, { oldDoc }) => {
 
-        const anyActiveChildrenInGroup = await ctx.db.query("childrens")
+        const anyActiveChildrenInGroup = await ctx.db.query("children")
             .withIndex("index_group_active", (q) =>
                 q.eq("groupId", oldDoc._id).eq("active", true))
             .unique();

@@ -1,9 +1,9 @@
 import { zid } from "convex-helpers/server/zod4";
 import z from "zod";
 
-const childrenIdValidator = zid("childrens");
+const childIdValidator = zid("children");
 
-export const childrenValidator = z.object({
+export const childValidator = z.object({
     name: z.string(),
     groupId: zid("groups").nullable(),
     dni: z.string(),
@@ -14,15 +14,15 @@ export const childrenValidator = z.object({
 );
 
 
-export const createChildrenValidator = childrenValidator.omit({ active: true })
+export const createChildValidator = childValidator.omit({ active: true })
 
-export const updateChildrenValidator = z.object({
-    id: childrenIdValidator,
+export const updateChildValidator = z.object({
+    id: childIdValidator,
     name: z.string().optional(),
     dni: z.string().optional(),
     groupId: zid("groups").nullable().optional(),
     active: z.union([z.literal(true), z.literal(false)]).optional(),
 })
-export const deleteChildrenValidator = z.object({
-    id: childrenIdValidator
+export const deleteChildValidator = z.object({
+    id: childIdValidator
 })

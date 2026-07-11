@@ -1,7 +1,7 @@
 import { subscribeTrigger } from "../triggers";
 import { incrementCount, decrementCount, CounterKeysBuilders } from "../counter";
 
-subscribeTrigger("childrens", {
+subscribeTrigger("children", {
   insert: async (ctx, { newDoc }) => {
     if (newDoc.active && newDoc.groupId) {
       await incrementCount(ctx, CounterKeysBuilders.childrenInGroup(newDoc.groupId));

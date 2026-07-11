@@ -4,11 +4,11 @@ import { FormLayout } from "./FormLayout";
 import { BaseInput } from "../UI/BaseInput";
 import { BaseSelect } from "../UI/BaseSelect";
 import { BaseSwitch } from "../UI/BaseSwitch";
-import { FullChildren } from "../../../convex/childrens/types";
+import { FullChild } from "../../../convex/children/types";
 
 interface ChildrenFormProps {
   onSubmit: (data: any) => void;
-  initialData?: FullChildren;
+  initialData?: FullChild;
 }
 
 export function ChildrenForm({ onSubmit, initialData }: ChildrenFormProps) {

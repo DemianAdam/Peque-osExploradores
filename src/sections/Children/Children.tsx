@@ -1,19 +1,19 @@
 import { useQuery } from "convex/react";
 import { List } from "../../components/UI/List";
 import { api } from "../../../convex/_generated/api";
-import { FullChildren } from "../../../convex/childrens/types";
+import { FullChild } from "../../../convex/children/types";
 import { useNavigate } from "react-router";
 import { Pencil } from "lucide-react";
 
-export default function Childrens() {
+export default function Children() {
     
-    const childrens = useQuery(api.childrens.queries.getChildrens);
+    const children = useQuery(api.children.queries.getChildren);
     const navigate = useNavigate();
     const columns = [
-        { header: "N°", accessor: (_: FullChildren, index: number) => index + 1 },
-        { header: "Nombre", accessor: (child: FullChildren) => child.name },
-        { header: "DNI", accessor: (child: FullChildren) => child.dni },
-        { header: "Estado", accessor: (child: FullChildren) => (
+        { header: "N°", accessor: (_: FullChild, index: number) => index + 1 },
+        { header: "Nombre", accessor: (child: FullChild) => child.name },
+        { header: "DNI", accessor: (child: FullChild) => child.dni },
+        { header: "Estado", accessor: (child: FullChild) => (
             <div className={`relative flex items-center w-14 h-7 rounded-full p-1 transition-colors ${child.active ? 'bg-green-500' : 'bg-red-500'}`}>
       
                 {/* El círculo que se mueve */}
@@ -26,7 +26,7 @@ export default function Childrens() {
                 
             </div>
         )},
-        { header: "Grupo", accessor: (child: FullChildren) => {
+        { header: "Grupo", accessor: (child: FullChild) => {
             const groupName = child.group?.name ?? 'Sin grupo';
             const groupId = child.group?._id;
             return (
@@ -39,7 +39,7 @@ export default function Childrens() {
                 </button>
             )
         }},
-        { header: "Acciones", accessor: (child: FullChildren) => 
+        { header: "Acciones", accessor: (child: FullChild) => 
             <button 
                 onClick={() => navigate(`/chicos/editar/${child._id}`)} 
                 className="bg-orange-100 text-pink-600 px-4 py-1 rounded-full font-bold hover:bg-orange-200 transition"
@@ -57,7 +57,7 @@ export default function Childrens() {
             
             <List
                 title="Lista de Chicos"
-                data={childrens}
+                data={children}
                 columns={columns}
                 onSearch={(term) => console.log("Searching:", term)}
                 onAdd={() => navigate("/chicos/nuevo")}

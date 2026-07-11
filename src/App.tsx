@@ -11,9 +11,9 @@ import Teachers from "./sections/Teachers";
 import Invoices from "./sections/Invoices";
 import Payslips from "./sections/Payslips";
 import Groups from "./sections/Groups";
-import ChildrenEditor from "./sections/Childrens/ChildrenEditor";
-import Childrens from "./sections/Childrens/Childrens";
-import ChildrenCreator from "./sections/Childrens/ChildrenCreator";
+import ChildrenEditor from "./sections/Children/ChildrenEditor";
+import Children from "./sections/Children/Children";
+import ChildrenCreator from "./sections/Children/ChildrenCreator";
 
 
 
@@ -30,7 +30,7 @@ export default function App() {
         <Routes>
           <Route path="/" element={<ProtectedLayout />}>
             <Route index element={<Dashboard />} />
-            <Route path="children" element={<Childrens />} />
+            <Route path="children" element={<Children />} />
             <Route path="/chicos/editar/:id" element={<ChildrenEditor />} />
             <Route path="/chicos/nuevo" element={<ChildrenCreator />} />
             <Route path="fees" element={<Fees />} />

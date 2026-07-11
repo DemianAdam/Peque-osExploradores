@@ -10,8 +10,8 @@ export default function ChildrenEditor() {
   const { id } = useParams();
   
   
-  const childData = useQuery(api.childrens.queries.getById, { id: id as any});
-  const updateChild = useMutation(api.childrens.mutations.updateChildren);
+  const childData = useQuery(api.children.queries.getById, { id: id as any});
+  const updateChild = useMutation(api.children.mutations.updateChild);
   if (!childData) return <div>Cargando...</div>;
   return (
     <div className="p-10 bg-[#C6E5D9] min-h-screen">

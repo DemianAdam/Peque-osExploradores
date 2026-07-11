@@ -6,5 +6,5 @@ export const feeValidator = z.object({
     period: periodValidator,
     totalAmount: z.number(),
     state: stateValidator,
-    childrenId: zid("childrens")
+    childId: zid("children")
 });
