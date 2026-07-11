@@ -30,15 +30,15 @@ export default function App() {
         <Routes>
           <Route path="/" element={<ProtectedLayout />}>
             <Route index element={<Dashboard />} />
-            <Route path="children" element={<Children />} />
-            <Route path="/chicos/editar/:id" element={<ChildrenEditor />} />
-            <Route path="/chicos/nuevo" element={<ChildrenCreator />} />
-            <Route path="fees" element={<Fees />} />
-            <Route path="payments" element={<Payments />} />
-            <Route path="teachers" element={<Teachers />} />
-            <Route path="invoices" element={<Invoices />} />
-            <Route path="payslips" element={<Payslips />} />
-            <Route path="groups" element={<Groups />} />
+            <Route path="chicos" element={<Children />} />
+            <Route path="chicos/editar/:id" element={<ChildrenEditor />} />
+            <Route path="chicos/nuevo" element={<ChildrenCreator />} />
+            <Route path="cuotas" element={<Fees />} />
+            <Route path="pagos" element={<Payments />} />
+            <Route path="seños" element={<Teachers />} />
+            <Route path="gastos" element={<Invoices />} />
+            <Route path="liquidaciones" element={<Payslips />} />
+            <Route path="grupos" element={<Groups />} />
 
           </Route>
         </Routes>
