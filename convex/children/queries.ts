@@ -38,7 +38,6 @@ export const getById = query({
     
     if (!child) return null;
 
-    // Enriquecemos igual que en la lista
     let group: Group | null = null;
     if (child.groupId) {
       group = await ctx.db.get("groups", child.groupId);

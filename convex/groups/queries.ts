@@ -1,5 +1,8 @@
 import { query } from "../_generated/server";
+import { Child } from "../children/types";
+import { Teacher } from "../teachers/types";
 import { zTeacherQuery } from "../zod";
+import { FullGroup } from "./types";
 
 export const getGroups = zTeacherQuery({
   args: {},
@@ -15,9 +18,9 @@ export const getFullGroups = zTeacherQuery({
     //TODO: Paginate
     const groups = await ctx.db.query("groups").collect();
 
-    return await Promise.all(
+    const fullGroups: FullGroup[] = await Promise.all(
       groups.map(async (group) => {
-        const children = await ctx.db
+        const children: Child[] = await ctx.db
           .query("children")
           .withIndex("index_group_active", (q) => q.eq("groupId", group._id))
           .collect();
@@ -27,25 +30,19 @@ export const getFullGroups = zTeacherQuery({
           .withIndex("index_group", (q) => q.eq("groupId", group._id))
           .collect();
 
-        const teachers = await Promise.all(
-          groupTeachers.map((gt) => ctx.db.get("teachers", gt.teacherId))
-        );
+        const teachers: Teacher[] = (
+          await Promise.all(
+            groupTeachers.map((gt) => ctx.db.get("teachers", gt.teacherId))
+          )
+        ).filter((t) => t !== null);
 
         return {
           ...group,
           children,
-          teachers: teachers.filter(Boolean),
-          childrenCount: children.length,
-          teachersCount: groupTeachers.length,
+          teachers,
         };
       })
     );
-  },
-});
-
-export const getAllGroupTeachers = query({
-  args: {},
-  handler: async (ctx) => {
-    return await ctx.db.query("group_teachers").collect();
+    return fullGroups;
   },
 });
