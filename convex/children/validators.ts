@@ -13,8 +13,11 @@ export const childValidator = z.object({
     { message: "Active children must have a group" }
 );
 
-
-export const createChildValidator = childValidator.omit({ active: true })
+export const createChildValidator = z.object({
+    name: z.string(),
+    groupId: zid("groups"),
+    dni: z.string(),
+})
 
 export const updateChildValidator = z.object({
     id: childIdValidator,

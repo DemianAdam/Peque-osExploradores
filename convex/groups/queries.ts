@@ -1,4 +1,4 @@
-import { query } from "../_generated/server";
+import { Id } from "../_generated/dataModel";
 import { Child } from "../children/types";
 import { Teacher } from "../teachers/types";
 import { zTeacherQuery } from "../zod";
@@ -18,31 +18,42 @@ export const getFullGroups = zTeacherQuery({
     //TODO: Paginate
     const groups = await ctx.db.query("groups").collect();
 
-    const fullGroups: FullGroup[] = await Promise.all(
-      groups.map(async (group) => {
-        const children: Child[] = await ctx.db
-          .query("children")
-          .withIndex("index_group_active", (q) => q.eq("groupId", group._id))
-          .collect();
+    const [allChildren, allGroupTeachers] = await Promise.all([
+      ctx.db.query("children").collect(),
+      ctx.db.query("group_teachers").collect(),
+    ]);
 
-        const groupTeachers = await ctx.db
-          .query("group_teachers")
-          .withIndex("index_group", (q) => q.eq("groupId", group._id))
-          .collect();
+    const childrenByGroup = new Map<Id<"groups">, Child[]>();
+    for (const child of allChildren) {
+      if (child.groupId) {
+        const arr = childrenByGroup.get(child.groupId) ?? [];
+        arr.push(child);
+        childrenByGroup.set(child.groupId, arr);
+      }
+    }
 
-        const teachers: Teacher[] = (
-          await Promise.all(
-            groupTeachers.map((gt) => ctx.db.get("teachers", gt.teacherId))
-          )
-        ).filter((t) => t !== null);
-
-        return {
-          ...group,
-          children,
-          teachers,
-        };
-      })
+    const teacherIds = [...new Set(allGroupTeachers.map(gt => gt.teacherId))];
+    const allTeachers = await Promise.all(
+      teacherIds.map(id => ctx.db.get("teachers", id))
     );
-    return fullGroups;
+    const teacherMap = new Map(
+      allTeachers.filter((t): t is Teacher => t !== null).map(t => [t._id, t])
+    );
+
+    const teachersByGroup = new Map<Id<"groups">, Teacher[]>();
+    for (const gt of allGroupTeachers) {
+      const teacher = teacherMap.get(gt.teacherId);
+      if (teacher) {
+        const arr = teachersByGroup.get(gt.groupId) ?? [];
+        arr.push(teacher);
+        teachersByGroup.set(gt.groupId, arr);
+      }
+    }
+
+    return groups.map(group => ({
+      ...group,
+      children: childrenByGroup.get(group._id) ?? [],
+      teachers: teachersByGroup.get(group._id) ?? [],
+    }));
   },
 });
