@@ -1,4 +1,4 @@
-import { convexAuth, createAccount, GenericActionCtxWithAuthConfig, retrieveAccount } from "@convex-dev/auth/server";
+import { convexAuth, GenericActionCtxWithAuthConfig, retrieveAccount } from "@convex-dev/auth/server";
 import { Password } from "@convex-dev/auth/providers/Password";
 import { Scrypt } from "lucia";
 import { DataModel } from "./_generated/dataModel";
@@ -44,22 +44,6 @@ const customPasswordProvider = ConvexCredentials<DataModel>({
 export const { auth, signIn, signOut, store, isAuthenticated } = convexAuth({
   providers: [customPasswordProvider],
 });
-
-async function signUpFlow(ctx: GenericActionCtxWithAuthConfig<DataModel>, accountInfo: Account) {
-  const account = await createAccount(ctx, {
-    provider: "password",
-    account: {
-      id: accountInfo.username,
-      secret: accountInfo.password
-    },
-    profile: {
-      username: accountInfo.username
-    },
-    shouldLinkViaEmail: false,
-    shouldLinkViaPhone: false
-  })
-  return { userId: account.user._id };
-}
 
 async function signInFlow(ctx: GenericActionCtxWithAuthConfig<DataModel>, accountInfo: Account) {
   const account = await retrieveAccount(ctx, {

@@ -4,7 +4,7 @@ import { zid } from "convex-helpers/server/zod4";
 
 export const payslipValidator = z.object({
     period: periodValidator,
-    closedAt: z.string(),
+    closedAt: z.number(),
     totalCollected: z.number(),
     totalSpent: z.number(),
     partnerPercentage: z.number(),

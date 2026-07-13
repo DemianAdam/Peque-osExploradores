@@ -20,7 +20,8 @@ export const updateGroup = zTeacherMutation({
         if (!existingGroup) {
             throw new Error(`No Group exists with id ${args.id}`);
         }
-        await ctx.db.patch("groups", args.id, args);
+        const { id, ...fields } = args;
+        await ctx.db.patch("groups", id, fields);
     }
 });
 
