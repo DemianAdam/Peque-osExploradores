@@ -7,19 +7,20 @@ interface Column<T> {
 }
 
 interface ListProps<T extends { _id: string }> {
-  title: string;
+  
   data: T[] | undefined;
   columns: Column<T>[];
   onSearch: (term: string) => void;
   onAdd?: () => void; // Nueva propiedad opcional
-  buttonLabel?: string; //
+  buttonLabel?: string; // Nueva propiedad opcional para el texto del botón
+  
 }
 
-export function List<T extends { _id: string }>({ title, data, columns, onSearch, onAdd, buttonLabel = "Agregar"}: ListProps<T>) {
+export function List<T extends { _id: string }>({ data, columns, onSearch, onAdd, buttonLabel= "Agregar"}: ListProps<T>) {
   return (
     <div className="p-6 bg-white rounded-[30px] shadow-sm border border-gray-100">
       <div className="flex justify-between items-center mb-6">
-        <h2 className="text-2xl font-bold">{title}</h2>
+        
         {onAdd && (
             <button 
               onClick={onAdd}
@@ -60,7 +61,7 @@ export function List<T extends { _id: string }>({ title, data, columns, onSearch
           {/* MODO MÓVIL (Tarjetas Dinámicas) */}
         <div className="md:hidden flex flex-col gap-4">
           {data?.map((item, i) => (
-            <div key={item._id} className="bg-gray-50 p-4 rounded-xl shadow-sm border border-gray-100 flex flex-col gap-2">
+            <div key={item._id} className="bg-gray-50 p-4 rounded-xl shadow-sm border border-gray-500 flex flex-col gap-2">
               {columns.map((col, j) => (
                 <div key={j} className="flex justify-between items-center py-1 border-b border-gray-200 last:border-0">
                   <span className="font-semibold text-gray-500 text-sm">{col.header}:</span>

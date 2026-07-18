@@ -37,14 +37,11 @@ export default function Teachers() {
         <h2 className="font-angkor text-[40px] text-[#1E293B] font-normal mb-2 text-right">LISTA</h2>
         <h3 className="text-4xl font-bold text-pink-500 mb-8 drop-shadow-sm text-right">Señoritas</h3>
         <List<FullTeacher>
-          title="Lista de Señoritas"
           data={teachers ?? []}
           columns={columns}
           onSearch={(term) => console.log(term)}
         />
       
-       
-        
         {selectedTeacher && (
           <TeacherDetailModal 
             teacher={selectedTeacher}

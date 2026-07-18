@@ -1,12 +1,13 @@
 "use client";
 import { useNavigate } from "react-router";
 import { useState } from "react";
-import { List } from "../components/UI/List";
-import { api } from "../../convex/_generated/api";
 import { useQuery } from "convex/react";
 import { Eye, Trash2 } from "lucide-react";
+import { api } from "../../../convex/_generated/api";
+import { FullGroup } from "../../../convex/groups/types";
+import { List } from "@/components/UI/List";
 import { GroupDetailModal } from "@/components/Modals/GroupDetailModal";
-import { FullGroup } from "../../convex/groups/types";
+
 
 
 export default function Groups() {
@@ -55,7 +56,6 @@ export default function Groups() {
         <h3 className="text-4xl font-bold text-blue-500 mb-8 drop-shadow-sm text-right">Grupos</h3>
 
       <List<FullGroup>
-        title="Lista de Grupos"
         data={groups ?? []}
         columns={columns}
         onSearch={(term) => console.log("Buscando:", term)}
@@ -66,8 +66,7 @@ export default function Groups() {
       {selectedGroup && (
         <GroupDetailModal
           group={selectedGroup}
-          onClose={() => setSelectedGroup(null)}
-        />
+          onClose={() => setSelectedGroup(null)}       />
       )}
     </div>
 
