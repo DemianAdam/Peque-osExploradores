@@ -32,7 +32,7 @@ export function ChildrenForm({ onSubmit, initialData }: ChildrenFormProps) {
   });
 
   return (
-    <FormLayout title={initialData ? "Editar" : "Nuevo"} onSubmit={() => onSubmit(formData)}>
+    <FormLayout  onSubmit={() => onSubmit(formData)}>
       <BaseInput
         label="Nombre"
         value={formData.name}

@@ -23,7 +23,7 @@ export function GroupForm({ onSubmit }: GroupFormProps) {
   });
 
   return (
-    <FormLayout title="Nuevo Grupo" onSubmit={() => onSubmit(formData)}>
+    <FormLayout onSubmit={() => onSubmit(formData)}>
       <BaseInput
         label="Nombre del Grupo"
         value={formData.name}

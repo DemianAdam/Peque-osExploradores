@@ -2,17 +2,20 @@ import { Pencil, Check, X } from "lucide-react";
 import { useState } from "react";
 import { FullGroup } from "../../../convex/groups/types";
 import { Modal } from "../UI/Modal";
-import { Doc } from "../../../convex/_generated/dataModel"; 
+import { useQuery } from "convex/react";
+import { api } from "../../../convex/_generated/api";
+
 
 interface GroupDetailModalProps {
   group: FullGroup;
   onClose: () => void;
-  allTeachers: Doc<"teachers">[] | undefined; 
 }
 
-export function GroupDetailModal({ group, onClose, allTeachers }: GroupDetailModalProps) {
+export function GroupDetailModal({ group, onClose }: GroupDetailModalProps) {
   const [isEditing, setIsEditing] = useState(false);
   const [name, setName] = useState(group.name);
+  
+  const allTeachers = useQuery(api.teachers.queries.listTeachers);
 
   const availableTeachers = allTeachers?.filter(
     (t) => !group.teachers.some((gt) => gt._id === t._id)

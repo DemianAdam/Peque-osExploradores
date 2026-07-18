@@ -1,5 +1,5 @@
 // components/UI/Form/FormLayout.tsx
-export function FormLayout({ children, onSubmit }: { children: React.ReactNode, onSubmit: () => void, title: string }) {
+export function FormLayout({ children, onSubmit }: { children: React.ReactNode, onSubmit: () => void}) {
   return (
     <div className="bg-white p-8 rounded-[30px] shadow-sm border border-gray-100 w-full max-w-lg mx-auto">
       <form onSubmit={(e) => { e.preventDefault(); onSubmit(); }} className="flex flex-col gap-5">

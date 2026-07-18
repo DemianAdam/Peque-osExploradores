@@ -61,7 +61,6 @@ export default function Children() {
 
 
             <List<FullChild>
-                title="Lista de Chicos"
                 data={children}
                 columns={columns}
                 onSearch={(term) => console.log("Searching:", term)}

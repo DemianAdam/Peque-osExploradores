@@ -66,7 +66,7 @@ export default function Groups() {
       {selectedGroup && (
         <GroupDetailModal
           group={selectedGroup}
-          onClose={() => setSelectedGroup(null)} allTeachers={undefined}        />
+          onClose={() => setSelectedGroup(null)}       />
       )}
     </div>
 
