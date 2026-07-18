@@ -2,12 +2,14 @@
 import { useParams } from "react-router";
 import { ChildrenForm } from "../../components/Forms/ChildrenForm";
 import { useMutation, useQuery } from "convex/react";
+import { useNavigate } from "react-router";
 import { api } from "../../../convex/_generated/api";
 import { Id } from "../../../convex/_generated/dataModel";
 
+
 export default function ChildrenEditor() {
   const { id } = useParams<{ id: Id<"children"> }>();
-
+  const navigate = useNavigate();
   const childData = useQuery(api.children.queries.getById, { id: id! });
   const updateChild = useMutation(api.children.mutations.updateChild);
   if (!childData) return <div>Cargando...</div>;
@@ -19,9 +21,10 @@ export default function ChildrenEditor() {
         initialData={childData} 
         onSubmit={(data) => {
             updateChild({ id: id!, ...data });
-            alert("¡Datos guardados!");
+            navigate("/chicos");
         }}
       />
     </div>
   );
 }
+

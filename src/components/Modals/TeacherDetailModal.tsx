@@ -21,7 +21,7 @@ export function TeacherDetailModal({ teacher, isOpen, onClose }: TeacherDetailMo
       <div className="flex flex-col gap-4">
         
         {/* Lista de Grupos  */}
-        <div className="flex flex-wrap gap-2">
+        <div className="bg-gray-50 border rounded-xl p-4 flex flex-wrap gap-2">
           {teacher.groups.map((grupo) => (
             <span 
               key={grupo._id} 
