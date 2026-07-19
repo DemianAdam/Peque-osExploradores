@@ -54,11 +54,11 @@ export function ChildrenForm({ onSubmit, initialData }: ChildrenFormProps) {
       />}
 
       {/* Switch de Estado */}
-      <BaseSwitch
+      {initialData && <BaseSwitch
         label="Estado Activo"
         checked={formData.active}
         onChange={(checked) => setFormData({ ...formData, active: checked })}
-      />
+      />}
     </FormLayout>
   );
 }
