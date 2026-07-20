@@ -19,7 +19,7 @@ interface ListProps<T extends { _id: string }> {
 export function List<T extends { _id: string }>({ data, columns, onSearch, onAdd, buttonLabel= "Agregar"}: ListProps<T>) {
   return (
     <div className="p-6 bg-white rounded-[30px] shadow-sm border border-gray-100">
-      <div className="flex justify-between items-center mb-6">
+      <div className="flex justify-end items-center mb-6">
         
         {onAdd && (
             <button 
@@ -65,7 +65,7 @@ export function List<T extends { _id: string }>({ data, columns, onSearch, onAdd
               {columns.map((col, j) => (
                 <div key={j} className="flex justify-between items-center py-1 border-b border-gray-200 last:border-0">
                   <span className="font-semibold text-gray-500 text-sm">{col.header}:</span>
-                  <span className="text-right">{col.accessor(item, i)}</span>
+                  <span className="">{col.accessor(item, i)}</span>
                 </div>
               ))}
             </div>
