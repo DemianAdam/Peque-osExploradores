@@ -10,7 +10,7 @@ import { FullTeacher } from "../../convex/teachers/types";
 
 export default function Teachers() {
   const [selectedTeacher, setSelectedTeacher] = useState<FullTeacher | null>(null);
-  const teachers = useQuery(api.teachers.queries.listTeachers);
+  const teachers = useQuery(api.teachers.queries.getTeachers);
 
   
   const columns = [
