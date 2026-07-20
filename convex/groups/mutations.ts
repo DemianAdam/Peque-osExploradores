@@ -21,7 +21,8 @@ export const createGroupWithTeachers = zTeacherMutation({
             throw new Error(`A Group already exists with name ${args.name}`);
         }
 
-        const groupId = await ctx.db.insert("groups", args);
+        const { teacherIds, ...groupData } = args;
+        const groupId = await ctx.db.insert("groups", groupData);
 
         const existingGroupTeachers = await ctx.db.query("group_teachers")
             .withIndex("index_group", (q) => q.eq("groupId", groupId))
@@ -29,7 +30,7 @@ export const createGroupWithTeachers = zTeacherMutation({
 
         await Promise.all(existingGroupTeachers.map((gt) => ctx.db.delete("group_teachers", gt._id)));
 
-        await Promise.all(args.teacherIds.map((teacherId) =>
+        await Promise.all(teacherIds.map((teacherId) =>
             ctx.db.insert("group_teachers", { teacherId, groupId: groupId })
         ));
     }
