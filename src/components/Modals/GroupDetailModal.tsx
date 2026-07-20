@@ -15,7 +15,7 @@ export function GroupDetailModal({ group, onClose }: GroupDetailModalProps) {
   const [isEditing, setIsEditing] = useState(false);
   const [name, setName] = useState(group.name);
   
-  const allTeachers = useQuery(api.teachers.queries.listTeachers);
+  const allTeachers = useQuery(api.teachers.queries.getTeachers);
 
   const availableTeachers = allTeachers?.filter(
     (t) => !group.teachers.some((gt) => gt._id === t._id)

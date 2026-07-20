@@ -9,6 +9,10 @@ export const groupValidator = z.object({
 
 export const createGroupValidator = groupValidator;
 
+export const createGroupWithTeachersValidator = groupValidator.extend({
+    teacherIds: z.array(zid("teachers")),
+});
+
 export const updateGroupValidator = groupValidator.partial().extend({
     id: groupIdValidator
 });
