@@ -14,7 +14,7 @@ export default function ChildrenCreator() {
       <h1 className="text-3xl font-bold mb-5">Nuevo Explorador</h1>
 
       <ChildrenForm
-        onSubmit={(data) => {
+        onSubmit={async (data) => {
           if (!data.groupId) {
             /*TODO KAREN: 
             Aca valido que se haya seleccionado un grupo, ya que de poder el usuario puede NO SELECCIONAR nada.
@@ -29,7 +29,8 @@ export default function ChildrenCreator() {
             dni: data.dni,
             groupId: data.groupId,
           };
-          createChild(createData);
+          //TODO KAREN: Loading...
+          await createChild(createData);
           navigate("/chicos");
         }}
       />

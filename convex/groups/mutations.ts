@@ -1,6 +1,6 @@
 
 import { zTeacherMutation } from "../zod";
-import { createGroupValidator, deleteGroupValidator, updateGroupValidator } from "./validators";
+import { createGroupValidator, createGroupWithTeachersValidator, deleteGroupValidator, updateGroupValidator } from "./validators";
 
 export const createGroup = zTeacherMutation({
     args: createGroupValidator,
@@ -9,7 +9,29 @@ export const createGroup = zTeacherMutation({
         if (existingGroup) {
             throw new Error(`A Group already exists with name ${args.name}`);
         }
-        await ctx.db.insert("groups", args);
+        return await ctx.db.insert("groups", args);
+    }
+});
+
+export const createGroupWithTeachers = zTeacherMutation({
+    args: createGroupWithTeachersValidator,
+    handler: async (ctx, args) => {
+        const existingGroup = await ctx.db.query("groups").withIndex("index_name", (q) => q.eq("name", args.name)).unique();
+        if (existingGroup) {
+            throw new Error(`A Group already exists with name ${args.name}`);
+        }
+
+        const groupId = await ctx.db.insert("groups", args);
+
+        const existingGroupTeachers = await ctx.db.query("group_teachers")
+            .withIndex("index_group", (q) => q.eq("groupId", groupId))
+            .collect();
+
+        await Promise.all(existingGroupTeachers.map((gt) => ctx.db.delete("group_teachers", gt._id)));
+
+        await Promise.all(args.teacherIds.map((teacherId) =>
+            ctx.db.insert("group_teachers", { teacherId, groupId: groupId })
+        ));
     }
 });
 
