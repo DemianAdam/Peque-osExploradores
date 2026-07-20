@@ -6,11 +6,11 @@ import { X } from "lucide-react";
 import { useQuery } from "convex/react";
 import { BaseSelect } from "../UI/BaseSelect";
 import { api } from "../../../convex/_generated/api";
-
+import { Id } from "../../../convex/_generated/dataModel";
 
 interface GroupData {
   name: string;
-  teacherIds: string[];
+  teacherIds: Id<"teachers">[];
 }
 
 interface GroupFormProps {
