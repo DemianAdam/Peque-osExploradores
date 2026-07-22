@@ -17,11 +17,12 @@ export default function ChildrenEditor() {
     <div className="p-10 bg-[#C6E5D9] min-h-screen">
       <h1 className="text-3xl font-bold mb-5">Editando a {childData.name}</h1>
 
-      <ChildrenForm 
-        initialData={childData} 
-        onSubmit={(data) => {
-            updateChild({ id: id!, ...data });
-            navigate("/chicos");
+      <ChildrenForm
+        initialData={childData}
+        onSubmit={async (data) => {
+          //TODO KAREN: Loading...
+          await updateChild({ id: id!, ...data });
+          navigate("/chicos");
         }}
       />
     </div>

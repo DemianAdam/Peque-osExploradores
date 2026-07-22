@@ -18,7 +18,7 @@ export const getCurrentTeacher = zQuery({
     }
 })
 
-export const listTeachers = zQuery({
+export const getTeachers = zQuery({
     args: {},
     handler: async (ctx, args) => {
         //TODO: Paginate

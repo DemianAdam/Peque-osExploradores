@@ -4,7 +4,6 @@ import { BaseInput } from "../UI/BaseInput";
 import { BaseSelect } from "../UI/BaseSelect";
 import { BaseSwitch } from "../UI/BaseSwitch";
 import { FullChild, ChildData } from "../../../convex/children/types";
-import { Id } from "../../../convex/_generated/dataModel";
 import { useQuery } from "convex/react";
 import { api } from "../../../convex/_generated/api";
 
@@ -90,8 +89,8 @@ export function ChildrenForm({ onSubmit, initialData }: ChildrenFormProps) {
         value={formData.groupId ?? ""}
         onChange={(value) => setFormData({ 
           ...formData, 
-          groupId: value as Id<"groups">,
-          active: true // Forzamos a que se active al seleccionar un grupo
+          groupId: value,
+          active: true
         })}
         options={formattedGroups}
         error={errors.groupId}
