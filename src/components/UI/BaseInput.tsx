@@ -3,9 +3,10 @@ import React from 'react';
 
 interface BaseInputProps extends React.InputHTMLAttributes<HTMLInputElement> {
   label?: string;
+  error?: string;
 }
 
-export function BaseInput({ label, ...props }: BaseInputProps) {
+export function BaseInput({ label, error, ...props }: BaseInputProps) {
   return (
     <div className="flex flex-col gap-2 w-full">
       {label && <label className="text-sm font-bold text-gray-600 ml-2">{label}</label>}
@@ -13,6 +14,7 @@ export function BaseInput({ label, ...props }: BaseInputProps) {
         {...props}
         className="w-full bg-gray-50 border border-gray-100 rounded-2xl px-5 py-3 outline-none focus:border-orange-300 transition-all shadow-sm placeholder:text-gray-400"
       />
+      {error && <span className="text-red-500 text-sm">{error}</span>}
     </div>
   );
 }

@@ -8,13 +8,14 @@ import Dashboard from "./sections/Dashboard";
 import Fees from "./sections/Fees";
 import Payments from "./sections/Payments";
 import Teachers from "./sections/Teachers";
-import Invoices from "./sections/Invoices";
+import Invoices from "./sections/Invoices/Invoices";
 import Payslips from "./sections/Payslips";
 import Groups from "./sections/Groups/Groups";
 import GroupCreator from "./sections/Groups/GroupCreator";
 import ChildrenEditor from "./sections/Children/ChildrenEditor";
 import Children from "./sections/Children/Children";
 import ChildrenCreator from "./sections/Children/ChildrenCreator";
+import InvoicesCreator from "./sections/Invoices/InvoicesCreator";
 
 
 
@@ -38,6 +39,7 @@ export default function App() {
             <Route path="pagos" element={<Payments />} />
             <Route path="seños" element={<Teachers />} />
             <Route path="gastos" element={<Invoices />} />
+            <Route path="gastos/nuevo" element={<InvoicesCreator />} />
             <Route path="liquidaciones" element={<Payslips />} />
             <Route path="grupos" element={<Groups />} />
             <Route path="grupos/nuevo" element={<GroupCreator />} />
