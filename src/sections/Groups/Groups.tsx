@@ -1,19 +1,38 @@
 "use client";
 import { useNavigate } from "react-router";
 import { useState } from "react";
-import { useQuery } from "convex/react";
+import { useMutation, useQuery } from "convex/react";
 import { Eye, Trash2 } from "lucide-react";
 import { api } from "../../../convex/_generated/api";
 import { FullGroup } from "../../../convex/groups/types";
 import { List } from "@/components/UI/List";
 import { GroupDetailModal } from "@/components/Modals/GroupDetailModal";
+import { GroupDeleteModal } from "@/components/Modals/GroupDeleteModal";
 
 
 
 export default function Groups() {
   const [selectedGroup, setSelectedGroup] = useState<FullGroup | null>(null); // Estado para el modal
+  const [groupToDelete, setGroupToDelete] = useState<FullGroup | null>(null);
   const navigate = useNavigate();
   const groups = useQuery(api.groups.queries.getFullGroups);
+  const deleteGroupMutation = useMutation(api.groups.mutations.deleteGroup);
+  const handleDeleteConfirm = async () => {
+    if (!groupToDelete) return;
+    
+    try {
+      // 3. Ejecutamos la mutación pasando el ID como lo pide el validador
+      await deleteGroupMutation({ id: groupToDelete._id });
+      
+      // Si todo sale bien, cerramos el modal
+      setGroupToDelete(null);
+    } catch (error) {
+      // Si el grupo tiene chicos asignados o salta algún error del backend, lo atrapamos acá
+      console.error("No se pudo eliminar el grupo:", error);
+      alert("No se puede eliminar el grupo porque tiene chicos asignados o ocurrió un error.");
+    }
+  };
+
 
   const columns = [
     { header: "N°", accessor: (_: FullGroup, index: number) => index + 1 },
@@ -39,7 +58,7 @@ export default function Groups() {
             <Eye size={18} />
           </button>
           <button
-            onClick={() => console.log("Eliminar", g._id)}
+            onClick={() => setGroupToDelete(g)}
             className="bg-red-100 text-red-600 p-2 rounded-full hover:bg-red-200 transition"
           >
             <Trash2 size={18} />
@@ -68,6 +87,14 @@ export default function Groups() {
           group={selectedGroup}
           onClose={() => setSelectedGroup(null)}       />
       )}
+      
+      {/* Modal de Eliminación */}
+      <GroupDeleteModal
+        isOpen={!!groupToDelete}
+        onClose={() => setGroupToDelete(null)}
+        onConfirm={handleDeleteConfirm}
+        groupName={groupToDelete?.name ?? ""}
+      />
     </div>
 
   );

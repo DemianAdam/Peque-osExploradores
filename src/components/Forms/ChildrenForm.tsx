@@ -7,6 +7,8 @@ import { FullChild, ChildData } from "../../../convex/children/types";
 import { useQuery } from "convex/react";
 import { api } from "../../../convex/_generated/api";
 
+
+
 interface ChildrenFormProps {
   onSubmit: (data: ChildData) => void;
   initialData?: FullChild;
@@ -14,7 +16,11 @@ interface ChildrenFormProps {
 
 export function ChildrenForm({ onSubmit, initialData }: ChildrenFormProps) {
   const groups = useQuery(api.groups.queries.getGroups);
-  const [error, setError] = useState<string | null>(null);
+  const [errors, setErrors] = useState({
+            name: "",
+            groupId: "",
+            dni: "",
+        });
 
   const [formData, setFormData] = useState<ChildData>({
     name: initialData?.name || "",
@@ -29,37 +35,52 @@ export function ChildrenForm({ onSubmit, initialData }: ChildrenFormProps) {
   })) || [];
 
   const handleSave = () => {
-    // 1. Validaciones básicas de texto
-    if (!formData.name.trim()) return setError("El nombre es obligatorio.");
-    if (!formData.dni.trim()) return setError("El DNI es obligatorio.");
+        const newErrors = {
+            name: "",
+            groupId: "",
+            dni: "",
+        };
 
-    // 2. Validación de Grupo: Obligatorio si está activo
-    if (formData.active && !formData.groupId) {
-      return setError("Debe asignar un grupo a un niño activo.");
-    }
+        let isValid = true;
 
-    setError(null);
-    onSubmit(formData);
-  };
+        if (!formData.name || !formData.name.trim()) {
+            newErrors.name = "El nombre del explorador es obligatorio.";
+            isValid = false;
+        }
+
+        if (!formData.groupId) {
+            newErrors.groupId = "Debe seleccionar un grupo.";
+            isValid = false;
+        }
+
+        if (!formData.dni || !formData.dni.trim()) {
+            newErrors.dni = "El DNI es obligatorio.";
+            isValid = false;
+        }
+
+        setErrors(newErrors);
+
+        if (!isValid) return;
+
+        onSubmit(formData);
+    };
+
 
   return (
     <FormLayout onSubmit={handleSave}>
-      {error && (
-        <div className="bg-red-100 text-red-700 p-3 rounded-xl text-sm font-medium mb-4">
-          {error}
-        </div>
-      )}
-
+      
       <BaseInput
         label="Nombre"
         value={formData.name}
         onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+        error={errors.name}
       />
 
       <BaseInput
         label="DNI"
         value={formData.dni}
         onChange={(e) => setFormData({ ...formData, dni: e.target.value })}
+        error={errors.dni}
       />
 
       {/* Selector de Grupo */}
@@ -72,6 +93,7 @@ export function ChildrenForm({ onSubmit, initialData }: ChildrenFormProps) {
           active: true
         })}
         options={formattedGroups}
+        error={errors.groupId}
       />
 
       {initialData && (
