@@ -23,33 +23,48 @@ export function GroupForm({ onSubmit }: GroupFormProps) {
     name: "",
     teacherIds: [],
   });
-  const [error, setError] = useState<string | null>(null);
+  const [errors, setErrors] = useState({
+          name: "",
+          teacherId: "",
+      });
   const formattedTeachers = teachers?.map((t) => ({
     label: t.name,
     value: t._id,
   })) || [];
 
   const handleSave = () => {
-    // 1. Validamos usando .trim() para evitar nombres que solo sean espacios
-    if (!formData.name.trim()) {
-      setError("El nombre del grupo es obligatorio.");
-      return;
-    }
-    onSubmit(formData);
-  };
+        const newErrors = {
+            name: "",
+            teacherId: "",
+        };
+
+        let isValid = true;
+
+        if (!formData.name || !formData.name.trim()) {
+            newErrors.name = "El nombre del grupo es obligatorio.";
+            isValid = false;
+        }
+
+        if (!formData.teacherIds.length) {
+            newErrors.teacherId = "Debe seleccionar una seño.";
+            isValid = false;
+        }
+
+        setErrors(newErrors);
+
+        if (!isValid) return;
+
+        onSubmit(formData);
+    };
 
   return (
     <FormLayout onSubmit={handleSave}>
-      {/* El error aparecerá aquí arriba si falla la validación */}
-      {error && (
-        <div className="bg-red-100 text-red-700 p-3 rounded-xl text-sm font-medium mb-4">
-          {error}
-        </div>
-      )}
+     
       <BaseInput
         label="Nombre del Grupo"
         value={formData.name}
         onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+        error={errors.name}
       />
 
       {/* Selector reutilizado */}
@@ -62,6 +77,7 @@ export function GroupForm({ onSubmit }: GroupFormProps) {
           }
         }}
         options={formattedTeachers}
+        error={errors.teacherId}
       />
 
         {/* Tags de Seños seleccionadas */}

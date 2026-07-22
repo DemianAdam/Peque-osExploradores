@@ -9,9 +9,10 @@ interface BaseSelectProps {
   value: string;
   options: SelectOption[];
   onChange: (value: string) => void;
+  error?: string;
 }
 
-export function BaseSelect({ label, value, options, onChange }: BaseSelectProps) {
+export function BaseSelect({ label, value, options, onChange, error }: BaseSelectProps) {
   return (
     <div className="flex flex-col gap-1">
       <label className="text-sm font-semibold text-gray-700">{label}</label>
@@ -27,6 +28,7 @@ export function BaseSelect({ label, value, options, onChange }: BaseSelectProps)
           </option>
         ))}
       </select>
+      {error && <span className="text-red-500 text-sm">{error}</span>}
     </div>
   );
 }

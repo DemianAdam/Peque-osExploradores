@@ -5,4 +5,4 @@ import { payslipValidator } from "./validators";
 const schema = zodOutputToConvex(payslipValidator);
 
 export const payslipSchema = defineTable(schema)
-    .index("index_period", ["period"])
+    
