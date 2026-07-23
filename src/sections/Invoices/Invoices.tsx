@@ -7,21 +7,7 @@ import { useQuery } from "convex/react";
 import { api } from "../../../convex/_generated/api";
 
 export default function Invoices() {
-    // TODO: Crear Query para obtener los invoices desde Convex y reemplazar el mock temporal
-    //const invoices = useQuery(api.invoices.queries.getInvoices);
-
-    // Mock temporal fuertemente tipado con Invoice (solo para probar visualmente)
-    const invoices: Invoice[] = [
-        {
-            _id: "1" as any,
-            _creationTime: Date.now(),
-            description: "Compra de materiales didácticos",
-            amount: 15000,
-            date: Date.now(),
-            teacherId: "teacher_1" as any,
-            payslipId: null
-        },
-    ];
+    const invoices = useQuery(api.invoices.queries.getInvoices);
 
     const navigate = useNavigate();
 
