@@ -18,7 +18,7 @@ interface GroupFormProps {
 }
 
 export function GroupForm({ onSubmit }: GroupFormProps) {
-  const teachers = useQuery(api.teachers.queries.getTeachers); // TODO: Ajustar nombre de query
+  const teachers = useQuery(api.teachers.queries.getTeachers);
   const [formData, setFormData] = useState<GroupData>({
     name: "",
     teacherIds: [],

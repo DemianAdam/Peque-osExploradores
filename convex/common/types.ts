@@ -1,0 +1,1 @@
+export type TypeData<T> = Omit<T,"_id" | "_creationTime">
