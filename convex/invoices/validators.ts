@@ -1,6 +1,8 @@
 import { zid } from "convex-helpers/server/zod4";
 import z from "zod";
 
+const invoiceIdValidator = zid("invoices");
+
 export const invoiceValidator = z.object({
     description: z.string(),
     amount: z.number(),
@@ -13,5 +15,16 @@ export const createInvoiceValidator = invoiceValidator
     .omit({
         payslipId: true,
         teacherId: true,
-        date: true
     });
+
+export const updateInvoiceValidator = z.object({
+    id: invoiceIdValidator,
+    description: z.string().optional(),
+    amount: z.number().optional(),
+    date: z.number().optional(),
+    payslipId: zid("payslips").nullable().optional(),
+});
+
+export const deleteInvoiceValidator = z.object({
+    id: invoiceIdValidator
+});

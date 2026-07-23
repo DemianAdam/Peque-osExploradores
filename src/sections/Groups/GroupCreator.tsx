@@ -7,8 +7,6 @@ import { api } from "../../../convex/_generated/api";
 
 export default function GroupCreator() {
   const navigate = useNavigate();
-
-  // TODO: Demian, mutación para crear grupo
   const createGroupWithTeachers = useMutation(api.groups.mutations.createGroupWithTeachers);
 
   return (
