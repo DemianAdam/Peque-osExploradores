@@ -72,18 +72,20 @@ export function TeacherDetailModal({ teacher, isOpen, onClose }: TeacherDetailMo
           </div>
         )}
 
-        <button
+      <button
           onClick={() => isEditing ? handleFinishEditing() : setIsEditing(true)}
-          className={`flex items-center justify-center gap-2 mt-2 py-2 rounded-lg text-sm font-semibold transition ${
-            isEditing ? "bg-emerald-100 text-emerald-700 hover:bg-emerald-200" : "bg-sky-100 text-sky-700 hover:bg-sky-200"
+          className={`flex items-center justify-center gap-2 w-full py-2 rounded-lg text-sm font-semibold transition ${
+              isEditing 
+              ? "bg-emerald-600 text-white hover:bg-emerald-700 shadow-sm" // <--- Verde fuerte y letra blanca
+              : "bg-green-100 text-green-700 hover:bg-green-200"
           }`}
-        >
+          >
           {isEditing ? (
-            <><Check size={16} /> Finalizar Edición</>
+              <><Check size={16}/> Finalizar Edición</>
           ) : (
-            <><Pencil size={16} /> Editar Grupos</>
+              <><Pencil size={16}/> Editar grupos</>
           )}
-        </button>
+      </button>
 
       </div>
     </Modal>
