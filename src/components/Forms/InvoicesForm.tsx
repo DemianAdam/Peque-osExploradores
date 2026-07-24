@@ -1,48 +1,30 @@
-import { useQuery } from "convex/react";
-import { api } from "../../../convex/_generated/api";
 import { useState } from "react";
 import { FormLayout } from "./FormLayout";
-import { BaseSelect } from "../UI/BaseSelect";
 import { BaseInput } from "../UI/BaseInput";
-
-interface InvoicesData {
-  description: string;
-  mount: number | string;
-  date: string;
-  teacherId: string;
-}
+import { InvoicesFormData } from "../../types/forms";
 
 interface InvoicesFormProps {
-  onSubmit: (data: InvoicesData) => void;
+  onSubmit: (data: InvoicesFormData) => void;
 }
 
 export function InvoicesForm({ onSubmit }: InvoicesFormProps) {
-    const teachers = useQuery(api.teachers.queries.listTeachers);
-    const [formData, setFormData] = useState<InvoicesData>({
+    const [formData, setFormData] = useState<InvoicesFormData>({
         description: "",
-        mount: "",
+        amount: "",
         date: "",
-        teacherId: "",
     });
     
     const [errors, setErrors] = useState({
         description: "",
         date: "",
-        teacherId: "",
-        mount: "",
+        amount: "",
     });
-
-    const formattedTeachers = teachers?.map((t) => ({
-        label: t.name,
-        value: t._id,
-    })) || [];
 
     const handleSave = () => {
         const newErrors = {
             description: "",
             date: "",
-            teacherId: "",
-            mount: "",
+            amount: "",
         };
 
         let isValid = true;
@@ -52,18 +34,13 @@ export function InvoicesForm({ onSubmit }: InvoicesFormProps) {
             isValid = false;
         }
 
-        if (!formData.mount || Number(formData.mount) <= 0) {
-            newErrors.mount = "El monto es obligatorio.";
+        if (!formData.amount || Number(formData.amount) <= 0) {
+            newErrors.amount = "El monto es obligatorio.";
             isValid = false;
         }
 
         if (!formData.date) {
             newErrors.date = "La fecha es obligatoria.";
-            isValid = false;
-        }
-
-        if (!formData.teacherId) {
-            newErrors.teacherId = "Debe seleccionar una seño.";
             isValid = false;
         }
 
@@ -85,9 +62,9 @@ export function InvoicesForm({ onSubmit }: InvoicesFormProps) {
         <BaseInput
             label="Monto"
             type="number"
-            value={formData.mount}
-            onChange={(e) => setFormData({ ...formData, mount: e.target.value })}
-            error={errors.mount}
+            value={formData.amount}
+            onChange={(e) => setFormData({ ...formData, amount: e.target.value })}
+            error={errors.amount}
             
         />
         <BaseInput
@@ -96,13 +73,6 @@ export function InvoicesForm({ onSubmit }: InvoicesFormProps) {
             value={formData.date}
             onChange={(e) => setFormData({ ...formData, date: e.target.value })}
             error={errors.date}
-        />
-        <BaseSelect
-            label="Seño"
-            value={formData.teacherId}
-            onChange={(id) => setFormData({ ...formData, teacherId: id })}
-            options={formattedTeachers}
-            error={errors.teacherId}
         />
     </FormLayout>
   );

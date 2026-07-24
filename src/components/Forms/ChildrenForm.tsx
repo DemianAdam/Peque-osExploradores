@@ -3,14 +3,15 @@ import { FormLayout } from "./FormLayout";
 import { BaseInput } from "../UI/BaseInput";
 import { BaseSelect } from "../UI/BaseSelect";
 import { BaseSwitch } from "../UI/BaseSwitch";
-import { FullChild, ChildData } from "../../../convex/children/types";
+import { FullChild } from "../../../convex/children/types";
+import { ChildFormData } from "../../types/forms";
 import { useQuery } from "convex/react";
 import { api } from "../../../convex/_generated/api";
 
 
 
 interface ChildrenFormProps {
-  onSubmit: (data: ChildData) => void;
+  onSubmit: (data: ChildFormData) => void;
   initialData?: FullChild;
 }
 
@@ -22,7 +23,7 @@ export function ChildrenForm({ onSubmit, initialData }: ChildrenFormProps) {
             dni: "",
         });
 
-  const [formData, setFormData] = useState<ChildData>({
+  const [formData, setFormData] = useState<ChildFormData>({
     name: initialData?.name || "",
     groupId: initialData?.groupId ?? null,
     active: initialData?.active ?? true,
