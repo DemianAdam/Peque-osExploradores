@@ -84,6 +84,7 @@ export default function Groups() {
 
       {selectedGroup && (
         <GroupDetailModal
+          key={selectedGroup._id}
           group={selectedGroup}
           onClose={() => setSelectedGroup(null)}       />
       )}

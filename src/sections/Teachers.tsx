@@ -44,6 +44,7 @@ export default function Teachers() {
       
         {selectedTeacher && (
           <TeacherDetailModal 
+            key={selectedTeacher._id}
             teacher={selectedTeacher}
             isOpen={!!selectedTeacher}
             onClose={() => setSelectedTeacher(null)}

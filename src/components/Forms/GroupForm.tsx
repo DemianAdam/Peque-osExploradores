@@ -6,20 +6,15 @@ import { X } from "lucide-react";
 import { useQuery } from "convex/react";
 import { BaseSelect } from "../UI/BaseSelect";
 import { api } from "../../../convex/_generated/api";
-import { Id } from "../../../convex/_generated/dataModel";
-
-interface GroupData {
-  name: string;
-  teacherIds: Id<"teachers">[];
-}
+import { GroupFormData } from "../../types/forms";
 
 interface GroupFormProps {
-  onSubmit: (data: GroupData) => void;
+  onSubmit: (data: GroupFormData) => void;
 }
 
 export function GroupForm({ onSubmit }: GroupFormProps) {
   const teachers = useQuery(api.teachers.queries.getTeachers);
-  const [formData, setFormData] = useState<GroupData>({
+  const [formData, setFormData] = useState<GroupFormData>({
     name: "",
     teacherIds: [],
   });

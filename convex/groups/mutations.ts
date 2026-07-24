@@ -1,6 +1,6 @@
 
 import { zTeacherMutation } from "../zod";
-import { createGroupValidator, createGroupWithTeachersValidator, deleteGroupValidator, updateGroupValidator } from "./validators";
+import { createGroupValidator, createGroupWithTeachersValidator, deleteGroupValidator, updateGroupValidator, updateGroupWithTeachersValidator } from "./validators";
 
 export const createGroup = zTeacherMutation({
     args: createGroupValidator,
@@ -45,6 +45,32 @@ export const updateGroup = zTeacherMutation({
         }
         const { id, ...fields } = args;
         await ctx.db.patch("groups", id, fields);
+    }
+});
+
+export const updateGroupWithTeachers = zTeacherMutation({
+    args: updateGroupWithTeachersValidator,
+    handler: async (ctx, args) => {
+        const existingGroup = await ctx.db.get("groups", args.id);
+        if (!existingGroup) {
+            throw new Error(`No Group exists with id ${args.id}`);
+        }
+
+        const { id, teacherIds, ...fields } = args;
+
+        if (Object.keys(fields).length > 0) {
+            await ctx.db.patch("groups", id, fields);
+        }
+
+        const existing = await ctx.db.query("group_teachers")
+            .withIndex("index_group", (q) => q.eq("groupId", id))
+            .collect();
+
+        await Promise.all(existing.map((gt) => ctx.db.delete("group_teachers", gt._id)));
+
+        await Promise.all(teacherIds.map((teacherId) =>
+            ctx.db.insert("group_teachers", { teacherId, groupId: id })
+        ));
     }
 });
 
