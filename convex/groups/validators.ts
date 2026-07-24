@@ -17,6 +17,11 @@ export const updateGroupValidator = groupValidator.partial().extend({
     id: groupIdValidator
 });
 
+export const updateGroupWithTeachersValidator = groupValidator.partial().extend({
+    id: groupIdValidator,
+    teacherIds: z.array(zid("teachers")),
+});
+
 export const deleteGroupValidator = z.object({
     id: groupIdValidator
 });
