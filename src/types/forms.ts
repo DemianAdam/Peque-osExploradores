@@ -14,6 +14,6 @@ export interface GroupFormData {
 
 export interface InvoicesFormData {
   description: string;
-  amount: number | string;
-  date: string;
+  amount: number;
+  date: number;
 }

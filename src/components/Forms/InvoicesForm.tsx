@@ -10,8 +10,8 @@ interface InvoicesFormProps {
 export function InvoicesForm({ onSubmit }: InvoicesFormProps) {
     const [formData, setFormData] = useState<InvoicesFormData>({
         description: "",
-        amount: "",
-        date: "",
+        amount: 0,
+        date: 0,
     });
     
     const [errors, setErrors] = useState({
@@ -34,7 +34,7 @@ export function InvoicesForm({ onSubmit }: InvoicesFormProps) {
             isValid = false;
         }
 
-        if (!formData.amount || Number(formData.amount) <= 0) {
+        if (formData.amount <= 0) {
             newErrors.amount = "El monto es obligatorio.";
             isValid = false;
         }
@@ -62,16 +62,16 @@ export function InvoicesForm({ onSubmit }: InvoicesFormProps) {
         <BaseInput
             label="Monto"
             type="number"
-            value={formData.amount}
-            onChange={(e) => setFormData({ ...formData, amount: e.target.value })}
+            value={formData.amount || ""}
+            onChange={(e) => setFormData({ ...formData, amount: Number(e.target.value) })}
             error={errors.amount}
             
         />
         <BaseInput
             label="Fecha"
             type="date"
-            value={formData.date}
-            onChange={(e) => setFormData({ ...formData, date: e.target.value })}
+            value={formData.date ? new Date(formData.date).toISOString().split("T")[0] : ""}
+            onChange={(e) => setFormData({ ...formData, date: new Date(e.target.value).getTime() })}
             error={errors.date}
         />
     </FormLayout>
