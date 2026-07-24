@@ -10,3 +10,8 @@ export const setGroupTeachersValidator = z.object({
     groupId: zid("groups"),
     teacherIds: z.array(zid("teachers")),
 });
+
+export const setTeacherGroupsValidator = z.object({
+    teacherId: zid("teachers"),
+    groupIds: z.array(zid("groups")),
+});

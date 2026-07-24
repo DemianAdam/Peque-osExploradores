@@ -1,5 +1,5 @@
 import { zTeacherMutation } from "../zod";
-import { setGroupTeachersValidator } from "./validators";
+import { setGroupTeachersValidator, setTeacherGroupsValidator } from "./validators";
 
 export const setGroupTeachers = zTeacherMutation({
     args: setGroupTeachersValidator,
@@ -12,6 +12,21 @@ export const setGroupTeachers = zTeacherMutation({
 
         await Promise.all(args.teacherIds.map((teacherId) =>
             ctx.db.insert("group_teachers", { teacherId, groupId: args.groupId })
+        ));
+    }
+});
+
+export const setTeacherGroups = zTeacherMutation({
+    args: setTeacherGroupsValidator,
+    handler: async (ctx, args) => {
+        const existing = await ctx.db.query("group_teachers")
+            .withIndex("index_teacher", (q) => q.eq("teacherId", args.teacherId))
+            .collect();
+
+        await Promise.all(existing.map((gt) => ctx.db.delete("group_teachers", gt._id)));
+
+        await Promise.all(args.groupIds.map((groupId) =>
+            ctx.db.insert("group_teachers", { teacherId: args.teacherId, groupId })
         ));
     }
 });
