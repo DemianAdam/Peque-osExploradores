@@ -47,7 +47,7 @@ export default function Children() {
             header: "Acciones", accessor: (child: FullChild) =>
                 <button
                     onClick={() => navigate(`/chicos/editar/${child._id}`)}
-                    className="bg-orange-100 text-pink-600 px-4 py-1 rounded-full font-bold hover:bg-orange-200 transition"
+                    className="bg-green-100 text-green-600 px-4 py-1 rounded-full font-bold hover:bg-green-200 transition"
                 >
                     <Pencil size={18} />
                 </button>

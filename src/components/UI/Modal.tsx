@@ -3,7 +3,7 @@ import { X } from "lucide-react";
 
 // components/UI/Modal.tsx
 interface ModalProps {
-  title: string;
+  title: string | React.ReactNode;
   isOpen: boolean;
   onClose: () => void;
   children: React.ReactNode;

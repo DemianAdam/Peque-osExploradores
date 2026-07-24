@@ -2,7 +2,7 @@
 import { useNavigate } from "react-router";
 import { useState } from "react";
 import { useMutation, useQuery } from "convex/react";
-import { Eye, Trash2 } from "lucide-react";
+import { Eye, Trash2, Pencil } from "lucide-react";
 import { api } from "../../../convex/_generated/api";
 import { FullGroup } from "../../../convex/groups/types";
 import { List } from "@/components/UI/List";
@@ -14,6 +14,7 @@ import { GroupDeleteModal } from "@/components/Modals/GroupDeleteModal";
 export default function Groups() {
   const [selectedGroup, setSelectedGroup] = useState<FullGroup | null>(null); // Estado para el modal
   const [groupToDelete, setGroupToDelete] = useState<FullGroup | null>(null);
+  const [groupToEdit, setGroupToEdit] = useState<FullGroup | null>(null);
   const navigate = useNavigate();
   const groups = useQuery(api.groups.queries.getFullGroups);
   const deleteGroupMutation = useMutation(api.groups.mutations.deleteGroup);
@@ -53,9 +54,16 @@ export default function Groups() {
           <button
             // AQUÍ CAMBIAMOS EL NAVIGATE POR EL SETSTATE
             onClick={() => setSelectedGroup(g)}
-            className="bg-sky-100 text-sky-600 p-2 rounded-full hover:bg-sky-200 transition"
+            className="bg-pink-100 text-pink-600 p-2 rounded-full hover:bg-pink-200 transition"
           >
             <Eye size={18} />
+          </button>
+          <button
+              onClick={() => setGroupToEdit(g)}
+              className="bg-green-100 text-green-600 p-2 rounded-full hover:bg-green-200 transition"
+              title="Editar gasto"
+          >
+              <Pencil size={18} />
           </button>
           <button
             onClick={() => setGroupToDelete(g)}
@@ -81,6 +89,16 @@ export default function Groups() {
         onAdd={() => navigate("/grupos/nuevo")}
         buttonLabel=""
       />
+
+      {/* Modal de Detalle abierto DIRECTO en Modo Edición */}
+      {groupToEdit && (
+          <GroupDetailModal
+              key={groupToEdit._id}
+              group={groupToEdit}
+              onClose={() => setGroupToEdit(null)}
+              initialEditing={true} // <--- Esto hace la magia
+          />
+      )}
 
       {selectedGroup && (
         <GroupDetailModal

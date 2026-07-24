@@ -9,10 +9,12 @@ import { api } from "../../../convex/_generated/api";
 interface GroupDetailModalProps {
   group: FullGroup;
   onClose: () => void;
+  initialEditing?: boolean;
+
 }
 
-export function GroupDetailModal({ group, onClose }: GroupDetailModalProps) {
-  const [isEditing, setIsEditing] = useState(false);
+export function GroupDetailModal({ group, onClose, initialEditing = false }: GroupDetailModalProps) {
+  const [isEditing, setIsEditing] = useState(initialEditing);
   const [name, setName] = useState(group.name);
   const [selectedTeachers, setSelectedTeachers] = useState<Teacher[]>(group.teachers);
   const [selectValue, setSelectValue] = useState("");
@@ -39,7 +41,15 @@ export function GroupDetailModal({ group, onClose }: GroupDetailModalProps) {
   };
 
   return (
-    <Modal title="Detalle del grupo" isOpen={!!group} onClose={onClose}>
+    <Modal title={isEditing ? (
+        <span className="text-emerald-600 font-bold">Editar Grupo</span>
+        ) : (
+        <span className="text-pink-500 font-bold">Detalle del Grupo</span>
+        )
+        } 
+        isOpen={!!group} 
+        onClose={onClose}
+    >
       <div className="flex flex-col gap-6">
 
         <div className="flex flex-col gap-2">
@@ -102,16 +112,18 @@ export function GroupDetailModal({ group, onClose }: GroupDetailModalProps) {
         </div>
 
         <button
-          onClick={() => isEditing ? handleSave() : setIsEditing(true)}
-          className={`flex items-center justify-center gap-2 w-full py-2 rounded-lg text-sm font-semibold transition ${
-            isEditing ? "bg-emerald-100 text-emerald-700 hover:bg-emerald-200" : "bg-sky-100 text-sky-700 hover:bg-sky-200"
-          }`}
-        >
-          {isEditing ? (
-            <><Check size={16}/> Finalizar Edición</>
-          ) : (
-            <><Pencil size={16}/> Editar</>
-          )}
+            onClick={() => isEditing ? handleSave() : setIsEditing(true)}
+            className={`flex items-center justify-center gap-2 w-full py-2 rounded-lg text-sm font-semibold transition ${
+                isEditing 
+                ? "bg-emerald-600 text-white hover:bg-emerald-700 shadow-sm" // <--- Verde fuerte y letra blanca
+                : "bg-green-100 text-green-700 hover:bg-green-200"
+            }`}
+            >
+            {isEditing ? (
+                <><Check size={16}/> Finalizar Edición</>
+            ) : (
+                <><Pencil size={16}/> Editar Grupo</>
+            )}
         </button>
 
       </div>
