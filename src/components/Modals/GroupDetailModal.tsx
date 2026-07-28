@@ -10,7 +10,6 @@ interface GroupDetailModalProps {
   group: FullGroup;
   onClose: () => void;
   initialEditing?: boolean;
-
 }
 
 export function GroupDetailModal({ group, onClose, initialEditing = false }: GroupDetailModalProps) {
@@ -19,6 +18,10 @@ export function GroupDetailModal({ group, onClose, initialEditing = false }: Gro
   const [selectedTeachers, setSelectedTeachers] = useState<Teacher[]>(group.teachers);
   const [selectValue, setSelectValue] = useState("");
 
+  // Estados de errores por campo
+  const [errors, setErrors] = useState({
+      name: "",
+    });
   const allTeachers = useQuery(api.teachers.queries.getTeachers);
   const updateGroupWithTeachers = useMutation(api.groups.mutations.updateGroupWithTeachers);
 
@@ -32,23 +35,37 @@ export function GroupDetailModal({ group, onClose, initialEditing = false }: Gro
   };
 
   const handleSave = async () => {
+    const newErrors = { name: "" };
+    let isValid = true;
+
+    if (!name || !name.trim()) {
+      newErrors.name = "El nombre es obligatorio.";
+      isValid = false;
+    }
+
+    setErrors(newErrors);
+
+    if (!isValid) return;
+
     await updateGroupWithTeachers({
       id: group._id,
       name,
       teacherIds: selectedTeachers.map(t => t._id),
     });
-    setIsEditing(false);
+    setIsEditing(false); // Vuelve al modo detalle al guardar con éxito
   };
 
   return (
-    <Modal title={isEditing ? (
-        <span className="text-emerald-600 font-bold">Editar Grupo</span>
+    <Modal 
+      title={
+        isEditing ? (
+          <span className="text-emerald-600 font-bold">Editar Grupo</span>
         ) : (
-        <span className="text-pink-500 font-bold">Detalle del Grupo</span>
+          <span className="text-blue-500 font-bold">Detalle del Grupo</span>
         )
-        } 
-        isOpen={!!group} 
-        onClose={onClose}
+      } 
+      isOpen={!!group} 
+      onClose={onClose}
     >
       <div className="flex flex-col gap-6">
 
@@ -58,13 +75,19 @@ export function GroupDetailModal({ group, onClose, initialEditing = false }: Gro
             {isEditing ? (
               <input
                 value={name}
-                onChange={(e) => setName(e.target.value)}
+                onChange={(e) => {
+                  setName(e.target.value)
+                  if (errors.name) setErrors({ ...errors, name: "" });
+                }}
                 className="w-full bg-transparent outline-none font-bold text-slate-800"
               />
             ) : (
               <h2 className="text-2xl font-bold text-slate-800">{name}</h2>
             )}
           </div>
+          {isEditing && errors.name && (
+            <span className="text-red-500 text-xs font-semibold ml-1">{errors.name}</span>
+          )}
         </div>
 
         <div className="flex flex-col gap-4">
@@ -85,7 +108,7 @@ export function GroupDetailModal({ group, onClose, initialEditing = false }: Gro
             <h3 className="font-semibold text-gray-700 mb-2">Seños ({selectedTeachers.length})</h3>
             <div className="flex flex-wrap gap-2">
               {selectedTeachers.map(t => (
-                <span key={t._id} className="bg-pink-100 text-pink-700 px-3 py-1 rounded-full text-sm flex items-center gap-2">
+                <span key={t._id} className="bg-blue-100 text-blue-700 px-3 py-1 rounded-full text-sm flex items-center gap-2">
                   {t.name}
                   {isEditing && (
                     <button onClick={() => setSelectedTeachers(prev => prev.filter(p => p._id !== t._id))}>
@@ -115,10 +138,10 @@ export function GroupDetailModal({ group, onClose, initialEditing = false }: Gro
             onClick={() => isEditing ? handleSave() : setIsEditing(true)}
             className={`flex items-center justify-center gap-2 w-full py-2 rounded-lg text-sm font-semibold transition ${
                 isEditing 
-                ? "bg-emerald-600 text-white hover:bg-emerald-700 shadow-sm" // <--- Verde fuerte y letra blanca
-                : "bg-green-100 text-green-700 hover:bg-green-200"
+                ? "bg-emerald-600 text-white hover:bg-emerald-700 shadow-sm"
+                : "bg-blue-100 text-blue-700 hover:bg-blue-200"
             }`}
-            >
+        >
             {isEditing ? (
                 <><Check size={16}/> Finalizar Edición</>
             ) : (

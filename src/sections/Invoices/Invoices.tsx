@@ -7,12 +7,12 @@ import { useMutation, useQuery } from "convex/react";
 import { api } from "../../../convex/_generated/api";
 import { useState } from "react";
 import { InvoiceDeleteModal } from "@/components/Modals/InvoiceDeleteModal";
-import { InvoiceDetailModal } from "@/components/Modals/InvoiceDetailModal";
+import { InvoiceModal } from "@/components/Modals/InvoiceDetailModal";
 
 export default function Invoices() {
-    const [selectedInvoice, setSelectedInvoice] = useState<Invoice | null>(null); 
+    const [selectedInvoice, setSelectedInvoice] = useState<Invoice | null>(null);
+    const [isEditingMode, setIsEditingMode] = useState(false);
     const invoices = useQuery(api.invoices.queries.getInvoices);
-    const [invoiceToEdit, setInvoiceToEdit] = useState<Invoice | null>(null);
     const [invoiceToDelete, setInvoiceToDelete] = useState<Invoice | null>(null);
     const navigate = useNavigate();
     const deleteInvoiceMutation = useMutation(api.invoices.mutations.deleteInvoice);
@@ -35,34 +35,29 @@ export default function Invoices() {
         { header: "Descripción", accessor: (invoice: Invoice) => invoice.description },
         { header: "Monto", accessor: (invoice: Invoice) => `$${invoice.amount.toFixed(2)}` },
         { header: "Fecha", accessor: (invoice: Invoice) => new Date(invoice.date).toLocaleDateString() },
-        {
-            header: "Acciones", accessor: (invoice: Invoice) => (
-                <div className="flex items-center gap-2">
-                    <button
-                        // AQUÍ CAMBIAMOS EL NAVIGATE POR EL SETSTATE
-                        onClick={() => setSelectedInvoice(invoice)}
-                        className="bg-pink-100 text-pink-600 p-2 rounded-full hover:bg-pink-200 transition"
-                    >
-                        <Eye size={18} />
-                    {/* Botón Editar Directo */}
-                    </button>
-                    <button
-                        onClick={() => setInvoiceToEdit(invoice)}
-                        className="bg-green-100 text-green-600 p-2 rounded-full hover:bg-green-200 transition"
-                        title="Editar gasto"
-                    >
-                        <Pencil size={18} />
-                    </button>
-                    
-                    <button
-                        onClick={() => setInvoiceToDelete(invoice)}
-                        className="bg-red-100 text-red-600 p-2 rounded-full hover:bg-red-200 transition"
-                    >
-                        <Trash2 size={18} />
-                    </button>
-                </div>
-            )
-        }
+        { header: "Acciones", accessor: (invoice: Invoice) => (
+            <div className="flex items-center gap-2">
+                <button
+                    onClick={() => {setSelectedInvoice(invoice); setIsEditingMode(false);}}
+                    className="bg-orange-100 text-orange-600 p-2 rounded-full hover:bg-orange-200 transition"
+                >
+                    <Eye size={18} />
+                </button>
+                <button
+                    onClick={() => {setSelectedInvoice(invoice); setIsEditingMode(true);}}
+                    className="bg-green-100 text-green-600 p-2 rounded-full hover:bg-green-200 transition"
+                >
+                    <Pencil size={18} />
+                </button>
+                <button
+                    onClick={() => setInvoiceToDelete(invoice)}
+                    className="bg-red-100 text-red-600 p-2 rounded-full hover:bg-red-200 transition"
+                >
+                    <Trash2 size={18} />
+                </button>
+            </div>
+        )
+    }
     ];
 
     return (
@@ -77,23 +72,14 @@ export default function Invoices() {
                 onAdd={() => navigate("/gastos/nuevo")}
                 buttonLabel=""
             />
-
-            {/* Modal de Detalle abierto DIRECTO en Modo Edición */}
-            {invoiceToEdit && (
-                <InvoiceDetailModal
-                    key={invoiceToEdit._id}
-                    invoice={invoiceToEdit}
-                    onClose={() => setInvoiceToEdit(null)}
-                    initialEditing={true} // <--- Esto hace la magia
-                />
-            )}
-
             {selectedInvoice && (
-            <InvoiceDetailModal
+            <InvoiceModal
                 key={selectedInvoice._id}
                 invoice={selectedInvoice}
-                onClose={() => setSelectedInvoice(null)}       />
-            )}
+                initialEditing={isEditingMode}
+                onClose={() => setSelectedInvoice(null)}
+            />
+        )}
 
 
 

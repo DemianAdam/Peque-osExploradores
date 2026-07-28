@@ -35,7 +35,18 @@ export function TeacherDetailModal({ teacher, isOpen, onClose }: TeacherDetailMo
   };
 
   return (
-    <Modal title={`Grupos de ${teacher.name}`} isOpen={isOpen} onClose={onClose}>
+    <Modal 
+      title={
+        isEditing ? (
+          <span className="text-emerald-600 font-bold">Editar Grupos</span>
+        ) : (
+          <span className="text-pink-500 font-bold">Grupos de {teacher.name}</span>
+        )
+      } 
+      isOpen={!!teacher} 
+      onClose={onClose}
+    >
+
       <div className="flex flex-col gap-4">
 
         <div className="bg-gray-50 border rounded-xl p-4 flex flex-wrap gap-2">
@@ -77,7 +88,7 @@ export function TeacherDetailModal({ teacher, isOpen, onClose }: TeacherDetailMo
           className={`flex items-center justify-center gap-2 w-full py-2 rounded-lg text-sm font-semibold transition ${
               isEditing 
               ? "bg-emerald-600 text-white hover:bg-emerald-700 shadow-sm" // <--- Verde fuerte y letra blanca
-              : "bg-green-100 text-green-700 hover:bg-green-200"
+              : "bg-pink-100 text-pink-700 hover:bg-pink-200"
           }`}
           >
           {isEditing ? (
