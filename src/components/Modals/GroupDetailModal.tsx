@@ -14,31 +14,48 @@ interface GroupDetailModalProps {
 
 export function GroupDetailModal({ group, onClose, initialEditing = false }: GroupDetailModalProps) {
   const [isEditing, setIsEditing] = useState(initialEditing);
-  const [name, setName] = useState(group.name);
-  const [selectedTeachers, setSelectedTeachers] = useState<Teacher[]>(group.teachers);
-  const [selectValue, setSelectValue] = useState("");
+
+  // Estado único para los campos del formulario de edición del grupo
+  const [formData, setFormData] = useState({
+    name: group.name,
+    selectedTeachers: group.teachers as Teacher[],
+    selectValue: "",
+  });
 
   // Estados de errores por campo
   const [errors, setErrors] = useState({
-      name: "",
-    });
+    name: "",
+  });
+
   const allTeachers = useQuery(api.teachers.queries.getTeachers);
   const updateGroupWithTeachers = useMutation(api.groups.mutations.updateGroupWithTeachers);
 
-  const assignedTeacherIds = new Set(selectedTeachers.map(t => t._id));
+  const assignedTeacherIds = new Set(formData.selectedTeachers.map(t => t._id));
   const availableTeachers = allTeachers?.filter(t => !assignedTeacherIds.has(t._id));
 
   const handleAddTeacher = (teacherId: string) => {
     const teacher = allTeachers?.find(t => t._id === teacherId);
-    if (teacher) setSelectedTeachers(prev => [...prev, teacher]);
-    setSelectValue("");
+    if (teacher) {
+      setFormData(prev => ({
+        ...prev,
+        selectedTeachers: [...prev.selectedTeachers, teacher],
+        selectValue: "",
+      }));
+    }
+  };
+
+  const handleRemoveTeacher = (teacherId: string) => {
+    setFormData(prev => ({
+      ...prev,
+      selectedTeachers: prev.selectedTeachers.filter(p => p._id !== teacherId),
+    }));
   };
 
   const handleSave = async () => {
     const newErrors = { name: "" };
     let isValid = true;
 
-    if (!name || !name.trim()) {
+    if (!formData.name || !formData.name.trim()) {
       newErrors.name = "El nombre es obligatorio.";
       isValid = false;
     }
@@ -49,8 +66,8 @@ export function GroupDetailModal({ group, onClose, initialEditing = false }: Gro
 
     await updateGroupWithTeachers({
       id: group._id,
-      name,
-      teacherIds: selectedTeachers.map(t => t._id),
+      name: formData.name,
+      teacherIds: formData.selectedTeachers.map(t => t._id),
     });
     setIsEditing(false); // Vuelve al modo detalle al guardar con éxito
   };
@@ -69,20 +86,21 @@ export function GroupDetailModal({ group, onClose, initialEditing = false }: Gro
     >
       <div className="flex flex-col gap-6">
 
+        {/* Nombre del Grupo */}
         <div className="flex flex-col gap-2">
           <label className="text-sm font-semibold text-gray-500">Nombre del Grupo</label>
           <div className={`border rounded-xl p-4 transition-colors ${isEditing ? "bg-emerald-50 border-emerald-200" : "bg-gray-50 border border-gray-500 rounded-xl p-4"}`}>
             {isEditing ? (
               <input
-                value={name}
+                value={formData.name}
                 onChange={(e) => {
-                  setName(e.target.value)
+                  setFormData(prev => ({ ...prev, name: e.target.value }));
                   if (errors.name) setErrors({ ...errors, name: "" });
                 }}
                 className="w-full bg-transparent outline-none font-bold text-slate-800"
               />
             ) : (
-              <h2 className="text-2xl font-bold text-slate-800">{name}</h2>
+              <h2 className="text-2xl font-bold text-slate-800">{formData.name}</h2>
             )}
           </div>
           {isEditing && errors.name && (
@@ -90,9 +108,11 @@ export function GroupDetailModal({ group, onClose, initialEditing = false }: Gro
           )}
         </div>
 
+        {/* Integrantes */}
         <div className="flex flex-col gap-4">
           <label className="text-sm font-semibold text-gray-500">Integrantes</label>
 
+          {/* Chicos */}
           <div className="bg-gray-50 border border-gray-500 rounded-xl p-4">
             <h3 className="font-semibold text-gray-700 mb-2">Chicos ({group.children.length})</h3>
             <div className="flex flex-wrap gap-2">
@@ -104,14 +124,15 @@ export function GroupDetailModal({ group, onClose, initialEditing = false }: Gro
             </div>
           </div>
 
+          {/* Seños */}
           <div className={`border rounded-xl p-4 transition-colors ${isEditing ? "bg-emerald-50 border-emerald-200" : "bg-gray-50 border border-gray-500 rounded-xl p-4"}`}>
-            <h3 className="font-semibold text-gray-700 mb-2">Seños ({selectedTeachers.length})</h3>
+            <h3 className="font-semibold text-gray-700 mb-2">Seños ({formData.selectedTeachers.length})</h3>
             <div className="flex flex-wrap gap-2">
-              {selectedTeachers.map(t => (
+              {formData.selectedTeachers.map(t => (
                 <span key={t._id} className="bg-blue-100 text-blue-700 px-3 py-1 rounded-full text-sm flex items-center gap-2">
                   {t.name}
                   {isEditing && (
-                    <button onClick={() => setSelectedTeachers(prev => prev.filter(p => p._id !== t._id))}>
+                    <button type="button" onClick={() => handleRemoveTeacher(t._id)}>
                       <X size={14} />
                     </button>
                   )}
@@ -122,7 +143,7 @@ export function GroupDetailModal({ group, onClose, initialEditing = false }: Gro
             {isEditing && (
               <select
                 className="mt-4 w-full border border-emerald-300 p-2 rounded-lg text-sm bg-white"
-                value={selectValue}
+                value={formData.selectValue}
                 onChange={(e) => handleAddTeacher(e.target.value)}
               >
                 <option value="" disabled>+ Asignar otra seño...</option>
@@ -134,6 +155,7 @@ export function GroupDetailModal({ group, onClose, initialEditing = false }: Gro
           </div>
         </div>
 
+        {/* Botón de Acción */}
         <button
             onClick={() => isEditing ? handleSave() : setIsEditing(true)}
             className={`flex items-center justify-center gap-2 w-full py-2 rounded-lg text-sm font-semibold transition ${

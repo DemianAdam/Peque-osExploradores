@@ -8,20 +8,25 @@ import { api } from "../../../convex/_generated/api";
 interface InvoiceModalProps {
   invoice: Invoice;
   onClose: () => void;
-  initialEditing?: boolean; // Controla si arranca en modo edición o lectura
+  initialEditing?: boolean;
 }
 
 export function InvoiceModal({ invoice, onClose, initialEditing = false }: InvoiceModalProps) {
   const [isEditing, setIsEditing] = useState(initialEditing);
-  const [description, setDescription] = useState(invoice.description);
-  const [amount, setAmount] = useState(invoice.amount.toString());
-  
+
   const formatDateForInput = (timestamp: number) => {
     const d = new Date(timestamp);
     return d.toISOString().split('T')[0];
   };
 
-  const [date, setDate] = useState(formatDateForInput(invoice.date));
+  // Estado único para los campos del formulario
+  const [formData, setFormData] = useState({
+    description: invoice.description,
+    amount: invoice.amount.toString(),
+    date: formatDateForInput(invoice.date),
+  });
+
+  
 
   // Estados de errores por campo
   const [errors, setErrors] = useState({
@@ -36,21 +41,21 @@ export function InvoiceModal({ invoice, onClose, initialEditing = false }: Invoi
   const creatorTeacher = allTeachers?.find(t => t._id === invoice.teacherId);
 
   const handleSave = async () => {
-    const newDateTimestamp = date ? new Date(date).getTime() : invoice.date;
+    const newDateTimestamp = formData.date ? new Date(formData.date).getTime() : invoice.date;
 
     const newErrors = { description: "", amount: "", date: "" };
     let isValid = true;
 
-    if (!description || !description.trim()) {
+    if (!formData.description || !formData.description.trim()) {
       newErrors.description = "La descripción es obligatoria.";
       isValid = false;
     }
 
-    if (!amount || !amount.trim()) {
+    if (!formData.amount || !formData.amount.trim()) {
       newErrors.amount = "El monto es obligatorio.";
       isValid = false;
     }
-    if (!date || !date.trim()) {
+    if (!formData.date || !formData.date.trim()) {
       newErrors.date = "La fecha es obligatoria.";
       isValid = false;
     }
@@ -61,8 +66,8 @@ export function InvoiceModal({ invoice, onClose, initialEditing = false }: Invoi
 
     await updateInvoice({
       id: invoice._id,
-      description,
-      amount: parseFloat(amount) || 0,
+      description: formData.description,
+      amount: parseFloat(formData.amount) || 0,
       date: newDateTimestamp,
     });
     setIsEditing(false); // Vuelve al modo detalle al guardar
@@ -88,15 +93,15 @@ export function InvoiceModal({ invoice, onClose, initialEditing = false }: Invoi
           <div className={`border rounded-xl p-4 transition-colors ${isEditing ? "bg-emerald-50 border-emerald-200" : "bg-gray-50 border border-gray-500"}`}>
             {isEditing ? (
               <input
-                value={description}
+                value={formData.description}
                 onChange={(e) => {
-                  setDescription(e.target.value);
+                  setFormData({ ...formData, description: e.target.value });
                   if (errors.description) setErrors({ ...errors, description: "" });
                 }}
                 className="w-full bg-transparent outline-none font-bold text-slate-800"
               />
             ) : (
-              <h2 className="text-xl font-bold text-slate-800">{description}</h2>
+              <h2 className="text-xl font-bold text-slate-800">{formData.description}</h2>
             )}
           </div>
           {isEditing && errors.description && (
@@ -114,15 +119,15 @@ export function InvoiceModal({ invoice, onClose, initialEditing = false }: Invoi
               {isEditing ? (
                 <input
                   type="number"
-                  value={amount}
+                  value={formData.amount}
                   onChange={(e) => {
-                    setAmount(e.target.value);
+                    setFormData({ ...formData, amount: e.target.value });
                     if (errors.amount) setErrors({ ...errors, amount: "" });
                   }}
                   className="w-full bg-transparent outline-none font-bold text-slate-800"
                 />
               ) : (
-                <p className="text-lg font-bold text-orange-600">${Number(amount).toFixed(2)}</p>
+                <p className="text-lg font-bold text-orange-600">${Number(formData.amount).toFixed(2)}</p>
               )}
             </div>
             {isEditing && errors.amount && (
@@ -137,9 +142,9 @@ export function InvoiceModal({ invoice, onClose, initialEditing = false }: Invoi
               {isEditing ? (
                 <input
                   type="date"
-                  value={date}
+                  value={formData.date}
                   onChange={(e) => {
-                    setDate(e.target.value);
+                    setFormData({ ...formData, date: e.target.value });
                     if (errors.date) setErrors({ ...errors, date: "" });
                   }}
                   className="w-full bg-transparent outline-none font-medium text-slate-800 text-sm"

@@ -14,14 +14,14 @@ interface ChildDetailModalProps {
 export function ChildDetailModal({ child, onClose, initialEditing = false }: ChildDetailModalProps) {
   const [isEditing, setIsEditing] = useState(initialEditing);
   
-  // Estados editables
-  const [name, setName] = useState(child.name);
-  const [dni, setDni] = useState(child.dni);
-  const [active, setActive] = useState(child.active);
-  const [groupId, setGroupId] = useState<string | undefined>(child.group?._id);
-  
-  // Estado local para mostrar el nombre del grupo actualizado al instante en la interfaz
-  const [currentGroupName, setCurrentGroupName] = useState(child.group?.name);
+  // Estado único para los campos del formulario de edición del explorador
+  const [formData, setFormData] = useState({
+    name: child.name,
+    dni: child.dni,
+    active: child.active,
+    groupId: child.group?._id as string | undefined,
+    currentGroupName: child.group?.name,
+  });
 
   // Estados de errores por campo
   const [errors, setErrors] = useState({
@@ -34,11 +34,14 @@ export function ChildDetailModal({ child, onClose, initialEditing = false }: Chi
   const updateChild = useMutation(api.children.mutations.updateChild);
 
   const handleActiveToggle = () => {
-    const nextActive = !active;
-    setActive(nextActive);
+    const nextActive = !formData.active;
+    setFormData(prev => ({
+      ...prev,
+      active: nextActive,
+      groupId: nextActive ? prev.groupId : undefined,
+      currentGroupName: nextActive ? prev.currentGroupName : undefined,
+    }));
     if (!nextActive) {
-      setGroupId(undefined);
-      setCurrentGroupName(undefined);
       setErrors(prev => ({ ...prev, groupId: "" }));
     }
   };
@@ -47,17 +50,17 @@ export function ChildDetailModal({ child, onClose, initialEditing = false }: Chi
     const newErrors = { name: "", dni: "", groupId: "" };
     let isValid = true;
 
-    if (!name || !name.trim()) {
+    if (!formData.name || !formData.name.trim()) {
       newErrors.name = "El nombre del explorador es obligatorio.";
       isValid = false;
     }
 
-    if (!dni || !dni.trim()) {
+    if (!formData.dni || !formData.dni.trim()) {
       newErrors.dni = "El DNI es obligatorio.";
       isValid = false;
     }
 
-    if (active && !groupId) {
+    if (formData.active && !formData.groupId) {
       newErrors.groupId = "Debe seleccionar un grupo.";
       isValid = false;
     }
@@ -68,10 +71,10 @@ export function ChildDetailModal({ child, onClose, initialEditing = false }: Chi
 
     await updateChild({ 
       id: child._id, 
-      name, 
-      dni, 
-      active,
-      groupId: groupId as any
+      name: formData.name, 
+      dni: formData.dni, 
+      active: formData.active,
+      groupId: formData.groupId as any
     });
 
     setIsEditing(false); // Vuelve al modo detalle mostrando los cambios sincronizados
@@ -83,7 +86,7 @@ export function ChildDetailModal({ child, onClose, initialEditing = false }: Chi
         isEditing ? (
           <span className="text-emerald-600 font-bold">Editar Explorador</span>
         ) : (
-          <span className="text-blue-500 font-bold">Detalle de {name}</span>
+          <span className="text-blue-500 font-bold">Detalle de {formData.name}</span>
         )
       } 
       isOpen={!!child} 
@@ -97,15 +100,15 @@ export function ChildDetailModal({ child, onClose, initialEditing = false }: Chi
           <div className={`border rounded-xl p-4 transition-colors ${isEditing ? "bg-emerald-50 border-emerald-200" : "bg-gray-50 border border-gray-500"}`}>
             {isEditing ? (
               <input
-                value={name}
+                value={formData.name}
                 onChange={(e) => {
-                  setName(e.target.value);
+                  setFormData(prev => ({ ...prev, name: e.target.value }));
                   if (errors.name) setErrors({ ...errors, name: "" });
                 }}
                 className="w-full bg-transparent outline-none font-bold text-slate-800"
               />
             ) : (
-              <h2 className="text-2xl font-bold text-slate-800">{name}</h2>
+              <h2 className="text-2xl font-bold text-slate-800">{formData.name}</h2>
             )}
           </div>
           {isEditing && errors.name && (
@@ -119,15 +122,15 @@ export function ChildDetailModal({ child, onClose, initialEditing = false }: Chi
           <div className={`border rounded-xl p-4 transition-colors ${isEditing ? "bg-emerald-50 border-emerald-200" : "bg-gray-50 border border-gray-500"}`}>
             {isEditing ? (
               <input
-                value={dni}
+                value={formData.dni}
                 onChange={(e) => {
-                  setDni(e.target.value);
+                  setFormData(prev => ({ ...prev, dni: e.target.value }));
                   if (errors.dni) setErrors({ ...errors, dni: "" });
                 }}
                 className="w-full bg-transparent outline-none font-bold text-slate-800"
               />
             ) : (
-              <p className="text-lg font-medium text-slate-800">{dni}</p>
+              <p className="text-lg font-medium text-slate-800">{formData.dni}</p>
             )}
           </div>
           {isEditing && errors.dni && (
@@ -143,16 +146,16 @@ export function ChildDetailModal({ child, onClose, initialEditing = false }: Chi
               <button
                 type="button"
                 onClick={handleActiveToggle}
-                className={`relative flex items-center w-14 h-7 rounded-full p-1 transition-colors ${active ? 'bg-green-500' : 'bg-red-500'}`}
+                className={`relative flex items-center w-14 h-7 rounded-full p-1 transition-colors ${formData.active ? 'bg-green-500' : 'bg-red-500'}`}
               >
-                <div className={`bg-white w-5 h-5 rounded-full shadow-md transform transition-transform duration-300 ${active ? 'translate-x-7' : 'translate-x-0'}`} />
-                <span className={`absolute text-[10px] text-white font-bold transition-opacity duration-300 ${active ? 'left-2' : 'right-2'}`}>
-                  {active ? "ON" : "OFF"}
+                <div className={`bg-white w-5 h-5 rounded-full shadow-md transform transition-transform duration-300 ${formData.active ? 'translate-x-7' : 'translate-x-0'}`} />
+                <span className={`absolute text-[10px] text-white font-bold transition-opacity duration-300 ${formData.active ? 'left-2' : 'right-2'}`}>
+                  {formData.active ? "ON" : "OFF"}
                 </span>
               </button>
             ) : (
-              <span className={`px-3 py-1 rounded-full text-xs font-bold text-white ${active ? 'bg-green-500' : 'bg-red-500'}`}>
-                {active ? "ACTIVO (ON)" : "INACTIVO (OFF)"}
+              <span className={`px-3 py-1 rounded-full text-xs font-bold text-white ${formData.active ? 'bg-green-500' : 'bg-red-500'}`}>
+                {formData.active ? "ACTIVO (ON)" : "INACTIVO (OFF)"}
               </span>
             )}
           </div>
@@ -163,17 +166,19 @@ export function ChildDetailModal({ child, onClose, initialEditing = false }: Chi
           <label className="text-sm font-semibold text-gray-500">Grupo Asignado</label>
           <div className={`border rounded-xl p-4 transition-colors ${isEditing ? "bg-emerald-50 border-emerald-200" : "bg-gray-50 border border-gray-500"}`}>
             {isEditing ? (
-              active ? (
+              formData.active ? (
                 <select
                   className="w-full bg-transparent outline-none font-medium text-slate-800 cursor-pointer"
-                  value={groupId ?? ""}
+                  value={formData.groupId ?? ""}
                   onChange={(e) => {
                     const selectedId = e.target.value || undefined;
-                    setGroupId(selectedId);
-                    
-                    // Buscamos el nombre del grupo seleccionado para actualizarlo al instante
                     const foundGroup = allGroups?.find(g => g._id === selectedId);
-                    setCurrentGroupName(foundGroup?.name);
+                    
+                    setFormData(prev => ({
+                      ...prev,
+                      groupId: selectedId,
+                      currentGroupName: foundGroup?.name,
+                    }));
 
                     if (errors.groupId) setErrors({ ...errors, groupId: "" });
                   }}
@@ -192,11 +197,11 @@ export function ChildDetailModal({ child, onClose, initialEditing = false }: Chi
               )
             ) : (
               <p className="text-lg font-medium text-slate-700">
-                {currentGroupName ?? 'Sin grupo asignado'}
+                {formData.currentGroupName ?? 'Sin grupo asignado'}
               </p>
             )}
           </div>
-          {isEditing && active && errors.groupId && (
+          {isEditing && formData.active && errors.groupId && (
             <span className="text-red-500 text-xs font-semibold ml-1">{errors.groupId}</span>
           )}
         </div>
