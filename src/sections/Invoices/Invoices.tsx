@@ -7,7 +7,7 @@ import { useMutation, useQuery } from "convex/react";
 import { api } from "../../../convex/_generated/api";
 import { useState } from "react";
 import { InvoiceDeleteModal } from "@/components/Modals/InvoiceDeleteModal";
-import { InvoiceModal } from "@/components/Modals/InvoiceDetailModal";
+import { InvoiceDetailModal } from "@/components/Modals/InvoiceDetailModal";
 
 export default function Invoices() {
     const [selectedInvoice, setSelectedInvoice] = useState<Invoice | null>(null);
@@ -73,7 +73,7 @@ export default function Invoices() {
                 buttonLabel=""
             />
             {selectedInvoice && (
-            <InvoiceModal
+            <InvoiceDetailModal
                 key={selectedInvoice._id}
                 invoice={selectedInvoice}
                 initialEditing={isEditingMode}

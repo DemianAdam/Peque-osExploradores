@@ -11,7 +11,7 @@ interface InvoiceModalProps {
   initialEditing?: boolean;
 }
 
-export function InvoiceModal({ invoice, onClose, initialEditing = false }: InvoiceModalProps) {
+export function InvoiceDetailModal({ invoice, onClose, initialEditing = false }: InvoiceModalProps) {
   const [isEditing, setIsEditing] = useState(initialEditing);
 
   const formatDateForInput = (timestamp: number) => {
