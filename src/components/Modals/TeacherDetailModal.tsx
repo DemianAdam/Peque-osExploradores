@@ -14,32 +14,62 @@ interface TeacherDetailModalProps {
 
 export function TeacherDetailModal({ teacher, isOpen, onClose }: TeacherDetailModalProps) {
   const [isEditing, setIsEditing] = useState(false);
-  const [selectedGroups, setSelectedGroups] = useState<Group[]>(teacher.groups);
-  const [selectValue, setSelectValue] = useState("");
+
+  // Estado único para los campos del formulario de edición de grupos del docente
+  const [formData, setFormData] = useState({
+    selectedGroups: teacher.groups as Group[],
+    selectValue: "",
+  });
 
   const allGroups = useQuery(api.groups.queries.getGroups);
   const setTeacherGroups = useMutation(api.group_teachers.mutations.setTeacherGroups);
 
-  const assignedGroupIds = new Set(selectedGroups.map(g => g._id));
+  const assignedGroupIds = new Set(formData.selectedGroups.map(g => g._id));
   const availableGroups = allGroups?.filter(g => !assignedGroupIds.has(g._id));
 
   const handleAddGroup = (groupId: string) => {
     const group = allGroups?.find(g => g._id === groupId);
-    if (group) setSelectedGroups(prev => [...prev, group]);
-    setSelectValue("");
+    if (group) {
+      setFormData(prev => ({
+        ...prev,
+        selectedGroups: [...prev.selectedGroups, group],
+        selectValue: "",
+      }));
+    }
+  };
+
+  const handleRemoveGroup = (groupId: string) => {
+    setFormData(prev => ({
+      ...prev,
+      selectedGroups: prev.selectedGroups.filter(p => p._id !== groupId),
+    }));
   };
 
   const handleFinishEditing = async () => {
-    await setTeacherGroups({ teacherId: teacher._id, groupIds: selectedGroups.map(g => g._id) });
+    await setTeacherGroups({ 
+      teacherId: teacher._id, 
+      groupIds: formData.selectedGroups.map(g => g._id) 
+    });
     setIsEditing(false);
   };
 
   return (
-    <Modal title={`Grupos de ${teacher.name}`} isOpen={isOpen} onClose={onClose}>
+    <Modal 
+      title={
+        isEditing ? (
+          <span className="text-emerald-600 font-bold">Editar Grupos</span>
+        ) : (
+          <span className="text-pink-500 font-bold">Grupos de {teacher.name}</span>
+        )
+      } 
+      isOpen={isOpen} 
+      onClose={onClose}
+    >
+
       <div className="flex flex-col gap-4">
 
         <div className="bg-gray-50 border rounded-xl p-4 flex flex-wrap gap-2">
-          {selectedGroups.map(g => (
+          {formData.selectedGroups.map(g => (
             <span
               key={g._id}
               className="bg-sky-500 text-white px-3 py-1 rounded-full text-sm flex items-center gap-2"
@@ -47,7 +77,8 @@ export function TeacherDetailModal({ teacher, isOpen, onClose }: TeacherDetailMo
               {g.name}
               {isEditing && (
                 <button
-                  onClick={() => setSelectedGroups(prev => prev.filter(p => p._id !== g._id))}
+                  type="button"
+                  onClick={() => handleRemoveGroup(g._id)}
                   className="font-bold hover:text-red-200"
                 >
                   ×
@@ -60,8 +91,8 @@ export function TeacherDetailModal({ teacher, isOpen, onClose }: TeacherDetailMo
         {isEditing && (
           <div className="flex gap-2">
             <select
-              className="border p-2 rounded-lg flex-1 text-sm"
-              value={selectValue}
+              className="border p-2 rounded-lg flex-1 text-sm bg-white"
+              value={formData.selectValue}
               onChange={(e) => handleAddGroup(e.target.value)}
             >
               <option value="" disabled>Asignar nuevo grupo...</option>
@@ -72,18 +103,20 @@ export function TeacherDetailModal({ teacher, isOpen, onClose }: TeacherDetailMo
           </div>
         )}
 
-        <button
+      <button
           onClick={() => isEditing ? handleFinishEditing() : setIsEditing(true)}
-          className={`flex items-center justify-center gap-2 mt-2 py-2 rounded-lg text-sm font-semibold transition ${
-            isEditing ? "bg-emerald-100 text-emerald-700 hover:bg-emerald-200" : "bg-sky-100 text-sky-700 hover:bg-sky-200"
+          className={`flex items-center justify-center gap-2 w-full py-2 rounded-lg text-sm font-semibold transition ${
+              isEditing 
+              ? "bg-emerald-600 text-white hover:bg-emerald-700 shadow-sm"
+              : "bg-pink-100 text-pink-700 hover:bg-pink-200"
           }`}
         >
           {isEditing ? (
-            <><Check size={16} /> Finalizar Edición</>
+              <><Check size={16}/> Finalizar Edición</>
           ) : (
-            <><Pencil size={16} /> Editar Grupos</>
+              <><Pencil size={16}/> Editar grupos</>
           )}
-        </button>
+      </button>
 
       </div>
     </Modal>
