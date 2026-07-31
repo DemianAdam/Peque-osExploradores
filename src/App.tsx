@@ -3,7 +3,6 @@ import { Route, Routes } from "react-router";
 import { ProtectedLayout } from "./ProtectedLayout";
 import Login from './sections/Login';
 import Dashboard from "./sections/Dashboard";
-import Fees from "./sections/Fees";
 import Payments from "./sections/Payments";
 import Teachers from "./sections/Teachers";
 import Invoices from "./sections/Invoices/Invoices";
@@ -13,6 +12,8 @@ import GroupCreator from "./sections/Groups/GroupCreator";
 import Children from "./sections/Children/Children";
 import ChildrenCreator from "./sections/Children/ChildrenCreator";
 import InvoicesCreator from "./sections/Invoices/InvoicesCreator";
+import Fees from "./sections/Fees";
+
 
 
 

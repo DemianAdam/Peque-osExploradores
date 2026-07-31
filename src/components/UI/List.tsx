@@ -1,4 +1,4 @@
-import { Plus } from "lucide-react";
+import { Plus, Search } from "lucide-react";
 import React from "react";
 
 interface Column<T> {
@@ -31,12 +31,15 @@ export function List<T extends { _id: string }>({ data, columns, onSearch, onAdd
           )}
       </div>
         {/* Search Input */}
-      <input 
-        type="text" 
-        placeholder="Buscar..." 
-        className="w-full p-3 border border-gray-200 rounded-xl mb-6 bg-gray-50"
-        onChange={(e) => onSearch(e.target.value)}
-      />
+      <div className="relative w-full md:w-80">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
+          <input
+            type="text" 
+            placeholder="Buscar..." 
+            className="w-full bg-white border border-gray-200 rounded-xl pl-10 pr-4 py-2.5 text-sm outline-none focus:border-blue-400 transition shadow-sm"
+            onChange={(e) => onSearch(e.target.value)}
+          />
+      </div>
 
     
       {/* Table */}
@@ -59,7 +62,7 @@ export function List<T extends { _id: string }>({ data, columns, onSearch, onAdd
           </tbody>
         </table>
           {/* MODO MÓVIL (Tarjetas Dinámicas) */}
-        <div className="md:hidden flex flex-col gap-4">
+        <div className="md:hidden flex flex-col gap-4 mt-4">
           {data?.map((item, i) => (
             <div key={item._id} className="bg-gray-50 p-4 rounded-xl shadow-sm border border-gray-500 flex flex-col gap-2">
               {columns.map((col, j) => (
