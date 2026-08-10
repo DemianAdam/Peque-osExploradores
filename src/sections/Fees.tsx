@@ -1,107 +1,88 @@
 import { useState } from "react";
 import { List } from "@/components/UI/List";
-import { CheckCircle2, Clock} from "lucide-react";
+import { CheckCircle2, Clock, AlertCircle } from "lucide-react";
 
-// Tipado de prueba basado en tu validador de Convex
 interface Fee {
   _id: string;
   startedAt: string;
   closedAt: string;
   totalAmount: number;
-  state: "paid" | "pending";
+  paidAmount: number;
+  state: "pending" | "partial" | "paid";
   child: {
     _id: string;
     name: string;
+    dni: string;
   };
 }
 
-// Datos hardcodeados iniciales de prueba
+// TODO: Reemplazar MOCK_FEES por la query real de la base de datos
 const MOCK_FEES: Fee[] = [
   {
     _id: "1",
     startedAt: "01/07/2026",
     closedAt: "31/07/2026",
     totalAmount: 15000,
+    paidAmount: 15000,
     state: "paid",
-    child: { _id: "c1", name: "Mateo Gómez" },
+    child: { _id: "c1", name: "Mateo Gómez", dni: "45123456" },
   },
   {
     _id: "2",
     startedAt: "01/07/2026",
     closedAt: "31/07/2026",
     totalAmount: 15000,
-    state: "pending",
-    child: { _id: "c2", name: "Lucía Pérez" },
+    paidAmount: 5000,
+    state: "partial",
+    child: { _id: "c2", name: "Lucía Pérez", dni: "46789123" },
   },
   {
     _id: "3",
     startedAt: "01/07/2026",
     closedAt: "31/07/2026",
     totalAmount: 15000,
+    paidAmount: 0,
     state: "pending",
-    child: { _id: "c3", name: "Joaquín Benítez" },
+    child: { _id: "c3", name: "Joaquín Benítez", dni: "45987321" },
   },
 ];
 
 export default function Fees() {
-  const [fees, setFees] = useState<Fee[]>(MOCK_FEES);
-  const [filterState, setFilterState] = useState<"all" | "paid" | "pending">("all");
+  // TODO: Conectar con el estado o hook de datos reales de la API
+  const [fees] = useState<Fee[]>(MOCK_FEES);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [filterState, setFilterState] = useState<"all" | "pending" | "partial" | "paid">("all");
 
-  // Simula el cambio de estado de la cuota
-  const handleToggleState = (feeId: string) => {
-    setFees(prev =>
-      prev.map(fee => {
-        if (fee._id === feeId) {
-          const nextState = fee.state === "paid" ? "pending" : "paid";
-          return { ...fee, state: nextState };
-        }
-        return fee;
-      })
-    );
-  };
-
-  // Filtrado por buscador y estado
   const filteredFees = fees.filter(fee => {
+    const matchesSearch = fee.child.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                          fee.child.dni.includes(searchTerm);
     const matchesState = filterState === "all" || fee.state === filterState;
-    return matchesState;
+    return matchesSearch && matchesState;
   });
 
-  // Definición de columnas para el componente List
   const columns = [
     { header: "N°", accessor: (_: Fee, index: number) => index + 1 },
     { header: "Explorador", accessor: (fee: Fee) => fee.child.name },
-    { header: "Inicio", accessor: (fee: Fee) => fee.startedAt },
-    { header: "Vencimiento", accessor: (fee: Fee) => fee.closedAt },
-    { header: "Monto", accessor: (fee: Fee) => `$${fee.totalAmount.toLocaleString()}` },
+    { header: "DNI", accessor: (fee: Fee) => fee.child.dni },
+    { header: "Periodo", accessor: (fee: Fee) => `${fee.startedAt} al ${fee.closedAt}` },
+    { header: "Total", accessor: (fee: Fee) => `$${fee.totalAmount.toLocaleString()}` },
+    { header: "Pagado", accessor: (fee: Fee) => `$${fee.paidAmount.toLocaleString()}` },
     {
       header: "Estado",
       accessor: (fee: Fee) => {
-        const isPaid = fee.state === "paid";
+        const stateConfig = {
+          paid: { label: "Pagada", color: "bg-emerald-100 text-emerald-700", icon: <CheckCircle2 size={14} /> },
+          partial: { label: "Parcial", color: "bg-blue-100 text-blue-700", icon: <AlertCircle size={14} /> },
+          pending: { label: "Pendiente", color: "bg-amber-100 text-amber-700", icon: <Clock size={14} /> },
+        };
+
+        const current = stateConfig[fee.state];
+
         return (
-          <span className={`px-3 py-1 rounded-full text-xs font-bold inline-flex items-center gap-1.5 ${
-            isPaid ? "bg-emerald-100 text-emerald-700" : "bg-amber-100 text-amber-700"
-          }`}>
-            {isPaid ? <CheckCircle2 size={14} /> : <Clock size={14} />}
-            {isPaid ? "Pagada" : "Pendiente"}
+          <span className={`px-3 py-1 rounded-full text-xs font-bold inline-flex items-center gap-1.5 ${current.color}`}>
+            {current.icon}
+            {current.label}
           </span>
-        );
-      }
-    },
-    {
-      header: "Acciones",
-      accessor: (fee: Fee) => {
-        const isPaid = fee.state === "paid";
-        return (
-          <button
-            onClick={() => handleToggleState(fee._id)}
-            className={`px-4 py-2 rounded-xl text-xs font-semibold transition shadow-sm ${
-              isPaid 
-                ? "bg-amber-100 text-amber-800 hover:bg-amber-200" 
-                : "bg-emerald-600 text-white hover:bg-emerald-700"
-            }`}
-          >
-            {isPaid ? "Marcar Pendiente" : "Marcar Pagada"}
-          </button>
         );
       }
     }
@@ -109,39 +90,101 @@ export default function Fees() {
 
   return (
     <div className="min-h-screen w-full bg-[#C6E5D9] flex flex-col p-8 px-6">
-      <h2 className="font-angkor text-[40px] text-[#1E293B] font-normal mb-2 text-left">LISTA</h2>
+      <h2 className="font-angkor text-[40px] text-[#1E293B] font-normal mb-2 text-left">INFORME</h2>
       <h3 className="text-4xl font-bold text-blue-500 mb-6 drop-shadow-sm text-left">Cuotas</h3>
 
-      {/* Barra de Filtros por Estado*/}
+      {/* Barra de Filtros por Estado */}
       <div className="flex flex-col md:flex-row justify-between items-stretch md:items-center gap-4 mb-6">
-        <div className="flex items-center bg-white border border-gray-200 p-1 rounded-xl text-sm font-semibold text-gray-600 shadow-sm self-start md:self-auto">
+        <div className="flex flex-wrap items-center bg-white border border-gray-200 p-1 rounded-xl text-sm font-semibold text-gray-600 shadow-sm self-start md:self-auto">
           <button
             onClick={() => setFilterState("all")}
-            className={`px-4 py-1.5 rounded-lg transition ${filterState === "all" ? "bg-gray-100 text-slate-800 shadow-sm" : "hover:text-slate-800"}`}
+            className={`px-3 py-1.5 rounded-lg transition ${filterState === "all" ? "bg-gray-100 text-slate-800 shadow-sm" : "hover:text-slate-800"}`}
           >
             Todas
           </button>
           <button
             onClick={() => setFilterState("pending")}
-            className={`px-4 py-1.5 rounded-lg transition ${filterState === "pending" ? "bg-amber-100 text-amber-800 shadow-sm" : "hover:text-slate-800"}`}
+            className={`px-3 py-1.5 rounded-lg transition ${filterState === "pending" ? "bg-amber-100 text-amber-800 shadow-sm" : "hover:text-slate-800"}`}
           >
             Pendientes
           </button>
           <button
+            onClick={() => setFilterState("partial")}
+            className={`px-3 py-1.5 rounded-lg transition ${filterState === "partial" ? "bg-blue-100 text-blue-800 shadow-sm" : "hover:text-slate-800"}`}
+          >
+            Parciales
+          </button>
+          <button
             onClick={() => setFilterState("paid")}
-            className={`px-4 py-1.5 rounded-lg transition ${filterState === "paid" ? "bg-emerald-100 text-emerald-800 shadow-sm" : "hover:text-slate-800"}`}
+            className={`px-3 py-1.5 rounded-lg transition ${filterState === "paid" ? "bg-emerald-100 text-emerald-800 shadow-sm" : "hover:text-slate-800"}`}
           >
             Pagadas
           </button>
         </div>
-
       </div>
 
-      {/* Componente List reutilizado */}
       <List<Fee>
         data={filteredFees}
         columns={columns}
-        onSearch={() => {}} // Ya manejamos el filtro localmente arriba
+        onSearch={setSearchTerm}
+        searchPlaceholder="Buscar por explorador o DNI..."
+        // TODO: Si se requiere registrar un pago o nueva cuota desde esta vista, implementar onAdd={() => { ... }} y la mutación correspondiente.
+        renderMobileItem={(fee) => {
+          const stateConfig = {
+            paid: { 
+              label: "Pagada", 
+              color: "bg-emerald-100 text-emerald-700", 
+              borderLeft: "bg-emerald-500" 
+            },
+            partial: { 
+              label: "Parcial", 
+              color: "bg-blue-100 text-blue-700", 
+              borderLeft: "bg-blue-500" 
+            },
+            pending: { 
+              label: "Pendiente", 
+              color: "bg-rose-100 text-rose-700", 
+              borderLeft: "bg-rose-500" 
+            },
+          };
+          const current = stateConfig[fee.state];
+
+          return (
+            <div className="flex flex-col gap-3 relative">
+              {/* Barra lateral dinámica según el estado */}
+              <div className={`absolute -left-5 -top-5 -bottom-5 w-1.5 ${current.borderLeft}`} />
+
+              {/* Cabecera de la card */}
+              <div className="flex justify-between items-center">
+                <h4 className="font-bold text-slate-800 text-base">{fee.child.name}</h4>
+                <span className={`px-3 py-1 rounded-full text-xs font-bold ${current.color}`}>
+                  {current.label}
+                </span>
+              </div>
+
+              {/* DNI y Periodo */}
+              <div className="text-xs text-gray-500 flex justify-between">
+                <span>DNI: {fee.child.dni}</span>
+                <span>Periodo: {fee.startedAt} al {fee.closedAt}</span>
+              </div>
+
+              <hr className="border-gray-100 my-1" />
+
+              {/* Bloque financiero */}
+              <div className="bg-gray-50 p-3 rounded-xl flex justify-between items-center">
+                <div className="flex flex-col">
+                  <span className="text-[10px] uppercase tracking-wider text-gray-400 font-bold">Total Cuota</span>
+                  <span className="text-sm font-bold text-slate-700">${fee.totalAmount.toLocaleString()}</span>
+                </div>
+                <div className="h-6 w-px bg-gray-200" />
+                <div className="flex flex-col text-right">
+                  <span className="text-[10px] uppercase tracking-wider text-gray-400 font-bold">Abonado</span>
+                  <span className="text-sm font-bold text-emerald-600">${fee.paidAmount.toLocaleString()}</span>
+                </div>
+              </div>
+            </div>
+          );
+        }}
       />
     </div>
   );
