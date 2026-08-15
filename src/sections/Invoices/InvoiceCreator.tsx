@@ -5,7 +5,7 @@ import { api } from "../../../convex/_generated/api";
 import { useMutation } from "convex/react";
 
 
-export default function InvoicesCreator() {
+export default function InvoiceCreator() {
   const navigate = useNavigate();
 
   const createInvoice = useMutation(api.invoices.mutations.createInvoice);
