@@ -12,7 +12,7 @@ import GroupCreator from "./sections/Groups/GroupCreator";
 import Children from "./sections/Children/Children";
 import ChildrenCreator from "./sections/Children/ChildrenCreator";
 import InvoiceCreator from "./sections/Invoices/InvoiceCreator";
-import Fees from "./sections/Fees";
+import Fees from "./sections/Fees/Fees";
 import PaymentCreator from "./sections/Payments/PaymentCreator";
 
 
