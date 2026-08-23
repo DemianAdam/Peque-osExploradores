@@ -4,6 +4,7 @@ import { Invoice } from "../../../convex/invoices/types";
 import { Modal } from "../UI/Modal";
 import { useQuery, useMutation } from "convex/react";
 import { api } from "../../../convex/_generated/api";
+import { formatDateForInput } from "../../common/dates";
 
 interface InvoiceModalProps {
   invoice: Invoice;
@@ -13,11 +14,6 @@ interface InvoiceModalProps {
 
 export function InvoiceDetailModal({ invoice, onClose, initialEditing = false }: InvoiceModalProps) {
   const [isEditing, setIsEditing] = useState(initialEditing);
-
-  const formatDateForInput = (timestamp: number) => {
-    const d = new Date(timestamp);
-    return d.toISOString().split('T')[0];
-  };
 
   // Estado único para los campos del formulario
   const [formData, setFormData] = useState({

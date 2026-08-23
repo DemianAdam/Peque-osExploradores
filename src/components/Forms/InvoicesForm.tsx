@@ -2,6 +2,7 @@ import { useState } from "react";
 import { FormLayout } from "./FormLayout";
 import { BaseInput } from "../UI/BaseInput";
 import { InvoicesFormData } from "../../types/forms";
+import { formatDateForInput } from "../../common/dates";
 
 interface InvoicesFormProps {
   onSubmit: (data: InvoicesFormData) => void;
@@ -70,7 +71,7 @@ export function InvoicesForm({ onSubmit }: InvoicesFormProps) {
         <BaseInput
             label="Fecha"
             type="date"
-            value={formData.date ? new Date(formData.date).toISOString().split("T")[0] : ""}
+            value={formData.date ? formatDateForInput(formData.date) : ""}
             onChange={(e) => setFormData({ ...formData, date: new Date(e.target.value).getTime() })}
             error={errors.date}
         />

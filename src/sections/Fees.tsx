@@ -1,59 +1,16 @@
 import { useState } from "react";
 import { List } from "@/components/UI/List";
 import { CheckCircle2, Clock, AlertCircle } from "lucide-react";
-
-interface Fee {
-  _id: string;
-  startedAt: string;
-  closedAt: string;
-  totalAmount: number;
-  paidAmount: number;
-  state: "pending" | "partial" | "paid";
-  child: {
-    _id: string;
-    name: string;
-    dni: string;
-  };
-}
-
-// TODO: Reemplazar MOCK_FEES por la query real de la base de datos
-const MOCK_FEES: Fee[] = [
-  {
-    _id: "1",
-    startedAt: "01/07/2026",
-    closedAt: "31/07/2026",
-    totalAmount: 15000,
-    paidAmount: 15000,
-    state: "paid",
-    child: { _id: "c1", name: "Mateo Gómez", dni: "45123456" },
-  },
-  {
-    _id: "2",
-    startedAt: "01/07/2026",
-    closedAt: "31/07/2026",
-    totalAmount: 15000,
-    paidAmount: 5000,
-    state: "partial",
-    child: { _id: "c2", name: "Lucía Pérez", dni: "46789123" },
-  },
-  {
-    _id: "3",
-    startedAt: "01/07/2026",
-    closedAt: "31/07/2026",
-    totalAmount: 15000,
-    paidAmount: 0,
-    state: "pending",
-    child: { _id: "c3", name: "Joaquín Benítez", dni: "45987321" },
-  },
-];
+import { useQuery } from "convex/react";
+import { api } from "../../convex/_generated/api";
+import { FullFee } from "../../convex/fees/types";
 
 export default function Fees() {
-  // TODO: Conectar con el estado o hook de datos reales de la API
-  const [fees] = useState<Fee[]>(MOCK_FEES);
+  const fees = useQuery(api.fees.queries.getFees);
   const [searchTerm, setSearchTerm] = useState("");
   const [filterState, setFilterState] = useState<"all" | "pending" | "partial" | "paid">("all");
 
-  const filteredFees = fees.filter(fee => {
+  const filteredFees = fees?.filter(fee => {
     const matchesSearch = fee.child.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
                           fee.child.dni.includes(searchTerm);
     const matchesState = filterState === "all" || fee.state === filterState;
@@ -61,15 +18,15 @@ export default function Fees() {
   });
 
   const columns = [
-    { header: "N°", accessor: (_: Fee, index: number) => index + 1 },
-    { header: "Explorador", accessor: (fee: Fee) => fee.child.name },
-    { header: "DNI", accessor: (fee: Fee) => fee.child.dni },
-    { header: "Periodo", accessor: (fee: Fee) => `${fee.startedAt} al ${fee.closedAt}` },
-    { header: "Total", accessor: (fee: Fee) => `$${fee.totalAmount.toLocaleString()}` },
-    { header: "Pagado", accessor: (fee: Fee) => `$${fee.paidAmount.toLocaleString()}` },
+    { header: "N°", accessor: (_: FullFee, index: number) => index + 1 },
+    { header: "Explorador", accessor: (fee: FullFee) => fee.child.name },
+    { header: "DNI", accessor: (fee: FullFee) => fee.child.dni },
+    { header: "Periodo", accessor: (fee: FullFee) => `${fee.startedAt} al ${fee.closedAt}` },
+    { header: "Total", accessor: (fee: FullFee) => `$${fee.totalAmount.toLocaleString()}` },
+    { header: "Pagado", accessor: (fee: FullFee) => `$${fee.paidAmount.toLocaleString()}` },
     {
       header: "Estado",
-      accessor: (fee: Fee) => {
+      accessor: (fee: FullFee) => {
         const stateConfig = {
           paid: { label: "Pagada", color: "bg-emerald-100 text-emerald-700", icon: <CheckCircle2 size={14} /> },
           partial: { label: "Parcial", color: "bg-blue-100 text-blue-700", icon: <AlertCircle size={14} /> },
@@ -123,7 +80,7 @@ export default function Fees() {
         </div>
       </div>
 
-      <List<Fee>
+      <List<FullFee>
         data={filteredFees}
         columns={columns}
         onSearch={setSearchTerm}
@@ -131,20 +88,20 @@ export default function Fees() {
         // TODO: Si se requiere registrar un pago o nueva cuota desde esta vista, implementar onAdd={() => { ... }} y la mutación correspondiente.
         renderMobileItem={(fee) => {
           const stateConfig = {
-            paid: { 
-              label: "Pagada", 
-              color: "bg-emerald-100 text-emerald-700", 
-              borderLeft: "bg-emerald-500" 
+            paid: {
+              label: "Pagada",
+              color: "bg-emerald-100 text-emerald-700",
+              borderLeft: "bg-emerald-500"
             },
-            partial: { 
-              label: "Parcial", 
-              color: "bg-blue-100 text-blue-700", 
-              borderLeft: "bg-blue-500" 
+            partial: {
+              label: "Parcial",
+              color: "bg-blue-100 text-blue-700",
+              borderLeft: "bg-blue-500"
             },
-            pending: { 
-              label: "Pendiente", 
-              color: "bg-rose-100 text-rose-700", 
-              borderLeft: "bg-rose-500" 
+            pending: {
+              label: "Pendiente",
+              color: "bg-rose-100 text-rose-700",
+              borderLeft: "bg-rose-500"
             },
           };
           const current = stateConfig[fee.state];
