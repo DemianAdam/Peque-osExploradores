@@ -17,3 +17,10 @@ export interface InvoicesFormData {
   amount: number;
   date: number;
 }
+
+export interface PaymentFormData {
+  amount: number;
+  date: number;
+  type: "cash" | "transfer";
+  feeId: string;
+}
