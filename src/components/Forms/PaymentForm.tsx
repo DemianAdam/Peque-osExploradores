@@ -5,7 +5,7 @@ import { PaymentFormData } from "../../types/forms";
 import { BaseSelect } from "../UI/BaseSelect";
 import { useQuery } from "convex/react";
 import { api } from "../../../convex/_generated/api";
-import { formatDateForInput } from "../../common/dates";
+import { formatDateForInput, parseInputDate } from "../../common/dates";
 import { formatFeeLabel } from "../../common/labels";
 
 interface PaymentFormProps {
@@ -13,10 +13,15 @@ interface PaymentFormProps {
 }
 
 
+// Evaluated once at module load — keeps the form prefilled with "today" without
+// calling impure functions during render (react-hooks/purity). If the app stays
+// open across midnight, this snapshot may be from yesterday.
+const TODAY = Date.now();
+
 export function PaymentForm({ onSubmit }: PaymentFormProps) {
     const [formData, setFormData] = useState<PaymentFormData>({
         amount: 0,
-        date: Date.now(),
+        date: TODAY,
         type: "cash",
         feeId: null,
     });
@@ -28,6 +33,8 @@ export function PaymentForm({ onSubmit }: PaymentFormProps) {
         feeId: "",
     });
     const unpaidFees = useQuery(api.fees.queries.getUnpaidFees);
+    // TODO KAREN: si no hay cuotas pendientes el selector queda vacío sin mensaje (todavía no existe flujo de creación de cuotas). Agregar empty-state.
+    // TODO KAREN: unpaidFees ya trae paidAmount: validar/cap el monto contra (totalAmount - paidAmount) antes de enviar, porque hoy los rechazos del servidor no se muestran en la UI.
 
     const formattedFees = unpaidFees?.map((f) => ({
         label: formatFeeLabel(f),
@@ -109,7 +116,7 @@ export function PaymentForm({ onSubmit }: PaymentFormProps) {
                 label="Fecha"
                 type="date"
                 value={formData.date ? formatDateForInput(formData.date) : ""}
-                onChange={(e) => setFormData({ ...formData, date: new Date(e.target.value).getTime() })}
+                onChange={(e) => setFormData({ ...formData, date: parseInputDate(e.target.value) })}
                 error={errors.date}
             />
         </FormLayout>

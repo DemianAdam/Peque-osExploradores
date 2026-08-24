@@ -12,6 +12,7 @@ export default function PaymentCreator() {
 
       <PaymentForm
         onSubmit={async ({ feeId, ...rest }) => {
+          // TODO KAREN: createPayment puede ser rechazado por el servidor (monto mayor al restante, cuota ya pagada) y hoy el error es invisible para el usuario. Agregar try/catch con feedback en la UI.
           if (!feeId) return;
           await createPayment({ ...rest, feeId });
           navigate("/pagos");

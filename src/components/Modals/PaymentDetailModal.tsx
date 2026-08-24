@@ -5,7 +5,7 @@ import { FullPayment } from "../../../convex/payments/types";
 import { BaseSelect } from "../UI/BaseSelect";
 import { useQuery, useMutation } from "convex/react";
 import { api } from "../../../convex/_generated/api";
-import { formatDate, formatDateForInput } from "../../common/dates";
+import { formatDate, formatDateForInput, parseInputDate } from "../../common/dates";
 import { formatFeeLabel } from "../../common/labels";
 
 
@@ -24,8 +24,6 @@ export function PaymentDetailModal({ payment, onClose, initialEditing = false }:
     date: payment.date,
     type: payment.type,
     feeId: payment.feeId,
-    teacherId: payment.teacherId,
-    payslipId: payment.payslipId ?? "",
   });
 
   const allFees = useQuery(api.fees.queries.getFees);
@@ -45,6 +43,7 @@ export function PaymentDetailModal({ payment, onClose, initialEditing = false }:
     feeId: "",
   });
 
+  // TODO KAREN: updatePayment puede ser rechazado por el servidor (monto mayor al restante, cuota ya pagada); el modal no muestra ningún error y parece que guardó. Agregar try/catch con feedback visual.
   const handleSave = async () => {
     const newErrors = { amount: "", date: "", type: "", feeId: "" };
     let isValid = true;
@@ -130,7 +129,7 @@ export function PaymentDetailModal({ payment, onClose, initialEditing = false }:
                   type="date"
                   value={formatDateForInput(formData.date)}
                   onChange={(e) => {
-                    setFormData(prev => ({ ...prev, date: new Date(e.target.value).getTime() }));
+                    setFormData(prev => ({ ...prev, date: parseInputDate(e.target.value) }));
                     if (errors.date) setErrors({ ...errors, date: "" });
                   }}
                   className="w-full bg-transparent outline-none font-medium text-slate-800 text-sm"
@@ -206,6 +205,8 @@ export function PaymentDetailModal({ payment, onClose, initialEditing = false }:
             </div>
           </div>
         </div>
+
+        {/* TODO KAREN: el pago tiene payslipId pero nunca se muestra; InvoiceDetailModal renderiza el badge 'Vinculado a liquidación'/'Sin liquidación' (InvoiceDetailModal.tsx:168-181). Replicar ese bloque acá cuando exista vinculación. */}
 
         {/* Botón de Acción */}
         <button

@@ -4,7 +4,7 @@ import { Invoice } from "../../../convex/invoices/types";
 import { Modal } from "../UI/Modal";
 import { useQuery, useMutation } from "convex/react";
 import { api } from "../../../convex/_generated/api";
-import { formatDateForInput } from "../../common/dates";
+import { formatDate, formatDateForInput, parseInputDate } from "../../common/dates";
 
 interface InvoiceModalProps {
   invoice: Invoice;
@@ -37,7 +37,7 @@ export function InvoiceDetailModal({ invoice, onClose, initialEditing = false }:
   const creatorTeacher = allTeachers?.find(t => t._id === invoice.teacherId);
 
   const handleSave = async () => {
-    const newDateTimestamp = formData.date ? new Date(formData.date).getTime() : invoice.date;
+    const newDateTimestamp = formData.date ? parseInputDate(formData.date) : invoice.date;
 
     const newErrors = { description: "", amount: "", date: "" };
     let isValid = true;
@@ -147,7 +147,7 @@ export function InvoiceDetailModal({ invoice, onClose, initialEditing = false }:
                 />
               ) : (
                 <p className="text-lg font-medium text-slate-800">
-                  {new Date(invoice.date).toLocaleDateString()}
+                  {formatDate(invoice.date)}
                 </p>
               )}
             </div>

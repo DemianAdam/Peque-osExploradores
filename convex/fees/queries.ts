@@ -3,7 +3,7 @@ import { FullFee, Fee } from "./types";
 import { QueryCtx } from "../_generated/server";
 
 export async function toFullFee(db: QueryCtx["db"], fee: Fee): Promise<FullFee | null> {
-    const child = await db.get(fee.childId);
+    const child = await db.get("children", fee.childId);
     if (!child) return null;
 
     const payments = await db.query("payments")

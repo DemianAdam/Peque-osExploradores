@@ -42,6 +42,9 @@ export const createPayment = zTeacherMutation({
         if (fee.state === "paid") {
             throw new Error(`The Fee with id ${args.feeId} is already paid.`);
         }
+        if (fee.totalAmount <= 0) {
+            throw new Error(`The Fee with id ${args.feeId} cannot receive payments.`);
+        }
         if (args.amount <= 0) {
             throw new Error("The payment amount must be a positive value.");
         }
