@@ -1,7 +1,16 @@
 import { useState } from "react";
 import { List } from "@/components/UI/List";
-import { CheckCircle2, Clock, AlertCircle, Search } from "lucide-react";
+import { CheckCircle2, Clock, AlertCircle, Search, Eye, DollarSign } from "lucide-react";
 import { FeeMobileCard } from "./FeeMobileCard";
+import FeeDetailModal from "@/components/Modals/FeeDetailModal"; // 👈 Tu modal de detalle que armamos
+import { useNavigate } from "react-router";
+
+interface PaymentRecord {
+  _id: string;
+  date: string;
+  amount: number;
+  method?: string;
+}
 
 interface Fee {
   _id: string;
@@ -15,6 +24,7 @@ interface Fee {
     name: string;
     dni: string;
   };
+  payments?: PaymentRecord[];
 }
 
 const MOCK_FEES: Fee[] = [
@@ -26,6 +36,9 @@ const MOCK_FEES: Fee[] = [
     paidAmount: 15000,
     state: "paid",
     child: { _id: "c1", name: "Mateo Gómez", dni: "45123456" },
+    payments: [
+      { _id: "p1", date: "10/07/2026", amount: 15000, method: "Transferencia" }
+    ]
   },
   {
     _id: "2",
@@ -35,6 +48,9 @@ const MOCK_FEES: Fee[] = [
     paidAmount: 5000,
     state: "partial",
     child: { _id: "c2", name: "Lucía Pérez", dni: "46789123" },
+    payments: [
+      { _id: "p2", date: "12/07/2026", amount: 5000, method: "Efectivo" }
+    ]
   },
   {
     _id: "3",
@@ -44,13 +60,30 @@ const MOCK_FEES: Fee[] = [
     paidAmount: 0,
     state: "pending",
     child: { _id: "c3", name: "Joaquín Benítez", dni: "45987321" },
+    payments: []
   },
 ];
 
 export default function Fees() {
   const [fees] = useState<Fee[]>(MOCK_FEES);
+  const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState("");
   const [filterState, setFilterState] = useState<"all" | "pending" | "partial" | "paid">("all");
+
+  // Estados para controlar los modales
+  const [selectedFee, setSelectedFee] = useState<Fee | null>(null);
+  const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
+
+ const handleOpenDetail = (fee: Fee) => {
+    setSelectedFee(fee);
+    setIsDetailModalOpen(true);
+  };
+
+ const handleOpenPay = (fee: Fee) => {
+    setSelectedFee(fee);
+    setIsDetailModalOpen(false); 
+    navigate(`/Pagos/Nuevo?feeId=${fee._id}`);
+  };
 
   const filteredFees = fees.filter(fee => {
     const matchesSearch = fee.child.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -84,12 +117,43 @@ export default function Fees() {
           </span>
         );
       }
+    },
+    {
+      header: "Acciones",
+      accessor: (fee: Fee) => {
+        const isNotPaid = fee.state !== "paid";
+
+        return (
+          <div className="flex items-center gap-2">
+            {/* Botón del Ojo para Ver Detalle (Historial de pagos) */}
+            <button
+              onClick={() => handleOpenDetail(fee)}
+              className="p-1.5 bg-gray-100 hover:bg-blue-500 hover:text-white text-slate-600 rounded-lg transition-colors cursor-pointer shadow-2xs"
+              title="Ver detalle e historial de pagos"
+            >
+              <Eye size={16} />
+            </button>
+
+            {/* Botón de Pagar condicional (solo si está pendiente o parcial) */}
+            {isNotPaid && (
+              <button
+                onClick={() => handleOpenPay(fee)}
+                className="px-2.5 py-1.5 bg-emerald-500 hover:bg-emerald-600 text-white rounded-lg text-xs font-bold transition-colors cursor-pointer flex items-center gap-1 shadow-2xs"
+                title="Registrar pago"
+              >
+                <DollarSign size={14} />
+                Pagar
+              </button>
+            )}
+          </div>
+        );
+      }
     }
   ];
 
   return (
     <div className="min-h-screen w-full bg-[#C6E5D9] flex flex-col p-8 px-6">
-      <h2 className="font-angkor text-[40px] text-[#1E293B] font-normal mb-2 text-left">INFORME</h2>
+      <h2 className="font-angkor text-[40px] text-[#1E293B] font-normal mb-2 text-left">LISTA</h2>
       <h3 className="text-4xl font-bold text-blue-500 mb-6 drop-shadow-sm text-left">Cuotas</h3>
 
       {/* Barra de Filtros por Estado */}
@@ -122,7 +186,7 @@ export default function Fees() {
         </div>
       </div>
 
-      {/* 🖥️ ESCRITORIO: Renderiza la tabla oficial de <List /> */}
+      {/* 🖥️ ESCRITORIO: Renderiza la tabla oficial con la columna de Acciones */}
       <div className="hidden md:block">
         <List<Fee>
           data={filteredFees}
@@ -132,9 +196,8 @@ export default function Fees() {
         />
       </div>
 
-      {/* 📱 MÓVIL: Renderiza el diseño de cards con FeeMobileCard */}
+      {/* 📱 MÓVIL: Renderiza el diseño de cards */}
       <div className="md:hidden flex flex-col gap-4">
-        {/* Buscador exclusivo para móvil */}
         <div className="relative w-full">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
           <input
@@ -146,13 +209,26 @@ export default function Fees() {
           />
         </div>
 
-        {/* Listado de tarjetas móviles */}
         <div className="flex flex-col gap-3">
           {filteredFees.map((fee) => (
-            <FeeMobileCard key={fee._id} fee={fee} />
+            <FeeMobileCard 
+              key={fee._id} 
+              fee={fee} 
+              onViewDetail={() => handleOpenDetail(fee)} 
+              onPay={() => handleOpenPay(fee)}
+            />
           ))}
         </div>
       </div>
+
+      {/* Modal de Detalle (Muestra el historial de pagos con sus fechas) */}
+      <FeeDetailModal
+        isOpen={isDetailModalOpen}
+        onClose={() => setIsDetailModalOpen(false)}
+        onPay={handleOpenPay} // 👈 Al hacer clic en pagar acá, dispara handleOpenPay
+        fee={selectedFee}
+      />
+
     </div>
   );
 }

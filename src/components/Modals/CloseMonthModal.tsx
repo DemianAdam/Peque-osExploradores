@@ -30,7 +30,7 @@ export function CloseMonthModal({
     <Modal
       isOpen={isOpen}
       onClose={onClose}
-      title={<span className="text-orange-500 font-bold">Resumen Cierre de Ciclo</span>}
+      title={<span className="text-pink-500 font-bold">Resumen Cierre de Ciclo</span>}
     >
       <div className="flex flex-col gap-4">
         
@@ -77,7 +77,7 @@ export function CloseMonthModal({
 
         <button
           onClick={onConfirm}
-          className="mt-2 w-full bg-orange-500 hover:bg-orange-600 text-white font-bold py-3 rounded-xl transition shadow-md"
+          className="mt-2 w-full bg-pink-500 hover:bg-pink-600 text-white font-bold py-3 rounded-xl transition shadow-md"
         >
           Confirmar Cierre y Liquidar
         </button>

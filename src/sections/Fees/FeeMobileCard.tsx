@@ -1,3 +1,5 @@
+import { Eye, DollarSign } from "lucide-react";
+
 interface FeeItem {
   _id: string;
   state: "paid" | "partial" | "pending";
@@ -13,6 +15,8 @@ interface FeeItem {
 
 interface FeeMobileCardProps {
   fee: FeeItem;
+  onViewDetail?: () => void;
+  onPay?: () => void;
 }
 
 const stateConfig = {
@@ -33,8 +37,9 @@ const stateConfig = {
   },
 };
 
-export function FeeMobileCard({ fee }: FeeMobileCardProps) {
+export function FeeMobileCard({ fee, onViewDetail, onPay }: FeeMobileCardProps) {
   const current = stateConfig[fee.state] || stateConfig.pending;
+  const isNotPaid = fee.state !== "paid";
 
   return (
     /* Contenedor tipo Card con relative y overflow-hidden para la barra lateral */
@@ -43,7 +48,7 @@ export function FeeMobileCard({ fee }: FeeMobileCardProps) {
       {/* Barra lateral dinámica según el estado */}
       <div className={`absolute left-0 top-0 bottom-0 w-1.5 ${current.borderLeft}`} />
 
-      {/* Cabecera de la card (agregamos un pl-2 para que no pegue contra la barra lateral) */}
+      {/* Cabecera de la card (pl-2 para que no pegue contra la barra lateral) */}
       <div className="flex justify-between items-center pl-2">
         <h4 className="font-bold text-slate-800 text-base">{fee.child.name}</h4>
         <span className={`px-3 py-1 rounded-full text-xs font-bold ${current.color}`}>
@@ -71,6 +76,29 @@ export function FeeMobileCard({ fee }: FeeMobileCardProps) {
           <span className="text-sm font-bold text-emerald-600">${fee.paidAmount.toLocaleString()}</span>
         </div>
       </div>
+
+      {/* Botones de Acción Móvil (Ojo + Pagar) */}
+      <div className="flex justify-end items-center gap-2 pt-1 pl-2">
+        {/* Botón Ver Detalle */}
+        <button
+          onClick={onViewDetail}
+           className="bg-blue-100 text-blue-600 p-2.5 rounded-full hover:bg-blue-200 transition"
+        >
+          <Eye size={18} />
+        </button>
+
+        {/* Botón Pagar Condicional */}
+        {isNotPaid && (
+          <button
+            onClick={onPay}
+            className="flex items-center gap-1 px-3 py-1.5 bg-emerald-500 hover:bg-emerald-600 text-white rounded-xl text-xs font-bold transition-colors cursor-pointer"
+          >
+            <DollarSign size={14} />
+            Pagar
+          </button>
+        )}
+      </div>
+
     </div>
   );
 }

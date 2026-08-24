@@ -27,7 +27,7 @@ export function PayslipsCalendarView({ payslips, onSelect }: PayslipsCalendarVie
             onClick={() => onSelect(payslip)}
             className={`bg-white p-2 sm:p-4 rounded-xl sm:rounded-2xl border transition-all cursor-pointer flex flex-col justify-between gap-2 relative active:scale-95 ${
               isLatest 
-                ? "border-pink-500 ring-1 sm:ring-2 ring-pink-400/20 shadow-md bg-gradient-to-b from-pink-50/30 to-white" 
+                ? "border-pink-500 ring-1 sm:ring-2 ring-pink-400/20 shadow-md bg-linear-to-b from-pink-50/30 to-white" 
                 : "border-gray-100 shadow-sm hover:border-gray-200"
             }`}
           >
