@@ -53,10 +53,10 @@ export function ChildrenCard() {
         </div>
 
         <button 
-          onClick={() => navigate("/children")}
+          onClick={() => navigate("/chicos")}
           className="text-xs font-bold text-pink-600 hover:text-pink-700 flex items-center gap-1 self-end transition-colors pt-1 cursor-pointer"
         >
-          Ver detalle completo <ArrowRight size={14} />
+          Ver listado completo de exploradores <ArrowRight size={14} />
         </button>
       </div>
     </DashboardCard>

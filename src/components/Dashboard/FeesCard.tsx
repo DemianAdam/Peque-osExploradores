@@ -112,10 +112,19 @@ export function FeesCard() {
 
         {/* Enlace general para ver todas las cuotas */}
         <button 
-          onClick={() => navigate("/fees")}
+          onClick={() => navigate("/cuotas")}
           className="text-xs font-bold text-blue-600 hover:text-blue-700 flex items-center gap-1 self-end transition-colors pt-1 cursor-pointer"
         >
           Ver listado completo de cuotas <ArrowRight size={14} />
+        </button>
+
+      
+      {/* Enlace general para ver todas las pagos */}
+        <button 
+          onClick={() => navigate("/pagos")}
+          className="text-xs font-bold text-green-600 hover:text-green-700 flex items-center gap-1 self-end transition-colors pt-1 cursor-pointer"
+        >
+          Ver listado completo de pagos <ArrowRight size={14} />
         </button>
 
       </div>

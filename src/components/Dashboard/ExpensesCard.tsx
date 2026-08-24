@@ -118,7 +118,7 @@ export function ExpensesCard() {
 
         {/* Enlace para lista gastos */}
         <button 
-          onClick={() => navigate("/expenses")}
+          onClick={() => navigate("/gastos")}
           className="text-xs font-bold text-rose-600 hover:text-rose-700 flex items-center gap-1 self-end transition-colors pt-1 cursor-pointer"
         >
           Ver listado completo de gastos <ArrowRight size={14} />
