@@ -2,17 +2,17 @@ import {  Authenticated, Unauthenticated } from "convex/react";
 import { Route, Routes } from "react-router";
 import { ProtectedLayout } from "./ProtectedLayout";
 import Login from './sections/Login';
-import Dashboard from "./sections/Dashboard";
+import Dashboard from "./components/Dashboard/Dashboard";
 import Payments from "./sections/Payments/Payments";
 import Teachers from "./sections/Teachers";
 import Invoices from "./sections/Invoices/Invoices";
-import Payslips from "./sections/Payslips";
+import Payslips from "./sections/Payslips/Payslips";
 import Groups from "./sections/Groups/Groups";
 import GroupCreator from "./sections/Groups/GroupCreator";
 import Children from "./sections/Children/Children";
 import ChildrenCreator from "./sections/Children/ChildrenCreator";
 import InvoiceCreator from "./sections/Invoices/InvoiceCreator";
-import Fees from "./sections/Fees";
+import Fees from "./sections/Fees/Fees";
 import PaymentCreator from "./sections/Payments/PaymentCreator";
 
 
