@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { List } from "@/components/UI/List";
-import { CheckCircle2, Clock, AlertCircle } from "lucide-react";
+import { CheckCircle2, Clock, AlertCircle, Search } from "lucide-react";
 import { FeeMobileCard } from "./FeeMobileCard";
 
 interface Fee {
@@ -17,7 +17,6 @@ interface Fee {
   };
 }
 
-// TODO: Reemplazar MOCK_FEES por la query real de la base de datos
 const MOCK_FEES: Fee[] = [
   {
     _id: "1",
@@ -49,7 +48,6 @@ const MOCK_FEES: Fee[] = [
 ];
 
 export default function Fees() {
-  // TODO: Conectar con el estado o hook de datos reales de la API
   const [fees] = useState<Fee[]>(MOCK_FEES);
   const [searchTerm, setSearchTerm] = useState("");
   const [filterState, setFilterState] = useState<"all" | "pending" | "partial" | "paid">("all");
@@ -124,13 +122,37 @@ export default function Fees() {
         </div>
       </div>
 
-      <List
-        data={filteredFees}
-        columns={columns}
-        onSearch={setSearchTerm}
-        searchPlaceholder="Buscar por explorador o DNI..."
-        renderMobileItem={(fee) => <FeeMobileCard fee={fee} />}
-      />
+      {/* 🖥️ ESCRITORIO: Renderiza la tabla oficial de <List /> */}
+      <div className="hidden md:block">
+        <List<Fee>
+          data={filteredFees}
+          columns={columns}
+          onSearch={setSearchTerm}
+          searchPlaceholder="Buscar por explorador o DNI..."
+        />
+      </div>
+
+      {/* 📱 MÓVIL: Renderiza el diseño de cards con FeeMobileCard */}
+      <div className="md:hidden flex flex-col gap-4">
+        {/* Buscador exclusivo para móvil */}
+        <div className="relative w-full">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
+          <input
+            type="text" 
+            placeholder="Buscar por explorador o DNI..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="w-full bg-white border border-gray-200 rounded-xl pl-10 pr-4 py-2.5 text-sm outline-none focus:border-blue-400 transition shadow-sm"
+          />
+        </div>
+
+        {/* Listado de tarjetas móviles */}
+        <div className="flex flex-col gap-3">
+          {filteredFees.map((fee) => (
+            <FeeMobileCard key={fee._id} fee={fee} />
+          ))}
+        </div>
+      </div>
     </div>
   );
 }

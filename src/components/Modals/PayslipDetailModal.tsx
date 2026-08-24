@@ -1,3 +1,4 @@
+import { Trash2 } from "lucide-react";
 import { Modal } from "../UI/Modal";
 
 interface FullPayslip {
@@ -15,20 +16,19 @@ interface PayslipsDetailModalProps {
   payslip: FullPayslip;
   isOpen: boolean;
   onClose: () => void;
+  onOpenDeleteModal?: () => void; // Función para disparar el modal de eliminación específico
 }
 
-export function PayslipsDetailModal({ payslip, isOpen, onClose }: PayslipsDetailModalProps) {
-
-
+export function PayslipsDetailModal({ payslip, isOpen, onClose, onOpenDeleteModal }: PayslipsDetailModalProps) {
   return (
     <Modal 
-      title={<span className="text-orange-500 font-bold">Liquidación: {payslip.periodo}</span>} 
+      title={<span className="text-pink-500 font-bold">Liquidación: {payslip.periodo}</span>} 
       isOpen={isOpen} 
       onClose={onClose}
     >
       <div className="flex flex-col gap-4">
 
-        {/* Tarjeta de información general de la liquidación */}
+        {/* Tarjeta de información general */}
         <div className="bg-gray-50 border rounded-xl p-4 flex flex-col gap-3 text-sm text-slate-700">
           <div className="flex justify-between">
             <span className="font-semibold text-gray-500">Período:</span>
@@ -60,7 +60,17 @@ export function PayslipsDetailModal({ payslip, isOpen, onClose }: PayslipsDetail
           </div>
         </div>
 
-
+        {/* Botón de Eliminar: Solo aparece si onOpenDeleteModal está definido (es la última) */}
+        {onOpenDeleteModal && (
+          <button
+            onClick={() => {
+              onOpenDeleteModal();
+            }}
+            className="flex items-center justify-center gap-2 w-full py-2.5 rounded-xl text-sm font-semibold bg-red-100 text-red-600 hover:bg-red-200 transition"
+          >
+            <Trash2 size={16} /> Eliminar Liquidación
+          </button>
+        )}
 
       </div>
     </Modal>
