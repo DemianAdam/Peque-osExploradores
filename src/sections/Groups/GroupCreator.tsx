@@ -1,6 +1,6 @@
 
 import { useMutation } from "convex/react";
-import { GroupForm } from "../../components/Forms/GroupForm";
+import { GroupForm } from "../../../Forms/GroupForm";
 import { useNavigate } from "react-router";
 import { api } from "../../../convex/_generated/api";
 

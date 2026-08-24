@@ -1,12 +1,12 @@
 import { useState } from "react";
 import { FormLayout } from "./FormLayout";
-import { BaseInput } from "../UI/BaseInput";
-import { PaymentFormData } from "../../types/forms";
-import { BaseSelect } from "../UI/BaseSelect";
+import { BaseInput } from "../src/components/UI/BaseInput";
+import { PaymentFormData } from "../src/types/forms";
+import { BaseSelect } from "../src/components/UI/BaseSelect";
 import { useQuery } from "convex/react";
-import { api } from "../../../convex/_generated/api";
-import { formatDateForInput, parseInputDate } from "../../common/dates";
-import { formatFeeLabel } from "../../common/labels";
+import { api } from "../convex/_generated/api";
+import { formatDateForInput, parseInputDate } from "../src/common/dates";
+import { formatFeeLabel } from "../src/common/labels";
 
 interface PaymentFormProps {
     onSubmit: (data: PaymentFormData) => void;

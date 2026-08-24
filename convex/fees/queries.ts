@@ -12,7 +12,7 @@ export async function toFullFee(db: QueryCtx["db"], fee: Fee): Promise<FullFee |
 
     const paidAmount = payments.reduce((sum, payment) => sum + payment.amount, 0);
 
-    return { ...fee, child, paidAmount };
+    return { ...fee, child, paidAmount, payments };
 }
 
 export const getFees = zTeacherQuery({
