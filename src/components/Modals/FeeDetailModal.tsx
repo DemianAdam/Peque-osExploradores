@@ -1,11 +1,10 @@
 import { X, CheckCircle2, Clock, AlertCircle, Calendar, DollarSign } from "lucide-react";
-import { Fee, FullFee } from "../../../convex/fees/types";
-
+import { FullFee } from "../../../convex/fees/types";
 
 interface FeeDetailModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onPay?: (fee: FullFee) => void; 
+  onPay?: (fee: FullFee) => void;
   fee: FullFee | null;
 }
 

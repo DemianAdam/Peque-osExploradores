@@ -1,8 +1,8 @@
 import { useState } from "react";
 import { FormLayout } from "./FormLayout";
-import { BaseInput } from "../UI/BaseInput";
-import { InvoicesFormData } from "../../types/forms";
-import { formatDateForInput, parseInputDate } from "../../common/dates";
+import { BaseInput } from "@/components/UI/BaseInput";
+import { InvoicesFormData } from "@/types/forms";
+import { formatDateForInput, parseInputDate } from "@/common/dates";
 
 interface InvoicesFormProps {
   onSubmit: (data: InvoicesFormData) => void;

@@ -5,11 +5,11 @@ import { FullTeacher } from "./types";
 
 export const getCurrentTeacher = zQuery({
     args: {},
-    handler: async (ctx, args) => {
+    handler: async (ctx) => {
         let currentTeacher;
         try {
             currentTeacher = await getTeacherFunction(ctx);
-        } catch (error) {
+        } catch  {
             currentTeacher = null;
         }
 
@@ -20,7 +20,7 @@ export const getCurrentTeacher = zQuery({
 
 export const getTeachers = zQuery({
     args: {},
-    handler: async (ctx, args) => {
+    handler: async (ctx) => {
         //TODO: Paginate
         const teachers = await ctx.db.query("teachers").collect();
 

@@ -1,4 +1,4 @@
-import { PaymentForm } from "@/components/Forms/PaymentForm";
+import { PaymentForm } from "../../../Forms/PaymentForm";
 import { useNavigate } from "react-router";
 import { api } from "../../../convex/_generated/api";
 import { useMutation } from "convex/react";
@@ -12,10 +12,14 @@ export default function PaymentCreator() {
 
       <PaymentForm
         onSubmit={async ({ feeId, ...rest }) => {
-          // TODO KAREN: createPayment puede ser rechazado por el servidor (monto mayor al restante, cuota ya pagada) y hoy el error es invisible para el usuario. Agregar try/catch con feedback en la UI.
           if (!feeId) return;
-          await createPayment({ ...rest, feeId });
-          navigate("/pagos");
+          try {
+            await createPayment({ ...rest, feeId });
+            navigate("/pagos");
+          } catch (error) {
+            console.error("No se pudo crear el pago:", error);
+            alert("No se pudo crear el pago.");
+          }
         }}
       />
     </div>

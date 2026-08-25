@@ -60,12 +60,18 @@ export function InvoiceDetailModal({ invoice, onClose, initialEditing = false }:
 
     if (!isValid) return;
 
-    await updateInvoice({
-      id: invoice._id,
-      description: formData.description,
-      amount: parseFloat(formData.amount) || 0,
-      date: newDateTimestamp,
-    });
+    try {
+      await updateInvoice({
+        id: invoice._id,
+        description: formData.description,
+        amount: parseFloat(formData.amount) || 0,
+        date: newDateTimestamp,
+      });
+    } catch (error) {
+      console.error("No se pudo guardar el gasto:", error);
+      alert("No se pudo guardar el gasto.");
+      return;
+    }
     setIsEditing(false); // Vuelve al modo detalle al guardar
   };
 

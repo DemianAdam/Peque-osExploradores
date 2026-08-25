@@ -14,10 +14,14 @@ export default function GroupCreator() {
       <h1 className="text-3xl font-bold mb-5">Nuevo Grupo</h1>
       <GroupForm
         onSubmit={async (data) => {
-          //TODO KAREN: Loading...
-          await createGroupWithTeachers(data);
-          console.log("Datos del grupo a guardar:", data);
-          navigate("/grupos");
+          try {
+            await createGroupWithTeachers(data);
+            console.log("Datos del grupo a guardar:", data);
+            navigate("/grupos");
+          } catch (error) {
+            console.error("No se pudo crear el grupo:", error);
+            alert("No se pudo crear el grupo.");
+          }
         }}
       />
     </div>

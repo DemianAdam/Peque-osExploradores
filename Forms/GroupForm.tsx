@@ -1,12 +1,13 @@
 // src/components/Forms/GroupForm.tsx
 import { useState } from "react";
 import { FormLayout } from "./FormLayout";
-import { BaseInput } from "../UI/BaseInput";
+import { BaseInput } from "@/components/UI/BaseInput";
 import { X } from "lucide-react";
 import { useQuery } from "convex/react";
-import { BaseSelect } from "../UI/BaseSelect";
-import { api } from "../../../convex/_generated/api";
-import { GroupFormData } from "../../types/forms";
+import { BaseSelect } from "@/components/UI/BaseSelect";
+import { api } from "../convex/_generated/api";
+import { GroupFormData } from "@/types/forms";
+
 
 interface GroupFormProps {
   onSubmit: (data: GroupFormData) => void;

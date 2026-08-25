@@ -1,7 +1,6 @@
 import { Pencil, Check } from "lucide-react";
 import { useState } from "react";
 import { FullTeacher } from "../../../convex/teachers/types";
-import { Group } from "../../../convex/groups/types";
 import { Modal } from "../UI/Modal";
 import { useQuery, useMutation } from "convex/react";
 import { api } from "../../../convex/_generated/api";
@@ -17,7 +16,7 @@ export function TeacherDetailModal({ teacher, isOpen, onClose }: TeacherDetailMo
 
   // Estado único para los campos del formulario de edición de grupos del docente
   const [formData, setFormData] = useState({
-    selectedGroups: teacher.groups as Group[],
+    selectedGroups: teacher.groups,
     selectValue: "",
   });
 
@@ -46,10 +45,16 @@ export function TeacherDetailModal({ teacher, isOpen, onClose }: TeacherDetailMo
   };
 
   const handleFinishEditing = async () => {
-    await setTeacherGroups({ 
-      teacherId: teacher._id, 
-      groupIds: formData.selectedGroups.map(g => g._id) 
-    });
+    try {
+      await setTeacherGroups({ 
+        teacherId: teacher._id, 
+        groupIds: formData.selectedGroups.map(g => g._id) 
+      });
+    } catch (error) {
+      console.error("No se pudo guardar los grupos:", error);
+      alert("No se pudo guardar los grupos.");
+      return;
+    }
     setIsEditing(false);
   };
 

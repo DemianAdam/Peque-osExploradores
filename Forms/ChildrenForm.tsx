@@ -1,14 +1,12 @@
+import { ChildFormData } from "@/types/forms";
+import { FullChild } from "../convex/children/types";
+import { useQuery } from "convex/react";
+import { api } from "../convex/_generated/api";
 import { useState } from "react";
 import { FormLayout } from "./FormLayout";
-import { BaseInput } from "../UI/BaseInput";
-import { BaseSelect } from "../UI/BaseSelect";
-import { BaseSwitch } from "../UI/BaseSwitch";
-import { FullChild } from "../../../convex/children/types";
-import { ChildFormData } from "../../types/forms";
-import { useQuery } from "convex/react";
-import { api } from "../../../convex/_generated/api";
-
-
+import { BaseInput } from "@/components/UI/BaseInput";
+import { BaseSelect } from "@/components/UI/BaseSelect";
+import { BaseSwitch } from "@/components/UI/BaseSwitch";
 
 interface ChildrenFormProps {
   onSubmit: (data: ChildFormData) => void;

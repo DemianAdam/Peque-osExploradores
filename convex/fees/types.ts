@@ -10,5 +10,5 @@ export type FeeData = TypeData<Fee>;
 export type FullFee = Fee & {
     child: Child,
     paidAmount: number,
-    payments: Payment[]
+    payments?: Payment[]
 }

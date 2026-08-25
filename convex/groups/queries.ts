@@ -2,11 +2,10 @@ import { Id } from "../_generated/dataModel";
 import { Child } from "../children/types";
 import { Teacher } from "../teachers/types";
 import { zTeacherQuery } from "../zod";
-import { FullGroup } from "./types";
 
 export const getGroups = zTeacherQuery({
   args: {},
-  handler: async (ctx, args) => {
+  handler: async (ctx) => {
     //TODO: Paginate
     return await ctx.db.query("groups").collect();
   }

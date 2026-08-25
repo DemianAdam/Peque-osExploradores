@@ -14,9 +14,8 @@ export const CounterKeysBuilders = {
   teachersInGroup: (id: Id<"groups">) => `teachers:group:${id}` as const,
 } as const;
 
-type StaticKey = (typeof COUNTER_KEYS)[keyof typeof COUNTER_KEYS];
 type DynamicKey = ReturnType<(typeof CounterKeysBuilders)[keyof typeof CounterKeysBuilders]>;
-type CounterKey = StaticKey | DynamicKey;
+type CounterKey = DynamicKey;
 
 export async function incrementCount(ctx: MutationCtx, key: CounterKey) {
   await counter.inc(ctx, key);

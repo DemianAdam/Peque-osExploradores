@@ -13,26 +13,25 @@ export default function ChildrenCreator() {
     <div className="p-10 bg-[#C6E5D9] min-h-screen">
       <h1 className="text-3xl font-bold mb-5">Nuevo Explorador</h1>
 
-      <ChildrenForm
+<ChildrenForm
         onSubmit={async (data) => {
            if (!data.groupId) {
-             /*TODO KAREN: 
-             Aca valido que se haya seleccionado un grupo, ya que de poder el usuario puede NO SELECCIONAR nada.
-             Habria que dejarlo asi, que sale un alerta en el navegador, o habria que validarlo directamente den6tro de ChildrenForm
-             Como veas que sea lo mejor para la UI*/
-             
-             alert("Debes seleccionar un grupo para el explorador.");
-             return;
+              alert("Debes seleccionar un grupo para el explorador.");
+              return;
+            }
+           const createData: CreateChildData = {
+             name: data.name,
+             dni: data.dni,
+             groupId: data.groupId,
+           };
+           try {
+             await createChild(createData);
+             navigate("/chicos");
+           } catch (error) {
+             console.error("No se pudo crear el explorador:", error);
+             alert("No se pudo crear el explorador.");
            }
-          const createData: CreateChildData = {
-            name: data.name,
-            dni: data.dni,
-            groupId: data.groupId,
-          };
-          //TODO KAREN: Loading...
-          await createChild(createData);
-          navigate("/chicos");
-        }}
+         }}
       />
     </div>
   );

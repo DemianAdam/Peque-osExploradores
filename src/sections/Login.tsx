@@ -8,7 +8,12 @@ export default function Login() {
   const handleSubmit = async (e: React.SubmitEvent<HTMLFormElement>) => {
     e.preventDefault();
     const formData = new FormData(e.currentTarget);
-    await signIn("password", formData);
+    try {
+      await signIn("password", formData);
+    } catch (error) {
+      console.error("Error al iniciar sesión:", error);
+      alert("No se pudo iniciar sesión. Verifica tus credenciales.");
+    }
   }
 
   return (

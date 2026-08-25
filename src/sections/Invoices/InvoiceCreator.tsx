@@ -1,5 +1,5 @@
 
-import { InvoicesForm } from "@/components/Forms/InvoicesForm";
+import { InvoicesForm } from "../../../Forms/InvoicesForm";
 import { useNavigate } from "react-router";
 import { api } from "../../../convex/_generated/api";
 import { useMutation } from "convex/react";
@@ -16,10 +16,14 @@ export default function InvoiceCreator() {
 
       <InvoicesForm
         onSubmit={async (data) => {
-          //TODO KAREN: Loading...
-          await createInvoice(data);
-          console.log("Datos del gasto a guardar:", data);
-          navigate("/gastos");
+          try {
+            await createInvoice(data);
+            console.log("Datos del gasto a guardar:", data);
+            navigate("/gastos");
+          } catch (error) {
+            console.error("No se pudo crear el gasto:", error);
+            alert("No se pudo crear el gasto.");
+          }
         }}
       />
     </div>

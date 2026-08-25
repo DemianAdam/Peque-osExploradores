@@ -4,7 +4,7 @@ import { FullPayment } from "./types";
 
 export const getPayments = zTeacherQuery({
     args:{},
-    async handler(ctx, args) {
+    async handler(ctx) {
         //TODO: Paginate
         const payments = await ctx.db.query("payments").collect();
 

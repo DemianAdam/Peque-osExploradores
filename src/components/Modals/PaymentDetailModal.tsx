@@ -43,7 +43,6 @@ export function PaymentDetailModal({ payment, onClose, initialEditing = false }:
     feeId: "",
   });
 
-  // TODO KAREN: updatePayment puede ser rechazado por el servidor (monto mayor al restante, cuota ya pagada); el modal no muestra ningún error y parece que guardó. Agregar try/catch con feedback visual.
   const handleSave = async () => {
     const newErrors = { amount: "", date: "", type: "", feeId: "" };
     let isValid = true;
@@ -71,13 +70,19 @@ export function PaymentDetailModal({ payment, onClose, initialEditing = false }:
     setErrors(newErrors);
     if (!isValid) return;
 
-    await updatePayment({
-      id: payment._id,
-      amount: Number(formData.amount),
-      date: formData.date,
-      type: formData.type,
-      feeId: formData.feeId,
-    });
+    try {
+      await updatePayment({
+        id: payment._id,
+        amount: Number(formData.amount),
+        date: formData.date,
+        type: formData.type,
+        feeId: formData.feeId,
+      });
+    } catch (error) {
+      console.error("No se pudo guardar el pago:", error);
+      alert("No se pudo guardar el pago.");
+      return;
+    }
 
     setIsEditing(false);
     onClose();

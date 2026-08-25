@@ -1,5 +1,4 @@
 import { convexAuth, GenericActionCtxWithAuthConfig, retrieveAccount } from "@convex-dev/auth/server";
-import { Password } from "@convex-dev/auth/providers/Password";
 import { Scrypt } from "lucia";
 import { DataModel } from "./_generated/dataModel";
 import { ConvexCredentials } from "@convex-dev/auth/providers/ConvexCredentials";

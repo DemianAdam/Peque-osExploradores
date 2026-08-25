@@ -26,8 +26,8 @@ export default function Fees() {
     setIsDetailModalOpen(true);
   };
 
-  const handleOpenPay = (fee: FullFee) => {
-    setSelectedFee(fee);
+  const handleOpenPay = (fee: { _id: string }) => {
+    setSelectedFee(fee as FullFee);
     setIsDetailModalOpen(false);
     navigate(`/Pagos/Nuevo?feeId=${fee._id}`);
   };

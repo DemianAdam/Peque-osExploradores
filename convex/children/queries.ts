@@ -1,4 +1,3 @@
-import { ConvexError } from "convex/values";
 import { zTeacherQuery } from "../zod";
 import { FullChild } from "./types";
 import { Group } from "../groups/types";
@@ -7,7 +6,7 @@ import { v } from "convex/values";
 
 export const getChildren = zTeacherQuery({
     args: {},
-    handler: async (ctx, args) => {
+    handler: async (ctx) => {
         //TODO: Paginate
         const children = await ctx.db.query("children").collect();
 
@@ -34,7 +33,7 @@ export const getChildren = zTeacherQuery({
 export const getById = query({
   args: { id: v.id("children") },
   handler: async (ctx, args) => {
-    const child = await ctx.db.get(args.id);
+    const child = await ctx.db.get("children", args.id);
     
     if (!child) return null;
 

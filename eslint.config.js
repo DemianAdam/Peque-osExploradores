@@ -74,6 +74,16 @@ export default defineConfig([
       // Allow async functions without await
       // for consistency (esp. Convex `handler`s)
       "@typescript-eslint/require-await": "off",
+
+      // React ignores handler return values; RRv7 navigate() returns void | Promise<void> by design
+      "@typescript-eslint/no-misused-promises": [
+        "error",
+        { checksVoidReturn: { attributes: false } },
+      ],
+      "@typescript-eslint/no-floating-promises": [
+        "error",
+        { allowForKnownSafeCalls: [{ from: "package", name: ["NavigateFunction"], package: "react-router" }] },
+      ],
     },
   },
   ...convexPlugin.configs.recommended,

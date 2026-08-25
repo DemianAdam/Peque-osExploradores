@@ -1,4 +1,3 @@
-import { ConvexError } from "convex/values";
 import { MutationCtx, QueryCtx } from "../_generated/server";
 import { getCurrentUser } from "../users/functions";
 import { Teacher } from "./types";

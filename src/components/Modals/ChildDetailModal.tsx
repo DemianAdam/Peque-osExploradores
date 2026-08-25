@@ -69,13 +69,19 @@ export function ChildDetailModal({ child, onClose, initialEditing = false }: Chi
 
     if (!isValid) return;
 
-    await updateChild({ 
-      id: child._id, 
-      name: formData.name, 
-      dni: formData.dni, 
-      active: formData.active,
-      groupId: formData.groupId as any
-    });
+    try {
+      await updateChild({ 
+        id: child._id, 
+        name: formData.name, 
+        dni: formData.dni, 
+        active: formData.active,
+        groupId: formData.groupId
+      });
+    } catch (error) {
+      console.error("No se pudo guardar el explorador:", error);
+      alert("No se pudo guardar el explorador.");
+      return;
+    }
 
     setIsEditing(false); // Vuelve al modo detalle mostrando los cambios sincronizados
   };

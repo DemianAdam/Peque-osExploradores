@@ -1,6 +1,6 @@
 import { customMutation, NoOp } from "convex-helpers/server/customFunctions";
 import { zCustomQuery, zCustomMutation, zCustomAction } from "convex-helpers/server/zod4";
-import { internalMutation as rawInternalMutation, internalQuery as rawInternalQuery, internalAction as rawInternalAction, action as rawAction, mutation as rawMutation, query as rawQuery } from "./_generated/server";
+import { internalMutation as rawInternalMutation, internalQuery as rawInternalQuery, internalAction as rawInternalAction, mutation as rawMutation, query as rawQuery } from "./_generated/server";
 import { customCtx } from "convex-helpers/server/customFunctions";
 import { triggersDB } from "./triggers";
 import { getCurrentTeacher } from "./teachers/functions";
