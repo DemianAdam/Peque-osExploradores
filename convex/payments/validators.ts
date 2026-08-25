@@ -12,6 +12,21 @@ export const paymentValidator = z.object({
     payslipId: zid("payslips").nullable()
 });
 
+export const createPaymentValidator = z.object({
+    amount: z.number(),
+    date: z.number(),
+    type: z.union([z.literal("cash"), z.literal("transfer")]),
+    feeId: zid("fees"),
+});
+
+export const updatePaymentValidator = z.object({
+    id: paymentIdValidator,
+    amount: z.number().optional(),
+    date: z.number().optional(),
+    type: z.union([z.literal("cash"), z.literal("transfer")]).optional(),
+    feeId: zid("fees").optional(),
+});
+
 export const deletePaymentValidator = z.object({
     id: paymentIdValidator
 });

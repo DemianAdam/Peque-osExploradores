@@ -5,6 +5,7 @@ import { List } from "../../components/UI/List";
 import { Invoice } from "../../../convex/invoices/types"; // Importamos tu tipo real de Convex
 import { useMutation, useQuery } from "convex/react";
 import { api } from "../../../convex/_generated/api";
+import { formatDate } from "../../common/dates";
 import { useState } from "react";
 import { InvoiceDeleteModal } from "@/components/Modals/InvoiceDeleteModal";
 import { InvoiceDetailModal } from "@/components/Modals/InvoiceDetailModal";
@@ -34,7 +35,7 @@ export default function Invoices() {
         { header: "N°", accessor: (_: Invoice, index: number) => index + 1 },
         { header: "Descripción", accessor: (invoice: Invoice) => invoice.description },
         { header: "Monto", accessor: (invoice: Invoice) => `$${invoice.amount.toFixed(2)}` },
-        { header: "Fecha", accessor: (invoice: Invoice) => new Date(invoice.date).toLocaleDateString() },
+        { header: "Fecha", accessor: (invoice: Invoice) => formatDate(invoice.date) },
         { header: "Acciones", accessor: (invoice: Invoice) => (
             <div className="flex items-center gap-2">
                 <button

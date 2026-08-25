@@ -4,104 +4,51 @@ import { CheckCircle2, Clock, AlertCircle, Search, Eye, DollarSign } from "lucid
 import { FeeMobileCard } from "./FeeMobileCard";
 import FeeDetailModal from "@/components/Modals/FeeDetailModal"; // 👈 Tu modal de detalle que armamos
 import { useNavigate } from "react-router";
+import { useQuery } from "convex/react";
+import { api } from "../../../convex/_generated/api";
+import { FullFee } from "../../../convex/fees/types";
 
-interface PaymentRecord {
-  _id: string;
-  date: string;
-  amount: number;
-  method?: string;
-}
 
-interface Fee {
-  _id: string;
-  startedAt: string;
-  closedAt: string;
-  totalAmount: number;
-  paidAmount: number;
-  state: "pending" | "partial" | "paid";
-  child: {
-    _id: string;
-    name: string;
-    dni: string;
-  };
-  payments?: PaymentRecord[];
-}
-
-const MOCK_FEES: Fee[] = [
-  {
-    _id: "1",
-    startedAt: "01/07/2026",
-    closedAt: "31/07/2026",
-    totalAmount: 15000,
-    paidAmount: 15000,
-    state: "paid",
-    child: { _id: "c1", name: "Mateo Gómez", dni: "45123456" },
-    payments: [
-      { _id: "p1", date: "10/07/2026", amount: 15000, method: "Transferencia" }
-    ]
-  },
-  {
-    _id: "2",
-    startedAt: "01/07/2026",
-    closedAt: "31/07/2026",
-    totalAmount: 15000,
-    paidAmount: 5000,
-    state: "partial",
-    child: { _id: "c2", name: "Lucía Pérez", dni: "46789123" },
-    payments: [
-      { _id: "p2", date: "12/07/2026", amount: 5000, method: "Efectivo" }
-    ]
-  },
-  {
-    _id: "3",
-    startedAt: "01/07/2026",
-    closedAt: "31/07/2026",
-    totalAmount: 15000,
-    paidAmount: 0,
-    state: "pending",
-    child: { _id: "c3", name: "Joaquín Benítez", dni: "45987321" },
-    payments: []
-  },
-];
 
 export default function Fees() {
-  const [fees] = useState<Fee[]>(MOCK_FEES);
+  const fees = useQuery(api.fees.queries.getFees);
+
   const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState("");
   const [filterState, setFilterState] = useState<"all" | "pending" | "partial" | "paid">("all");
 
   // Estados para controlar los modales
-  const [selectedFee, setSelectedFee] = useState<Fee | null>(null);
+  const [selectedFee, setSelectedFee] = useState<FullFee | null>(null);
   const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
 
- const handleOpenDetail = (fee: Fee) => {
+  const handleOpenDetail = (fee: FullFee) => {
     setSelectedFee(fee);
     setIsDetailModalOpen(true);
   };
 
- const handleOpenPay = (fee: Fee) => {
+  const handleOpenPay = (fee: FullFee) => {
     setSelectedFee(fee);
-    setIsDetailModalOpen(false); 
+    setIsDetailModalOpen(false);
     navigate(`/Pagos/Nuevo?feeId=${fee._id}`);
   };
 
-  const filteredFees = fees.filter(fee => {
+  const filteredFees = fees?.filter(fee => {
     const matchesSearch = fee.child.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                          fee.child.dni.includes(searchTerm);
+      fee.child.dni.includes(searchTerm);
     const matchesState = filterState === "all" || fee.state === filterState;
     return matchesSearch && matchesState;
   });
 
   const columns = [
-    { header: "N°", accessor: (_: Fee, index: number) => index + 1 },
-    { header: "Explorador", accessor: (fee: Fee) => fee.child.name },
-    { header: "DNI", accessor: (fee: Fee) => fee.child.dni },
-    { header: "Periodo", accessor: (fee: Fee) => `${fee.startedAt} al ${fee.closedAt}` },
-    { header: "Total", accessor: (fee: Fee) => `$${fee.totalAmount.toLocaleString()}` },
-    { header: "Pagado", accessor: (fee: Fee) => `$${fee.paidAmount.toLocaleString()}` },
+    { header: "N°", accessor: (_: FullFee, index: number) => index + 1 },
+    { header: "Explorador", accessor: (fee: FullFee) => fee.child.name },
+    { header: "DNI", accessor: (fee: FullFee) => fee.child.dni },
+    { header: "Periodo", accessor: (fee: FullFee) => `${fee.startedAt} al ${fee.closedAt}` },
+    { header: "Total", accessor: (fee: FullFee) => `$${fee.totalAmount.toLocaleString()}` },
+    { header: "Pagado", accessor: (fee: FullFee) => `$${fee.paidAmount.toLocaleString()}` },
     {
       header: "Estado",
-      accessor: (fee: Fee) => {
+      accessor: (fee: FullFee) => {
         const stateConfig = {
           paid: { label: "Pagada", color: "bg-emerald-100 text-emerald-700", icon: <CheckCircle2 size={14} /> },
           partial: { label: "Parcial", color: "bg-blue-100 text-blue-700", icon: <AlertCircle size={14} /> },
@@ -120,7 +67,7 @@ export default function Fees() {
     },
     {
       header: "Acciones",
-      accessor: (fee: Fee) => {
+      accessor: (fee: FullFee) => {
         const isNotPaid = fee.state !== "paid";
 
         return (
@@ -188,7 +135,7 @@ export default function Fees() {
 
       {/* 🖥️ ESCRITORIO: Renderiza la tabla oficial con la columna de Acciones */}
       <div className="hidden md:block">
-        <List<Fee>
+        <List<FullFee>
           data={filteredFees}
           columns={columns}
           onSearch={setSearchTerm}
@@ -201,7 +148,7 @@ export default function Fees() {
         <div className="relative w-full">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
           <input
-            type="text" 
+            type="text"
             placeholder="Buscar por explorador o DNI..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
@@ -210,11 +157,11 @@ export default function Fees() {
         </div>
 
         <div className="flex flex-col gap-3">
-          {filteredFees.map((fee) => (
-            <FeeMobileCard 
-              key={fee._id} 
-              fee={fee} 
-              onViewDetail={() => handleOpenDetail(fee)} 
+          {filteredFees?.map((fee) => (
+            <FeeMobileCard
+              key={fee._id}
+              fee={fee}
+              onViewDetail={() => handleOpenDetail(fee)}
               onPay={() => handleOpenPay(fee)}
             />
           ))}

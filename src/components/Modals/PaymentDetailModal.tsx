@@ -1,32 +1,22 @@
 import { Pencil, Check } from "lucide-react";
 import { useState } from "react";
 import { Modal } from "../UI/Modal";
+import { FullPayment } from "../../../convex/payments/types";
+import { BaseSelect } from "../UI/BaseSelect";
+import { useQuery, useMutation } from "convex/react";
+import { api } from "../../../convex/_generated/api";
+import { formatDate, formatDateForInput, parseInputDate } from "../../common/dates";
+import { formatFeeLabel } from "../../common/labels";
 
-interface Payment {
-  _id: string;
-  amount: number;
-  date: string;
-  type: "cash" | "transfer";
-  feeId: string;
-  teacherId: string;
-  payslipId?: string | null;
-}
+
 
 interface PaymentDetailModalProps {
-  payment: Payment;
+  payment: FullPayment;
   onClose: () => void;
   initialEditing?: boolean;
-  onSave?: (updatedPayment: Payment) => void;
 }
 
-const AVAILABLE_FEES = [
-  "Cuota 6 - Mateo Brito",
-  "Cuota 7 - Lucía Pérez",
-  "Cuota 8 - Sofía Gómez",
-  "Cuota 9 - Lucas Benítez",
-];
-
-export function PaymentDetailModal({ payment, onClose, initialEditing = false, onSave }: PaymentDetailModalProps) {
+export function PaymentDetailModal({ payment, onClose, initialEditing = false }: PaymentDetailModalProps) {
   const [isEditing, setIsEditing] = useState(initialEditing);
   
   const [formData, setFormData] = useState({
@@ -34,9 +24,17 @@ export function PaymentDetailModal({ payment, onClose, initialEditing = false, o
     date: payment.date,
     type: payment.type,
     feeId: payment.feeId,
-    teacherId: payment.teacherId,
-    payslipId: payment.payslipId ?? "",
   });
+
+  const allFees = useQuery(api.fees.queries.getFees);
+  const updatePayment = useMutation(api.payments.mutations.updatePayment);
+
+  const formattedFees = allFees
+    ?.filter((fee) => fee.state !== "paid" || fee._id === payment.feeId)
+    .map((fee) => ({
+      label: formatFeeLabel(fee),
+      value: fee._id
+    })) || [];
 
   const [errors, setErrors] = useState({
     amount: "",
@@ -45,12 +43,13 @@ export function PaymentDetailModal({ payment, onClose, initialEditing = false, o
     feeId: "",
   });
 
+  // TODO KAREN: updatePayment puede ser rechazado por el servidor (monto mayor al restante, cuota ya pagada); el modal no muestra ningún error y parece que guardó. Agregar try/catch con feedback visual.
   const handleSave = async () => {
     const newErrors = { amount: "", date: "", type: "", feeId: "" };
     let isValid = true;
 
     if (!formData.amount || Number(formData.amount) <= 0) {
-      newErrors.amount = "El monto mayor a 0.";
+      newErrors.amount = "El monto debe ser mayor a 0.";
       isValid = false;
     }
 
@@ -72,16 +71,13 @@ export function PaymentDetailModal({ payment, onClose, initialEditing = false, o
     setErrors(newErrors);
     if (!isValid) return;
 
-    if (onSave) {
-      onSave({
-        ...payment,
-        amount: Number(formData.amount),
-        date: formData.date,
-        type: formData.type,
-        feeId: formData.feeId,
-        teacherId: formData.teacherId,
-      });
-    }
+    await updatePayment({
+      id: payment._id,
+      amount: Number(formData.amount),
+      date: formData.date,
+      type: formData.type,
+      feeId: formData.feeId,
+    });
 
     setIsEditing(false);
     onClose();
@@ -131,16 +127,16 @@ export function PaymentDetailModal({ payment, onClose, initialEditing = false, o
               {isEditing ? (
                 <input
                   type="date"
-                  value={formData.date}
+                  value={formatDateForInput(formData.date)}
                   onChange={(e) => {
-                    setFormData(prev => ({ ...prev, date: e.target.value }));
+                    setFormData(prev => ({ ...prev, date: parseInputDate(e.target.value) }));
                     if (errors.date) setErrors({ ...errors, date: "" });
                   }}
                   className="w-full bg-transparent outline-none font-medium text-slate-800 text-sm"
                 />
               ) : (
                 <p className="text-sm font-medium text-slate-800 pt-1">
-                  {formData.date ? new Date(formData.date + "T00:00:00").toLocaleDateString() : ""}
+                  {formData.date ? formatDate(formData.date) : ""}
                 </p>
               )}
             </div>
@@ -153,63 +149,64 @@ export function PaymentDetailModal({ payment, onClose, initialEditing = false, o
           <label className="text-sm font-semibold text-gray-500">Cuota</label>
           <div className={`border rounded-xl p-4 transition-colors ${isEditing ? "bg-emerald-50 border-emerald-200" : "bg-gray-50 border border-gray-400"}`}>
             {isEditing ? (
-              <select
+              <BaseSelect
+                label="Cuota"
                 value={formData.feeId}
-                onChange={(e) => {
-                  setFormData(prev => ({ ...prev, feeId: e.target.value }));
-                  if (errors.feeId) setErrors({ ...errors, feeId: "" });
-                }}
-                className="w-full bg-transparent outline-none font-bold text-slate-800 text-sm"
-              >
-                <option value="" disabled>Selecciona una cuota</option>
-                {AVAILABLE_FEES.map((fee) => (
-                  <option key={fee} value={fee}>{fee}</option>
-                ))}
-              </select>
+                onChange={(value) => setFormData({
+                  ...formData,
+                  feeId: value
+                })}
+                options={formattedFees}
+                error={errors.feeId}
+              />      
             ) : (
-              <p className="text-sm font-medium text-slate-800">{formData.feeId}</p>
+              <p className="text-sm font-medium text-slate-800">{formatFeeLabel(payment.fee)}</p>
             )}
           </div>
-          {isEditing && errors.feeId && <span className="text-red-500 text-[10px] font-semibold ml-1">{errors.feeId}</span>}
         </div>
 
         {/* Fila 2: Tipo de Pago y Seño (Grid de 2 columnas) */}
         <div className="grid grid-cols-2 gap-4">
           {/* Tipo de Pago */}
           <div className="flex flex-col gap-2">
-            <label className="text-sm font-semibold text-gray-500">Tipo de Pago</label>
-            <div className={`border rounded-xl p-4 transition-colors ${isEditing ? "bg-emerald-50 border-emerald-200" : "bg-gray-50 border border-gray-400"}`}>
-              {isEditing ? (
-                <select
-                  value={formData.type}
-                  onChange={(e) => {
-                    setFormData(prev => ({ ...prev, type: e.target.value as "cash" | "transfer" }));
-                    if (errors.type) setErrors({ ...errors, type: "" });
-                  }}
-                  className="w-full bg-transparent outline-none font-bold text-slate-800 text-sm"
-                >
-                  <option value="cash">Efectivo</option>
-                  <option value="transfer">Transferencia</option>
-                </select>
-              ) : (
-                <p className="text-sm font-bold text-slate-800 uppercase pt-0.5">
-                  {formData.type === "cash" ? "Efectivo" : "Transferencia"}
-                </p>
-              )}
-            </div>
-            {isEditing && errors.type && <span className="text-red-500 text-[10px] font-semibold ml-1">{errors.type}</span>}
+            {isEditing ? (
+              <BaseSelect<"cash" | "transfer">
+                label="Tipo de Pago"
+                value={formData.type}
+                onChange={(type) => {
+                  setFormData(prev => ({ ...prev, type }));
+                  if (errors.type) setErrors({ ...errors, type: "" });
+                }}
+                options={[
+                  { label: "Efectivo", value: "cash" },
+                  { label: "Transferencia", value: "transfer" },
+                ]}
+                error={errors.type}
+              />
+            ) : (
+              <>
+                <label className="text-sm font-semibold text-gray-500">Tipo de Pago</label>
+                <div className="border rounded-xl p-4 bg-gray-50 border border-gray-400">
+                  <p className="text-sm font-bold text-slate-800 uppercase pt-0.5">
+                    {formData.type === "cash" ? "Efectivo" : "Transferencia"}
+                  </p>
+                </div>
+              </>
+            )}
           </div>
 
           {/* Seño / Profesor (Fijo) */}
           <div className="flex flex-col gap-2">
             <label className="text-sm font-semibold text-gray-500">Seño (Creador)</label>
             <div className="border rounded-xl p-4 bg-gray-100 border-gray-300">
-              <p className="text-sm font-medium text-slate-600 truncate pt-1." title={formData.teacherId}>
-                {formData.teacherId}
+              <p className="text-sm font-medium text-slate-600 truncate pt-1.">
+                {payment.teacher.name}
               </p>
             </div>
           </div>
         </div>
+
+        {/* TODO KAREN: el pago tiene payslipId pero nunca se muestra; InvoiceDetailModal renderiza el badge 'Vinculado a liquidación'/'Sin liquidación' (InvoiceDetailModal.tsx:168-181). Replicar ese bloque acá cuando exista vinculación. */}
 
         {/* Botón de Acción */}
         <button

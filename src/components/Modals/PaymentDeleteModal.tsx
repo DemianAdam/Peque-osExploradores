@@ -4,10 +4,10 @@ interface PaymentDeleteModalProps {
     isOpen: boolean; 
     onClose: () => void; 
     onConfirm: () => void;
-    feeId: string; // <--- Sincronizado correctamente
+    label: string;
 }
 
-export function PaymentDeleteModal({ isOpen, onClose, onConfirm, feeId }: PaymentDeleteModalProps) {
+export function PaymentDeleteModal({ isOpen, onClose, onConfirm, label }: PaymentDeleteModalProps) {
     return (
         <Modal 
             title="Eliminar Pago" 
@@ -16,7 +16,7 @@ export function PaymentDeleteModal({ isOpen, onClose, onConfirm, feeId }: Paymen
         >
             <div className="space-y-4">
                 <p className="text-slate-700">
-                    ¿Está seguro que quiere eliminar el pago <strong className="text-slate-900">{feeId}</strong>?
+                    ¿Está seguro que quiere eliminar el pago <strong className="text-slate-900">{label}</strong>?
                 </p>
 
                 {/* Botones de acción personalizados dentro del modal */}

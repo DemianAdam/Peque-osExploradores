@@ -1,6 +1,6 @@
 // sections/Children/ChildrenCreator.tsx
 import { useMutation } from "convex/react";
-import { ChildrenForm } from "../../components/Forms/ChildrenForm";
+import { ChildrenForm } from "../../../Forms/ChildrenForm";
 import { useNavigate } from "react-router";
 import { api } from "../../../convex/_generated/api";
 import type { CreateChildData } from "../../../convex/children/types";
@@ -15,19 +15,19 @@ export default function ChildrenCreator() {
 
       <ChildrenForm
         onSubmit={async (data) => {
-          /* if (!data.groupId) {
+           if (!data.groupId) {
              /*TODO KAREN: 
              Aca valido que se haya seleccionado un grupo, ya que de poder el usuario puede NO SELECCIONAR nada.
              Habria que dejarlo asi, que sale un alerta en el navegador, o habria que validarlo directamente den6tro de ChildrenForm
-             Como veas que sea lo mejor para la UI
+             Como veas que sea lo mejor para la UI*/
              
              alert("Debes seleccionar un grupo para el explorador.");
              return;
-           }*/
+           }
           const createData: CreateChildData = {
             name: data.name,
             dni: data.dni,
-            groupId: data.groupId!,
+            groupId: data.groupId,
           };
           //TODO KAREN: Loading...
           await createChild(createData);

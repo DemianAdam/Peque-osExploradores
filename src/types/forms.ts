@@ -22,5 +22,5 @@ export interface PaymentFormData {
   amount: number;
   date: number;
   type: "cash" | "transfer";
-  feeId: string;
+  feeId: Id<"fees"> | null;
 }

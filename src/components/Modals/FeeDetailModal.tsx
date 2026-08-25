@@ -1,32 +1,12 @@
 import { X, CheckCircle2, Clock, AlertCircle, Calendar, DollarSign } from "lucide-react";
+import { Fee, FullFee } from "../../../convex/fees/types";
 
-interface PaymentRecord {
-  _id: string;
-  date: string;
-  amount: number;
-  method?: string;
-}
-
-interface Fee {
-  _id: string;
-  startedAt: string;
-  closedAt: string;
-  totalAmount: number;
-  paidAmount: number;
-  state: "pending" | "partial" | "paid";
-  child: {
-    _id: string;
-    name: string;
-    dni: string;
-  };
-  payments?: PaymentRecord[];
-}
 
 interface FeeDetailModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onPay?: (fee: Fee) => void; 
-  fee: Fee | null;
+  onPay?: (fee: FullFee) => void; 
+  fee: FullFee | null;
 }
 
 export default function FeeDetailModal({ isOpen, onClose, onPay, fee }: FeeDetailModalProps) {
@@ -121,7 +101,7 @@ export default function FeeDetailModal({ isOpen, onClose, onPay, fee }: FeeDetai
                       </div>
                       <div className="flex flex-col">
                         <span className="text-xs font-bold text-slate-700">Fecha: {payment.date}</span>
-                        <span className="text-[10px] text-gray-400">Método: {payment.method || "Efectivo/Transferencia"}</span>
+                        <span className="text-[10px] text-gray-400">Método: {payment.type || "Efectivo/Transferencia"}</span>
                       </div>
                     </div>
                     <span className="text-sm font-bold text-emerald-600 flex items-center">
