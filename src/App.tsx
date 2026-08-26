@@ -1,52 +1,47 @@
-import {  Authenticated, Unauthenticated } from "convex/react";
+import { Authenticated, Unauthenticated } from "convex/react";
 import { Route, Routes } from "react-router";
-import { ProtectedLayout } from "./ProtectedLayout";
-import Login from './sections/Login';
-import Dashboard from "./components/Dashboard/Dashboard";
-import Payments from "./sections/Payments/Payments";
-import Teachers from "./sections/Teachers";
-import Invoices from "./sections/Invoices/Invoices";
-import Payslips from "./sections/Payslips/Payslips";
-import Groups from "./sections/Groups/Groups";
-import GroupCreator from "./sections/Groups/GroupCreator";
-import Children from "./sections/Children/Children";
-import ChildrenCreator from "./sections/Children/ChildrenCreator";
-import InvoiceCreator from "./sections/Invoices/InvoiceCreator";
-import Fees from "./sections/Fees/Fees";
-import PaymentCreator from "./sections/Payments/PaymentCreator";
-
-
-
+import { ProtectedLayout } from "./app/ProtectedLayout";
+import LoginPage from "./features/auth/pages/LoginPage";
+import DashboardPage from "./features/dashboard/pages/DashboardPage";
+import ChildrenPage from "./features/children/pages/ChildrenPage";
+import ChildrenCreator from "./features/children/pages/ChildrenCreator";
+import GroupsPage from "./features/groups/pages/GroupsPage";
+import GroupCreator from "./features/groups/pages/GroupCreator";
+import TeachersPage from "./features/teachers/pages/TeachersPage";
+import FeesPage from "./features/fees/pages/FeesPage";
+import PaymentsPage from "./features/payments/pages/PaymentsPage";
+import PaymentCreator from "./features/payments/pages/PaymentCreator";
+import InvoicesPage from "./features/invoices/pages/InvoicesPage";
+import InvoiceCreator from "./features/invoices/pages/InvoiceCreator";
+import PayslipsPage from "./features/payslips/pages/PayslipsPage";
 
 export default function App() {
   return (
     <>
       <Unauthenticated>
         <Routes>
-          <Route index element={<Login />} />
+          <Route index element={<LoginPage />} />
         </Routes>
       </Unauthenticated>
 
       <Authenticated>
         <Routes>
           <Route path="/" element={<ProtectedLayout />}>
-            <Route index element={<Dashboard />} />
-            <Route path="chicos" element={<Children />} />
+            <Route index element={<DashboardPage />} />
+            <Route path="chicos" element={<ChildrenPage />} />
             <Route path="chicos/nuevo" element={<ChildrenCreator />} />
-            <Route path="cuotas" element={<Fees />} />
-            <Route path="pagos" element={<Payments />} />
+            <Route path="cuotas" element={<FeesPage />} />
+            <Route path="pagos" element={<PaymentsPage />} />
             <Route path="pagos/nuevo" element={<PaymentCreator />} />
-            <Route path="seños" element={<Teachers />} />
-            <Route path="gastos" element={<Invoices />} />
+            <Route path="seños" element={<TeachersPage />} />
+            <Route path="gastos" element={<InvoicesPage />} />
             <Route path="gastos/nuevo" element={<InvoiceCreator />} />
-            <Route path="liquidaciones" element={<Payslips />} />
-            <Route path="grupos" element={<Groups />} />
+            <Route path="liquidaciones" element={<PayslipsPage />} />
+            <Route path="grupos" element={<GroupsPage />} />
             <Route path="grupos/nuevo" element={<GroupCreator />} />
-
           </Route>
         </Routes>
       </Authenticated>
-      
     </>
   );
 }

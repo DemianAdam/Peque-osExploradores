@@ -9,6 +9,12 @@ export default defineConfig({
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),
+      "@features": path.resolve(__dirname, "./src/features"),
+      "@shared": path.resolve(__dirname, "./src/shared"),
+      "@ui": path.resolve(__dirname, "./src/shared/ui"),
+      "@hooks": path.resolve(__dirname, "./src/shared/hooks"),
+      "@utils": path.resolve(__dirname, "./src/shared/utils"),
+      "@convex": path.resolve(__dirname, "./convex"),
     },
   },
   server:

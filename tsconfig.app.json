@@ -23,9 +23,16 @@
     "noUncheckedSideEffectImports": true,
 
     /* Import paths */
+    "baseUrl": ".",
     "paths": {
-      "@/*": ["./src/*"]
+      "@/*": ["./src/*"],
+      "@features/*": ["./src/features/*"],
+      "@shared/*": ["./src/shared/*"],
+      "@ui/*": ["./src/shared/ui/*"],
+      "@hooks/*": ["./src/shared/hooks/*"],
+      "@utils/*": ["./src/shared/utils/*"],
+      "@convex/*": ["./convex/*"]
     }
   },
-  "include": ["src", "Forms"]
+  "include": ["src"]
 }
