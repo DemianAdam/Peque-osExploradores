@@ -1,5 +1,6 @@
 import InputField from '@ui/InputField';
 import logo from '@/assets/images/logo_pequenos.png';
+import rainbowBg from '@/assets/images/rainbow.avif';
 import { useAuthActions } from '@convex-dev/auth/react';
 
 export default function Login() {
@@ -17,28 +18,30 @@ export default function Login() {
   }
 
   return (
-    <div className="min-h-screen w-full bg-[#C6E5D9] flex flex-col items-center pt-12 px-6">
-
-      <div className="w-full max-w-98.25 flex flex-col items-center">
+    <div 
+      className="min-h-screen w-full flex items-center justify-center px-4 py-8 bg-cover bg-center overflow-y-auto"
+      style={{ backgroundImage: `url(${rainbowBg})` }}
+    >
+      {/* Contenedor tipo Card centrado con ancho controlado y respiro vertical */}
+      <div className="w-full max-w-sm bg-[#C6E5D9]/95 backdrop-blur-md p-6 sm:p-8 rounded-3xl shadow-2xl flex flex-col items-center border border-white/55 my-auto">
 
         {/* Logo */}
         <img
           src={logo}
           alt="Pequeños Exploradores"
-          className="w-64 object-contain mb-8"
+          className="w-48 sm:w-56 object-contain mb-2"
         />
 
         {/* Título */}
-        <h1 className="text-3xl font-bold text-orange-500 mb-8 drop-shadow-sm">
+        <h1 className="text-xl sm:text-2xl font-bold text-orange-500 mb-5 drop-shadow-sm">
           Iniciar Sesión
         </h1>
 
-        {/* Contenedor Visual */}
+        {/* Formulario */}
         <form
-          className="w-full flex flex-col gap-2"
+          className="w-full flex flex-col gap-3.5"
           onSubmit={handleSubmit}
         >
-
           <InputField
             label="Usuario"
             id="username"
@@ -53,11 +56,11 @@ export default function Login() {
           
           <input type='hidden' name='flow' value='signIn' />
 
-          {/* Botón Visual */}
-          <div className="mt-8 flex justify-center">
+          {/* Botón */}
+          <div className="mt-4 flex justify-center">
             <button
               type="submit"
-              className="px-10 py-3 bg-[#F9A8D4] hover:bg-pink-400 text-gray-800 font-bold rounded-full shadow-md transition-all text-xl"
+              className="w-full py-2.5 bg-[#F9A8D4] hover:bg-pink-400 text-gray-800 font-bold rounded-xl shadow-md transition-all text-base cursor-pointer"
             >
               Ingresar
             </button>

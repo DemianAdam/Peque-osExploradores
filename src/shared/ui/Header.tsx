@@ -1,11 +1,23 @@
 import { useState } from "react";
 import logo from "@/assets/images/Logo.png"
 import { Link } from "react-router";
+import { LogOut } from "lucide-react";
+import { useAuthActions } from "@convex-dev/auth/react";
 
 export const Header = () => {
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isMenuOpen, setIsMenuOpen] = useState(false); 
+  const { signOut } = useAuthActions();
+
   const menuLinkClass = "block w-full px-5 py-4 transition-all duration-200 font-medium text-gray-700 hover:bg-pink-100 hover:text-pink-600";
   
+  const handleLogout = async () => {
+    setIsMenuOpen(false);
+    try {
+      await signOut(); 
+    } catch (error) {
+      console.error("Error al cerrar sesión:", error);
+    }
+  };
   
   return (
     <>
@@ -108,10 +120,21 @@ export const Header = () => {
             >
               Liquidaciones
             </Link>
-            
-            
           </nav>
+        
+
+            {/* 🚀 Parte Inferior: Botón de Cerrar Sesión */}
+        <div className="pt-4 border-t border-gray-100">
+          <button
+            onClick={handleLogout}
+            className="w-full flex items-left justify-left gap-2 bg-rose-50 hover:bg-rose-100 text-rose-600 font-bold py-3 px-4 rounded-xl transition-colors cursor-pointer text-sm"
+          >
+            <LogOut size={18} />
+            Cerrar Sesión
+          </button>
         </div>
+      </div>
+          
 
         {/* Fondo traslúcido (Cierra el menú al hacer clic) */}
         <div 

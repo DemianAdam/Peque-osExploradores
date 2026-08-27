@@ -153,7 +153,7 @@ export function InvoiceDetailModal({ invoice, onClose, initialEditing = false }:
                 />
               ) : (
                 <p className="text-lg font-medium text-slate-800">
-                  {formatDate(invoice.date)}
+                  {formatDate(parseInputDate(formData.date))} 
                 </p>
               )}
             </div>
