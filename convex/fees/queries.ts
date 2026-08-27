@@ -1,6 +1,9 @@
 import { zTeacherQuery } from "../zod";
 import { FullFee, Fee } from "./types";
 import { QueryCtx } from "../_generated/server";
+import { zid } from "convex-helpers/server/zod4";
+import z from "zod";
+import { Id } from "../_generated/dataModel";
 
 export async function toFullFee(db: QueryCtx["db"], fee: Fee): Promise<FullFee | null> {
     const child = await db.get("children", fee.childId);
@@ -44,5 +47,16 @@ export const getUnpaidFees = zTeacherQuery({
             .filter((fee): fee is FullFee => fee !== null);
 
         return fullFees;
+    }
+});
+    
+export const getFeeById = zTeacherQuery({
+    args: {
+        feeId: z.string()
+    },
+    handler: async ({ db }, { feeId }) => {
+        const fee = await db.get("fees", feeId as Id<"fees">);
+        if (!fee) return null;
+        return await toFullFee(db, fee);
     }
 });
