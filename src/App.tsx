@@ -1,6 +1,7 @@
 import { useConvexAuth } from "convex/react";
 import { Navigate, Route, Routes } from "react-router";
 import { ProtectedLayout } from "./app/ProtectedLayout";
+import { AuthProvider } from "./app/AuthProvider";
 import LoginPage from "./features/auth/pages/LoginPage";
 import DashboardPage from "./features/dashboard/pages/DashboardPage";
 import ChildrenPage from "./features/children/pages/ChildrenPage";
@@ -16,23 +17,20 @@ import InvoiceCreator from "./features/invoices/pages/InvoiceCreator";
 import PayslipsPage from "./features/payslips/pages/PayslipsPage";
 import { AuthLoadingScreen } from "./shared/components/AuthLoadingScreen";
 
-export default function App() {
+function RoutesContent() {
   const { isAuthenticated, isLoading } = useConvexAuth();
 
-  // Mientras Convex verifica la sesión, mostramos la pantalla de carga
   if (isLoading) {
     return <AuthLoadingScreen />;
   }
 
   return (
     <Routes>
-      {/* 1. RUTA EXPLICITA DE LOGIN */}
-      <Route 
-        path="/login" 
-        element={!isAuthenticated ? <LoginPage /> : <Navigate to="/" replace />} 
+      <Route
+        path="/login"
+        element={!isAuthenticated ? <LoginPage /> : <Navigate to="/" replace />}
       />
 
-      {/* 2. RUTAS PROTEGIDAS (Solo si está autenticado) */}
       {isAuthenticated ? (
         <Route path="/" element={<ProtectedLayout />}>
           <Route index element={<DashboardPage />} />
@@ -49,12 +47,18 @@ export default function App() {
           <Route path="grupos/nuevo" element={<GroupCreator />} />
         </Route>
       ) : (
-        /* Si no está autenticado y entra a cualquier otra ruta, lo mandamos al login */
         <Route path="*" element={<Navigate to="/login" replace />} />
       )}
 
-      {/* Si está autenticado pero pone una ruta inválida, lo mandamos al Dashboard */}
       {isAuthenticated && <Route path="*" element={<Navigate to="/" replace />} />}
     </Routes>
+  );
+}
+
+export default function App() {
+  return (
+    <AuthProvider>
+      <RoutesContent />
+    </AuthProvider>
   );
 }
