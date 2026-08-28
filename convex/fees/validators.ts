@@ -4,7 +4,7 @@ import { stateValidator } from "../common/validators";
 
 export const feeValidator = z.object({
     startedAt: z.string(),
-    closedAt: z.string(),
+    closedAt: z.string().nullable(),
     totalAmount: z.number(),
     state: stateValidator,
     childId: zid("children")
