@@ -7,6 +7,7 @@ import { PayslipDeleteModal } from "@features/payslips/components/PayslipDeleteM
 import { CloseMonthModal } from "@features/payslips/components/CloseMonthModal";
 import { PayslipCard } from "../components/PayslipCard";
 import { PayslipsCalendarView } from "../components/PayslipsCalendarView";
+import { PayslipFeeModal } from "../components/PayslipFeeModal";
 
 interface FullPayslip {
   _id: string;
@@ -47,10 +48,10 @@ export default function Payslips() {
   const [viewMode, setViewMode] = useState<"list" | "calendar">("list");
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedPayslip, setSelectedPayslip] = useState<FullPayslip | null>(null);
-  
   const [isCloseModalOpen, setIsCloseModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
-
+  const [isFeeModalOpen, setIsFeeModalOpen] = useState(false);
+  const [feeAmount, setFeeAmount] = useState<number>(15000);
   const [closeForm, setCloseForm] = useState({
     periodo: "Abril 2026",
     fecha_inicio: "01/04/2026",
@@ -75,7 +76,12 @@ export default function Payslips() {
 
     setPayslips([newPayslip, ...payslips]);
     setIsCloseModalOpen(false);
-    alert("¡Mes cerrado y liquidado exitosamente!");
+    setIsFeeModalOpen(true);
+  };
+  const handleConfirmFeeAndFinalize = () => {
+    console.log("Valor de cuota final:", feeAmount);
+    setIsFeeModalOpen(false);
+    alert(`¡Liquidación completada con éxito! Cuota siguiente periodo: $${feeAmount}`);
   };
 
   const handleConfirmDelete = (id: string) => {
@@ -217,6 +223,16 @@ export default function Payslips() {
             closeForm={closeForm}
             onChangeForm={setCloseForm}
             onConfirm={handleSaveCloseMonth}
+          />
+        )}
+
+        {isFeeModalOpen && (
+          <PayslipFeeModal
+            isOpen={isFeeModalOpen}
+            onClose={() => setIsFeeModalOpen(false)}
+            feeAmount={feeAmount}
+            onFeeChange={setFeeAmount}
+            onConfirm={handleConfirmFeeAndFinalize}
           />
         )}
       </div>
