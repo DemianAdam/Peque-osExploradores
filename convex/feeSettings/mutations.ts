@@ -5,7 +5,7 @@ import { FeeSettingsData } from "./types";
 import { updateFeeSettingsValidator, feeSettingsValidator } from "./validators";
 import { zid } from "convex-helpers/server/zod4";
 
-async function getOrCreateFeeSettings(ctx: MutationCtx): Promise<Id<"feeSettings">> {
+async function getOrCreateFeeSettings(ctx: MutationCtx, teacherId: Id<"teachers">): Promise<Id<"feeSettings">> {
     const existing = await ctx.db.query("feeSettings").first();
     if (existing) return existing._id;
 
@@ -13,8 +13,8 @@ async function getOrCreateFeeSettings(ctx: MutationCtx): Promise<Id<"feeSettings
         feeAmount: 0,
         partnerPercentage: 0,
         updatedAt: Date.now(),
-        updatedBy: ctx.teacher._id,
-    } as FeeSettingsData);
+        updatedBy: teacherId,
+    });
 }
 
 async function updateCurrentPeriodFees(ctx: MutationCtx, newFeeAmount: number) {
@@ -38,20 +38,25 @@ async function updateCurrentPeriodFees(ctx: MutationCtx, newFeeAmount: number) {
 export const updateFeeSettings = zTeacherMutation({
     args: updateFeeSettingsValidator,
     handler: async (ctx, args) => {
-        const settingsId = await getOrCreateFeeSettings(ctx);
+        const settingsId = await getOrCreateFeeSettings(ctx, ctx.teacher._id);
 
-        const updateData: Partial<FeeSettingsData> = {
-            updatedAt: Date.now(),
-            updatedBy: ctx.teacher._id,
-        };
+        let feeAmount;
+        let partnerPercentage;
 
         if (args.feeAmount !== undefined) {
-            updateData.feeAmount = args.feeAmount;
+            feeAmount = args.feeAmount;
             await updateCurrentPeriodFees(ctx, args.feeAmount);
         }
         if (args.partnerPercentage !== undefined) {
-            updateData.partnerPercentage = args.partnerPercentage;
+            partnerPercentage = args.partnerPercentage;
         }
+
+        const updateData = {
+            updatedAt: Date.now(),
+            updatedBy: ctx.teacher._id,
+            feeAmount: feeAmount,
+            partnerPercentage: partnerPercentage
+        };
 
         await ctx.db.patch("feeSettings", settingsId, updateData);
 
@@ -67,11 +72,12 @@ export const createFeeSettings = zTeacherMutation({
             throw new Error("Fee settings already exist. Use updateFeeSettings instead.");
         }
 
+        const date = Date.now();
         const settingsId = await ctx.db.insert("feeSettings", {
             ...args,
-            updatedAt: Date.now(),
+            updatedAt: date,
             updatedBy: ctx.teacher._id,
-        } as FeeSettingsData);
+        });
 
         return await ctx.db.get("feeSettings", settingsId);
     }

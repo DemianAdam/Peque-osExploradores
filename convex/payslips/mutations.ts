@@ -1,5 +1,5 @@
 import { zTeacherMutation } from "../zod";
-import { MutationCtx } from "../_generated/server";
+import { MutationCtx, QueryCtx } from "../_generated/server";
 import { Id } from "../_generated/dataModel";
 import { Payslip, FullPayslip } from "./types";
 import { FeeData } from "../fees/types";
@@ -18,13 +18,14 @@ const deleteLastPayslipValidator = z.object({});
 
 async function getActiveChildren(ctx: MutationCtx): Promise<Child[]> {
     return await ctx.db.query("children")
-        .withIndex("index_group_active", q => q.eq("active", true))
+        .withIndex("index_active", q => q.eq("active", true))
         .collect();
 }
 
-async function getCurrentOpenPayslip(ctx: MutationCtx): Promise<Payslip | null> {
+async function getCurrentOpenPayslip(ctx: QueryCtx, teacherId: Id<"teachers">): Promise<Payslip | null> {
+
     return await ctx.db.query("payslips")
-        .withIndex("index_teacher", q => q.eq("teacherId", ctx.teacher._id))
+        .withIndex("index_teacher", q => q.eq("teacherId", teacherId))
         .filter(q => q.eq(q.field("closedAt"), null))
         .first();
 }
@@ -66,7 +67,7 @@ async function createFeesForPeriod(ctx: MutationCtx, periodStart: string, feeAmo
 export const closePayslip = zTeacherMutation({
     args: closePayslipValidator,
     handler: async (ctx, args): Promise<FullPayslip> => {
-        const currentPayslip = await getCurrentOpenPayslip(ctx);
+        const currentPayslip = await getCurrentOpenPayslip(ctx, ctx.teacher._id);
         if (!currentPayslip) {
             throw new Error("No open payslip found to close");
         }
