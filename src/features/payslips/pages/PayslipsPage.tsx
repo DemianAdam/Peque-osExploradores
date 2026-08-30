@@ -4,94 +4,44 @@ import { List } from "@ui/List";
 import { Eye, Calculator } from "lucide-react";
 import { PayslipDetailModal } from "@features/payslips/components/PayslipDetailModal";
 import { PayslipDeleteModal } from "@features/payslips/components/PayslipDeleteModal";
-import { CloseMonthModal } from "@features/payslips/components/CloseMonthModal";
+
 import { PayslipCard } from "../components/PayslipCard";
 import { PayslipsCalendarView } from "../components/PayslipsCalendarView";
 
-interface FullPayslip {
-  _id: string;
-  periodo: string;
-  fecha_inicio: string;
-  fecha_cierre: string;
-  total_recaudado: number;
-  total_gastos: number;
-  id_seño: string;
-  porcentaje_socio: number;
-}
 
-const MOCK_PAYSLIPS: FullPayslip[] = [
-  {
-    _id: "1",
-    periodo: "Marzo 2026",
-    fecha_inicio: "01/03/2026",
-    fecha_cierre: "31/03/2026",
-    total_recaudado: 450000,
-    total_gastos: 50000,
-    id_seño: "Seño Ana",
-    porcentaje_socio: 30,
-  },
-  {
-    _id: "2",
-    periodo: "Febrero 2026",
-    fecha_inicio: "01/02/2026",
-    fecha_cierre: "28/02/2026",
-    total_recaudado: 380000,
-    total_gastos: 30000,
-    id_seño: "Seño Ana",
-    porcentaje_socio: 30,
-  },
-];
+import { api } from "@convex/_generated/api";
+import { FullPayslip } from "@convex/payslips";
+import ClosePayslipButton from "@/shared/components/ClosePayslipButton";
+import { useQuery } from "convex/react";
+
+
+
 
 export default function Payslips() {
-  const [payslips, setPayslips] = useState<FullPayslip[]>(MOCK_PAYSLIPS);
+  const payslipsData = useQuery(api.payslips.queries.getPayslips) || [];
+  const [payslips, setPayslips] = useState<FullPayslip[]>(payslipsData);
   const [viewMode, setViewMode] = useState<"list" | "calendar">("list");
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedPayslip, setSelectedPayslip] = useState<FullPayslip | null>(null);
-  
-  const [isCloseModalOpen, setIsCloseModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
 
-  const [closeForm, setCloseForm] = useState({
-    periodo: "Abril 2026",
-    fecha_inicio: "01/04/2026",
-    fecha_cierre: "30/04/2026",
-    total_recaudado: 520000,
-    total_gastos: 40000,
-    id_seño: "Seño Ana",
-    porcentaje_socio: 30,
-  });
 
-  const handleSaveCloseMonth = () => {
-    const newPayslip: FullPayslip = {
-      _id: String(Date.now()),
-      periodo: closeForm.periodo,
-      fecha_inicio: closeForm.fecha_inicio,
-      fecha_cierre: closeForm.fecha_cierre,
-      total_recaudado: closeForm.total_recaudado,
-      total_gastos: closeForm.total_gastos,
-      id_seño: closeForm.id_seño,
-      porcentaje_socio: Number(closeForm.porcentaje_socio),
-    };
-
-    setPayslips([newPayslip, ...payslips]);
-    setIsCloseModalOpen(false);
-    alert("¡Mes cerrado y liquidado exitosamente!");
-  };
 
   const handleConfirmDelete = (id: string) => {
     setPayslips(payslips.filter(p => p._id !== id));
     setSelectedPayslip(null);
   };
 
+  /*TODO DEMIAN: search
   const filteredPayslips = payslips.filter(p => 
     p.periodo.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  );*/
 
   const columns = [
-    { header: "Período", accessor: (p: FullPayslip) => p.periodo },
-    { header: "Total Recaudado", accessor: (p: FullPayslip) => `$${p.total_recaudado.toLocaleString()}` },
-    { header: "Total Gastos", accessor: (p: FullPayslip) => `$${p.total_gastos.toLocaleString()}` },
-    { header: "% Socio", accessor: (p: FullPayslip) => `${p.porcentaje_socio}%` },
+    { header: "Período", accessor: (p: FullPayslip) => p.startedAt },
+    { header: "Total Recaudado", accessor: (p: FullPayslip) => `$${p.payments.reduce((sum, payment) => sum + payment.amount, 0).toLocaleString()}` },
+    { header: "Total Gastos", accessor: (p: FullPayslip) => `$${p.invoices.reduce((sum, invoice) => sum + invoice.amount, 0).toLocaleString()}` },
+    { header: "% Socio", accessor: (p: FullPayslip) => `${p.partnerPercentage}%` },
     { 
       header: "Detalle", 
       accessor: (p: FullPayslip) => (
@@ -115,13 +65,7 @@ export default function Payslips() {
 
         {/* Botón de Cierre de Mes */}
         <div className="mb-8">
-          <button
-            onClick={() => setIsCloseModalOpen(true)}
-            className="w-full sm:w-auto bg-pink-500 hover:bg-pink-600 text-white font-bold text-lg px-8 py-4 rounded-2xl shadow-lg transition-all flex items-center justify-center gap-3 active:scale-95"
-          >
-            <Calculator size={26} />
-            Liquidar Mes
-          </button>
+          <ClosePayslipButton />
         </div>
 
         {/* Selector de modo de vista (Lista / Calendario) */}
@@ -149,8 +93,9 @@ export default function Payslips() {
           <div>
             {/* 🖥️ ESCRITORIO: Renderiza la tabla oficial de <List /> */}
             <div className="hidden md:block">
+              //TODO DEMIAN: filtrar
               <List<FullPayslip>
-                data={filteredPayslips}
+                data={payslips}
                 columns={columns}
                 onSearch={(term) => setSearchTerm(term)}
                 searchPlaceholder="Buscar liquidación..."
@@ -168,7 +113,7 @@ export default function Payslips() {
                 className="w-full bg-white border border-gray-200 rounded-xl px-4 py-2.5 text-sm outline-none focus:border-blue-400 transition shadow-sm mb-2"
               />
 
-              {filteredPayslips.map((payslip: FullPayslip, index: number) => (
+              {payslips.map((payslip: FullPayslip, index: number) => (
                 <PayslipCard 
                   key={payslip._id}
                   payslip={payslip} 
@@ -181,7 +126,7 @@ export default function Payslips() {
         ) : (
           /* Vista Calendario (aplica tanto para PC como móvil o según cómo lo maneje tu componente) */
           <PayslipsCalendarView 
-            payslips={filteredPayslips} 
+            payslips={payslips} 
             onSelect={(p) => setSelectedPayslip(p)} 
           />
         )}
@@ -205,20 +150,11 @@ export default function Payslips() {
           <PayslipDeleteModal
             isOpen={isDeleteModalOpen}
             onClose={() => setIsDeleteModalOpen(false)}
-            payslipId={selectedPayslip.periodo}
+            payslipId={selectedPayslip._id}
             onConfirm={() => handleConfirmDelete(selectedPayslip._id)}
           />
         )}
 
-        {isCloseModalOpen && (
-          <CloseMonthModal
-            isOpen={isCloseModalOpen}
-            onClose={() => setIsCloseModalOpen(false)}
-            closeForm={closeForm}
-            onChangeForm={setCloseForm}
-            onConfirm={handleSaveCloseMonth}
-          />
-        )}
       </div>
     </>
   );

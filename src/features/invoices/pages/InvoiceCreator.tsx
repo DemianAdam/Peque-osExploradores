@@ -19,10 +19,8 @@ export default function InvoiceCreator() {
         onSubmit={async (data) => {
           try {
             await createInvoice(data);
-            console.log("Datos del gasto a guardar:", data);
             navigate("/gastos");
           } catch (error) {
-            console.error("No se pudo crear el gasto:", error);
             alert("No se pudo crear el gasto.");
           }
         }}

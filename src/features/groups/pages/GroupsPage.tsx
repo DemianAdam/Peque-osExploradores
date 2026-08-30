@@ -25,7 +25,6 @@ export default function Groups() {
       await deleteGroupMutation({ id: groupToDelete._id });
       setGroupToDelete(null);
     } catch (error) {
-      console.error("No se pudo eliminar el grupo:", error);
       alert("No se puede eliminar el grupo porque tiene chicos asignados o ocurrió un error.");
     }
   };

@@ -11,7 +11,6 @@ import { feeSettingsValidator } from "../feeSettings/validators";
 
 const closePayslipValidator = z.object({
     partnerPercentage: z.number().min(0).max(100),
-    feeAmount: z.number().min(0),
 });
 
 const deleteLastPayslipValidator = z.object({});
@@ -82,13 +81,19 @@ export const closePayslip = zTeacherMutation({
         const totalCollected = payments.reduce((sum, p) => sum + p.amount, 0);
         const totalSpent = invoices.reduce((sum, i) => sum + i.amount, 0);
 
+        const feeSettings = await ctx.db.query("feeSettings").first();
+
+        if(!feeSettings){
+            throw new Error("Fee settings not found. Please configure fee settings before closing the payslip.");
+        }
+
         const closedPayslipId = await ctx.db.insert("payslips", {
             startedAt,
             closedAt,
             totalCollected,
             totalSpent,
             partnerPercentage: args.partnerPercentage,
-            feeAmountUsed: args.feeAmount,
+            feeAmountUsed: feeSettings?.feeAmount,
             teacherId: ctx.teacher._id,
         });
 
@@ -106,11 +111,11 @@ export const closePayslip = zTeacherMutation({
             totalCollected: 0,
             totalSpent: 0,
             partnerPercentage: args.partnerPercentage,
-            feeAmountUsed: args.feeAmount,
+            feeAmountUsed: feeSettings.feeAmount,
             teacherId: ctx.teacher._id,
         });
 
-        await createFeesForPeriod(ctx, closedAt, args.feeAmount);
+        await createFeesForPeriod(ctx, closedAt, feeSettings.feeAmount);
 
         const closedPayslip = await ctx.db.get("payslips", closedPayslipId);
         if (!closedPayslip) throw new Error("Failed to retrieve closed payslip");

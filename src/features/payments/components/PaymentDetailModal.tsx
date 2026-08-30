@@ -84,7 +84,6 @@ export function PaymentDetailModal({ payment, onClose, initialEditing = false }:
         feeId: formData.feeId,
       });
     } catch (error) {
-      console.error("No se pudo guardar el pago:", error);
       alert("No se pudo guardar el pago.");
       return;
     }

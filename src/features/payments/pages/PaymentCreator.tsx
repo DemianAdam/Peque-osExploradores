@@ -24,7 +24,6 @@ export default function PaymentCreator() {
             await createPayment({ ...rest, feeId });
             navigate("/pagos");
           } catch (error) {
-            console.error("No se pudo crear el pago:", error);
             alert("No se pudo crear el pago.");
           }
         }}

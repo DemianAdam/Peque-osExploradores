@@ -70,7 +70,6 @@ export function GroupDetailModal({ group, onClose, initialEditing = false }: Gro
         teacherIds: formData.selectedTeachers.map(t => t._id),
       });
     } catch (error) {
-      console.error("No se pudo guardar el grupo:", error);
       alert("No se pudo guardar el grupo.");
       return;
     }

@@ -78,7 +78,6 @@ export function ChildDetailModal({ child, onClose, initialEditing = false }: Chi
         groupId: formData.groupId
       });
     } catch (error) {
-      console.error("No se pudo guardar el explorador:", error);
       alert("No se pudo guardar el explorador.");
       return;
     }

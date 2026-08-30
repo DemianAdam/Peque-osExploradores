@@ -1,64 +1,68 @@
 import { Modal } from "@ui/Modal";
 import { BaseInput } from "@ui/BaseInput";
+import { api } from "@convex/_generated/api";
+import { useMutation, useQuery } from "convex/react";
+import { useState } from "react";
 
-interface CloseMonthFormState {
-  periodo: string;
-  fecha_inicio: string;
-  fecha_cierre: string;
-  total_recaudado: number;
-  total_gastos: number;
-  id_seño: string;
-  porcentaje_socio: number;
-}
-
-interface CloseMonthModalProps {
+interface ClosePayslipModalProps {
   isOpen: boolean;
-  onClose: () => void;
-  closeForm: CloseMonthFormState;
-  onChangeForm: (updatedForm: CloseMonthFormState) => void;
-  onConfirm: () => void;
+  onClose: (closedPayslip: boolean) => void;
 }
 
-export function CloseMonthModal({
+export function ClosePayslipModal({
   isOpen,
   onClose,
-  closeForm,
-  onChangeForm,
-  onConfirm,
-}: CloseMonthModalProps) {
+}: ClosePayslipModalProps) {
+
+  const closePayslip = useMutation(api.payslips.mutations.closePayslip);
+  const feeConfiguration = useQuery(api.feeSettings.queries.getFeeSettings)?.partnerPercentage ?? 0;
+  const currentPayslip = useQuery(api.payslips.queries.getCurrentPayslip);
+
+  const [partnerPercentage, setPartnerPercentage] = useState(feeConfiguration);
+
+  const handleClosePayslip = async () => {
+    await closePayslip({ partnerPercentage });
+    onClose(true);
+  }
+
+  const handleManualClose = () => {
+    onClose(false);
+  }
+
+
   return (
     <Modal
       isOpen={isOpen}
-      onClose={onClose}
+      onClose={handleManualClose}
       title={<span className="text-pink-500 font-bold">Resumen Cierre de Ciclo</span>}
     >
       <div className="flex flex-col gap-4">
-        
+
         {/* Tarjeta con los datos fijos del cierre */}
         <div className="bg-gray-50 border rounded-xl p-4 flex flex-col gap-2.5 text-sm text-slate-700">
           <div className="flex justify-between">
             <span className="font-semibold text-gray-500">Período:</span>
-            <span className="font-bold text-slate-800">{closeForm.periodo}</span>
+            <span className="font-bold text-slate-800">{currentPayslip?.startedAt}</span>
           </div>
           <div className="flex justify-between">
             <span className="font-semibold text-gray-500">Fecha de Inicio:</span>
-            <span className="font-medium text-slate-800">{closeForm.fecha_inicio}</span>
+            <span className="font-medium text-slate-800">{currentPayslip?.startedAt}</span>
           </div>
           <div className="flex justify-between">
             <span className="font-semibold text-gray-500">Fecha de Cierre:</span>
-            <span className="font-medium text-slate-800">{closeForm.fecha_cierre}</span>
+            <span className="font-medium text-slate-800">{Date.now().toLocaleString()}</span>
           </div>
           <div className="flex justify-between">
             <span className="font-semibold text-gray-500">Total Recaudado:</span>
-            <span className="font-bold text-emerald-600">${closeForm.total_recaudado.toLocaleString()}</span>
+            <span className="font-bold text-emerald-600">${currentPayslip?.payments.reduce((sum, payment) => sum + payment.amount, 0).toLocaleString()}</span>
           </div>
           <div className="flex justify-between">
             <span className="font-semibold text-gray-500">Total Gastos:</span>
-            <span className="font-bold text-red-500">${closeForm.total_gastos.toLocaleString()}</span>
+            <span className="font-bold text-red-500">${currentPayslip?.invoices.reduce((sum, invoice) => sum + invoice.amount, 0).toLocaleString()}</span>
           </div>
           <div className="flex justify-between">
             <span className="font-semibold text-gray-500">Seño Encargada:</span>
-            <span className="font-medium text-slate-800">{closeForm.id_seño}</span>
+            <span className="font-medium text-slate-800">{currentPayslip?.teacher._id}</span>
           </div>
         </div>
 
@@ -66,17 +70,12 @@ export function CloseMonthModal({
         <BaseInput
           label="Porcentaje del Socio (%)"
           type="number"
-          value={closeForm.porcentaje_socio}
-          onChange={(e) =>
-            onChangeForm({
-              ...closeForm,
-              porcentaje_socio: Number(e.target.value),
-            })
-          }
+          value={partnerPercentage}
+          onChange={(e) => setPartnerPercentage(Number(e.target.value))}
         />
 
         <button
-          onClick={onConfirm}
+          onClick={handleClosePayslip}
           className="mt-2 w-full bg-pink-500 hover:bg-pink-600 text-white font-bold py-3 rounded-xl transition shadow-md"
         >
           Confirmar Cierre y Liquidar
@@ -86,4 +85,4 @@ export function CloseMonthModal({
   );
 }
 
-export default CloseMonthModal;
+export default ClosePayslipModal;

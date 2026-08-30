@@ -42,7 +42,6 @@ export const getCurrentPayslip = zTeacherQuery({
     handler: async (ctx): Promise<FullPayslip | null> => {
 
         const payslip = await ctx.db.query("payslips")
-            .withIndex("index_teacher", q => q.eq("teacherId", ctx.teacher._id))
             .filter(q => q.eq(q.field("closedAt"), null))
             .first();
 

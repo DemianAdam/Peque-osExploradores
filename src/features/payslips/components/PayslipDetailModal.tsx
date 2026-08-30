@@ -1,16 +1,8 @@
 import { Trash2 } from "lucide-react";
 import { Modal } from "@ui/Modal";
+import { FullPayslip } from "@convex/payslips";
 
-interface FullPayslip {
-  _id: string;
-  periodo: string;
-  fecha_inicio: string;
-  fecha_cierre: string;
-  total_recaudado: number;
-  total_gastos: number;
-  id_seño: string;
-  porcentaje_socio: number;
-}
+
 
 interface PayslipDetailModalProps {
   payslip: FullPayslip;
@@ -22,7 +14,8 @@ interface PayslipDetailModalProps {
 export function PayslipDetailModal({ payslip, isOpen, onClose, onOpenDeleteModal }: PayslipDetailModalProps) {
   return (
     <Modal 
-      title={<span className="text-pink-500 font-bold">Liquidación: {payslip.periodo}</span>} 
+    //TODO KAREN: formatear periodo
+      title={<span className="text-pink-500 font-bold">Liquidación: {payslip.startedAt}</span>} 
       isOpen={isOpen} 
       onClose={onClose}
     >
@@ -32,31 +25,32 @@ export function PayslipDetailModal({ payslip, isOpen, onClose, onOpenDeleteModal
         <div className="bg-gray-50 border rounded-xl p-4 flex flex-col gap-3 text-sm text-slate-700">
           <div className="flex justify-between">
             <span className="font-semibold text-gray-500">Período:</span>
-            <span className="font-bold text-slate-800">{payslip.periodo}</span>
+            //TODO KAREN: formatear periodo
+            <span className="font-bold text-slate-800">{payslip.startedAt}</span>
           </div>
           <div className="flex justify-between">
             <span className="font-semibold text-gray-500">Fecha de Inicio:</span>
-            <span className="font-medium text-slate-800">{payslip.fecha_inicio}</span>
+            <span className="font-medium text-slate-800">{payslip.startedAt}</span>
           </div>
           <div className="flex justify-between">
             <span className="font-semibold text-gray-500">Fecha de Cierre:</span>
-            <span className="font-medium text-slate-800">{payslip.fecha_cierre}</span>
+            <span className="font-medium text-slate-800">{payslip.closedAt}</span>
           </div>
           <div className="flex justify-between">
             <span className="font-semibold text-gray-500">Total Recaudado:</span>
-            <span className="font-bold text-emerald-600">${payslip.total_recaudado.toLocaleString()}</span>
+            <span className="font-bold text-emerald-600">${payslip.payments.reduce((sum, payment) => sum + payment.amount, 0).toLocaleString()}</span>
           </div>
           <div className="flex justify-between">
             <span className="font-semibold text-gray-500">Total Gastos:</span>
-            <span className="font-bold text-red-500">${payslip.total_gastos.toLocaleString()}</span>
+            <span className="font-bold text-red-500">${payslip.invoices.reduce((sum, invoice) => sum + invoice.amount, 0).toLocaleString()}</span>
           </div>
           <div className="flex justify-between">
             <span className="font-semibold text-gray-500">Porcentaje del Socio:</span>
-            <span className="font-bold text-slate-800">{payslip.porcentaje_socio}%</span>
+            <span className="font-bold text-slate-800">{payslip.partnerPercentage}%</span>
           </div>
           <div className="flex justify-between">
             <span className="font-semibold text-gray-500">Seño Encargada:</span>
-            <span className="font-medium text-slate-800">{payslip.id_seño}</span>
+            <span className="font-medium text-slate-800">{payslip.teacherId}</span>
           </div>
         </div>
 

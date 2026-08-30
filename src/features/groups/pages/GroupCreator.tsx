@@ -17,7 +17,6 @@ export default function GroupCreator() {
         onSubmit={async (data) => {
           try {
             await createGroupWithTeachers(data);
-            console.log("Datos del grupo a guardar:", data);
             navigate("/grupos");
           } catch (error) {
             console.error("No se pudo crear el grupo:", error);

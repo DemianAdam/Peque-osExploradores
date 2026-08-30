@@ -1,13 +1,5 @@
-interface FullPayslip {
-  _id: string;
-  periodo: string;
-  fecha_inicio: string;
-  fecha_cierre: string;
-  total_recaudado: number;
-  total_gastos: number;
-  id_seño: string;
-  porcentaje_socio: number;
-}
+import { FullPayslip } from "@convex/payslips";
+
 
 interface PayslipsCalendarViewProps {
   payslips: FullPayslip[];
@@ -19,7 +11,7 @@ export function PayslipsCalendarView({ payslips, onSelect }: PayslipsCalendarVie
     <div className="grid grid-cols-3 gap-1.5 sm:gap-4">
       {payslips.map((payslip, index) => {
         const isLatest = index === 0;
-        const neto = payslip.total_recaudado - payslip.total_gastos;
+        const neto = payslip.payments.reduce((sum, payment) => sum + payment.amount, 0) - payslip.invoices.reduce((sum, invoice) => sum + invoice.amount, 0);
 
         return (
           <div
@@ -37,11 +29,12 @@ export function PayslipsCalendarView({ payslips, onSelect }: PayslipsCalendarVie
                 <div className={`w-6 h-6 sm:w-9 sm:h-9 rounded-lg sm:rounded-xl flex items-center justify-center font-bold text-[10px] sm:text-xs uppercase shrink-0 ${
                   isLatest ? "bg-pink-500 text-white" : "bg-slate-100 text-slate-700"
                 }`}>
-                  {payslip.periodo.slice(0, 3)}
+                  //TODO KAREN: formatear periodo
+                  {payslip.startedAt}
                 </div>
                 <div className="overflow-hidden">
-                  <h4 className="font-bold text-slate-800 text-[11px] sm:text-sm truncate">{payslip.periodo}</h4>
-                  <span className="text-[9px] sm:text-[10px] text-gray-400 truncate block">Socio: {payslip.porcentaje_socio}%</span>
+                  <h4 className="font-bold text-slate-800 text-[11px] sm:text-sm truncate">{payslip.startedAt}</h4>
+                  <span className="text-[9px] sm:text-[10px] text-gray-400 truncate block">Socio: {payslip.partnerPercentage}%</span>
                 </div>
               </div>
 
@@ -58,11 +51,11 @@ export function PayslipsCalendarView({ payslips, onSelect }: PayslipsCalendarVie
             <div className="bg-gray-50 p-1.5 sm:p-2.5 rounded-lg sm:rounded-xl flex flex-col sm:grid sm:grid-cols-3 gap-1 text-left sm:text-center">
               <div>
                 <span className="text-[7px] sm:text-[8px] uppercase tracking-wider text-gray-400 font-bold block">Ingresos</span>
-                <span className="text-[10px] sm:text-xs font-bold text-emerald-600 truncate block">${payslip.total_recaudado.toLocaleString()}</span>
+                <span className="text-[10px] sm:text-xs font-bold text-emerald-600 truncate block">${payslip.payments.reduce((sum, payment) => sum + payment.amount, 0).toLocaleString()}</span>
               </div>
               <div className="sm:border-x sm:border-gray-200 pt-1 sm:pt-0 border-t border-gray-200/60 sm:border-t-0">
                 <span className="text-[7px] sm:text-[8px] uppercase tracking-wider text-gray-400 font-bold block">Gastos</span>
-                <span className="text-[10px] sm:text-xs font-bold text-rose-500 truncate block">${payslip.total_gastos.toLocaleString()}</span>
+                <span className="text-[10px] sm:text-xs font-bold text-rose-500 truncate block">${payslip.invoices.reduce((sum, invoice) => sum + invoice.amount, 0).toLocaleString()}</span>
               </div>
               <div className="pt-1 sm:pt-0 border-t border-gray-200/60 sm:border-t-0">
                 <span className="text-[7px] sm:text-[8px] uppercase tracking-wider text-gray-400 font-bold block">Neto</span>

@@ -1,15 +1,7 @@
+import { FullPayslip } from "@convex/payslips";
 import { Eye, Calendar} from "lucide-react";
 
-interface FullPayslip {
-  _id: string;
-  periodo: string;
-  fecha_inicio: string;
-  fecha_cierre: string;
-  total_recaudado: number;
-  total_gastos: number;
-  id_seño: string;
-  porcentaje_socio: number;
-}
+
 
 interface PayslipCardProps {
   payslip: FullPayslip;
@@ -34,7 +26,8 @@ export function PayslipCard({ payslip, isLatest, onSelect }: PayslipCardProps) {
           </div>
           <div>
             <span className="text-xs text-gray-400 block font-medium">Período</span>
-            <h4 className="text-base font-bold text-slate-800">{payslip.periodo}</h4>
+            //TODO KAREN: formatear periodo
+            <h4 className="text-base font-bold text-slate-800">{payslip.startedAt}</h4>
           </div>
         </div>
 
@@ -47,27 +40,27 @@ export function PayslipCard({ payslip, isLatest, onSelect }: PayslipCardProps) {
 
       {/* Rango de fechas */}
       <div className="text-xs text-slate-500 bg-gray-50 px-3 py-1.5 rounded-xl flex items-center justify-between">
-        <span>Desde: <strong className="text-slate-700">{payslip.fecha_inicio}</strong></span>
-        <span>Hasta: <strong className="text-slate-700">{payslip.fecha_cierre}</strong></span>
+        <span>Desde: <strong className="text-slate-700">{payslip.startedAt}</strong></span>
+        <span>Hasta: <strong className="text-slate-700">{payslip.closedAt}</strong></span>
       </div>
 
       {/* Métricas clave en minigrid */}
       <div className="grid grid-cols-2 gap-2 pt-1 border-t border-gray-100">
         <div className="bg-emerald-50/50 p-2.5 rounded-2xl border border-emerald-100/60">
           <span className="text-[11px] text-emerald-600 font-medium block">Recaudado</span>
-          <span className="text-sm font-bold text-emerald-700">${payslip.total_recaudado.toLocaleString()}</span>
+          <span className="text-sm font-bold text-emerald-700">${payslip.payments.reduce((sum, payment) => sum + payment.amount, 0).toLocaleString()}</span>
         </div>
 
         <div className="bg-rose-50/50 p-2.5 rounded-2xl border border-rose-100/60">
           <span className="text-[11px] text-rose-600 font-medium block">Gastos</span>
-          <span className="text-sm font-bold text-rose-700">${payslip.total_gastos.toLocaleString()}</span>
+          <span className="text-sm font-bold text-rose-700">${payslip.invoices.reduce((sum, invoice) => sum + invoice.amount, 0).toLocaleString()}</span>
         </div>
       </div>
 
       {/* Pie de la Card: Porcentaje y botón detalle */}
       <div className="flex justify-between items-center pt-2">
         <div className="text-xs text-slate-500">
-          Socio: <strong className="text-slate-800">{payslip.porcentaje_socio}%</strong>
+          Socio: <strong className="text-slate-800">{payslip.partnerPercentage}%</strong>
         </div>
 
         <button 

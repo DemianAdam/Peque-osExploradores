@@ -68,7 +68,6 @@ export function InvoiceDetailModal({ invoice, onClose, initialEditing = false }:
         date: newDateTimestamp,
       });
     } catch (error) {
-      console.error("No se pudo guardar el gasto:", error);
       alert("No se pudo guardar el gasto.");
       return;
     }

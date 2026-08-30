@@ -12,8 +12,6 @@ export const getCurrentTeacher = zQuery({
         } catch  {
             currentTeacher = null;
         }
-
-        console.log("Current Teacher:", currentTeacher);
         return currentTeacher;
     }
 })

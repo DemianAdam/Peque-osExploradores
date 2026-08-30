@@ -1,9 +1,7 @@
 import { zTeacherMutation } from "../zod";
 import { MutationCtx } from "../_generated/server";
 import { Id } from "../_generated/dataModel";
-import { FeeSettingsData } from "./types";
 import { updateFeeSettingsValidator, feeSettingsValidator } from "./validators";
-import { zid } from "convex-helpers/server/zod4";
 
 async function getOrCreateFeeSettings(ctx: MutationCtx, teacherId: Id<"teachers">): Promise<Id<"feeSettings">> {
     const existing = await ctx.db.query("feeSettings").first();
@@ -39,17 +37,21 @@ export const updateFeeSettings = zTeacherMutation({
     args: updateFeeSettingsValidator,
     handler: async (ctx, args) => {
         const settingsId = await getOrCreateFeeSettings(ctx, ctx.teacher._id);
+        const settings = await ctx.db.get("feeSettings", settingsId);
 
-        let feeAmount;
-        let partnerPercentage;
+        let feeAmount = settings?.feeAmount;
+        let partnerPercentage = settings?.partnerPercentage;
 
         if (args.feeAmount !== undefined) {
             feeAmount = args.feeAmount;
             await updateCurrentPeriodFees(ctx, args.feeAmount);
         }
+
         if (args.partnerPercentage !== undefined) {
             partnerPercentage = args.partnerPercentage;
         }
+
+        console.log("test", feeAmount, partnerPercentage);
 
         const updateData = {
             updatedAt: Date.now(),
