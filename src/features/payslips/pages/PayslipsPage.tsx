@@ -1,10 +1,9 @@
 "use client";
 import { useState } from "react";
 import { List } from "@ui/List";
-import { Eye, Calculator } from "lucide-react";
+import { Eye } from "lucide-react";
 import { PayslipDetailModal } from "@features/payslips/components/PayslipDetailModal";
 import { PayslipDeleteModal } from "@features/payslips/components/PayslipDeleteModal";
-
 import { PayslipCard } from "../components/PayslipCard";
 import { PayslipsCalendarView } from "../components/PayslipsCalendarView";
 

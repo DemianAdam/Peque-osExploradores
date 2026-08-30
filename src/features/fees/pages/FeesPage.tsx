@@ -1,14 +1,14 @@
 import { useState } from "react";
 import { List } from "@ui/List";
 import { CheckCircle2, Clock, AlertCircle, Search, Eye, DollarSign } from "lucide-react";
-import { FeeCard } from "../components/FeeCard";
+
 import { FeeDetailModal } from "@features/fees/components/FeeDetailModal";
 import { useNavigate } from "react-router";
 import { useQuery } from "convex/react";
 import { api } from "@convex/_generated/api";
 import { FullFee } from "@shared/types/convex";
-
-
+import { ActivePeriodCard } from "../components/ActivePeriodCard";
+import FeeCard from "../components/FeeCard";
 
 export default function Fees() {
   const fees = useQuery(api.fees.queries.getFees);
@@ -21,6 +21,11 @@ export default function Fees() {
   const [selectedFee, setSelectedFee] = useState<FullFee | null>(null);
   const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
 
+  const activePeriod = fees && fees.length > 0 ? fees[0].startedAt : "Sin período activo";
+  const activeFeeAmount = fees && fees.length > 0 ? fees[0].totalAmount : 0;
+  const [editableFeeAmount, setEditableFeeAmount] = useState<number>(activeFeeAmount);
+  
+  
   const handleOpenDetail = (fee: FullFee) => {
     setSelectedFee(fee);
     setIsDetailModalOpen(true);
@@ -43,7 +48,22 @@ export default function Fees() {
     { header: "N°", accessor: (_: FullFee, index: number) => index + 1 },
     { header: "Explorador", accessor: (fee: FullFee) => fee.child.name },
     { header: "DNI", accessor: (fee: FullFee) => fee.child.dni },
-    { header: "Periodo", accessor: (fee: FullFee) => `${fee.startedAt} al ${fee.closedAt}` },
+    { 
+      header: "Periodo", 
+      accessor: (fee: FullFee) => {
+        // Si no tiene fecha de cierre, mostramos un badge destacado "En curso"
+        if (!fee.closedAt) {
+          return (
+            <span className="bg-purple-100 text-purple-700 px-3 py-1 rounded-full text-xs font-bold inline-flex items-center gap-1.5 shadow-2xs">
+              <span className="w-2 h-2 rounded-full bg-purple-500 animate-pulse"></span>
+              Desde {fee.startedAt} (En curso)
+            </span>
+          );
+        }
+        // Si ya está cerrado, muestra el rango normal
+        return `${fee.startedAt} al ${fee.closedAt}`;
+      }
+    },
     { header: "Total", accessor: (fee: FullFee) => `$${fee.totalAmount.toLocaleString()}` },
     { header: "Pagado", accessor: (fee: FullFee) => `$${fee.paidAmount.toLocaleString()}` },
     {
@@ -103,6 +123,11 @@ export default function Fees() {
       <h2 className="font-angkor text-[40px] text-[#1E293B] font-normal mb-2 text-left">LISTA</h2>
       <h3 className="text-4xl font-bold text-blue-500 mb-6 drop-shadow-sm text-left">Cuotas</h3>
 
+      <ActivePeriodCard 
+        startedAt={activePeriod}
+        feeAmount={editableFeeAmount || activeFeeAmount}
+        onFeeChange={setEditableFeeAmount}
+      />
       {/* Barra de Filtros por Estado */}
       <div className="flex flex-col md:flex-row justify-between items-stretch md:items-center gap-4 mb-6">
         <div className="flex flex-wrap items-center bg-white border border-gray-200 p-1 rounded-xl text-sm font-semibold text-gray-600 shadow-sm self-start md:self-auto">
@@ -157,14 +182,22 @@ export default function Fees() {
         </div>
 
         <div className="flex flex-col gap-3">
-          {filteredFees?.map((fee: FullFee) => (
-            <FeeCard
-              key={fee._id}
-              fee={fee}
-              onViewDetail={() => handleOpenDetail(fee)}
-              onPay={() => handleOpenPay(fee)}
-            />
-          ))}
+          {filteredFees?.map((fee: FullFee) => {
+            // Creamos un objeto seguro donde adaptamos closedAt usando la misma lógica
+            const safeFee = {
+              ...fee,
+              closedAt: fee.closedAt ? fee.closedAt : `(En curso)`, 
+            };
+
+            return (
+              <FeeCard
+                key={safeFee._id}
+                fee={safeFee}
+                onViewDetail={() => handleOpenDetail(fee)}
+                onPay={() => handleOpenPay(fee)}
+              />
+            );
+          })}
         </div>
       </div>
 
@@ -172,7 +205,7 @@ export default function Fees() {
       <FeeDetailModal
         isOpen={isDetailModalOpen}
         onClose={() => setIsDetailModalOpen(false)}
-        onPay={handleOpenPay} // 👈 Al hacer clic en pagar acá, dispara handleOpenPay
+        onPay={handleOpenPay} 
         fee={selectedFee}
       />
 

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { FormLayout } from "./FormLayout";
 import { BaseInput } from "@ui/BaseInput";
 import { PaymentFormData } from "@shared/types/forms";
@@ -7,23 +7,23 @@ import { useQuery } from "convex/react";
 import { api } from "../../../convex/_generated/api";
 import { formatDateForInput, parseInputDate } from "@utils/dates";
 import { formatFeeLabel } from "@utils/labels";
+import { Id } from "@convex/_generated/dataModel";
+
 
 interface PaymentFormProps {
     onSubmit: (data: PaymentFormData) => void;
+    initialFeeId?: string;
+    initialAmount?: number;
 }
 
-
-// Evaluated once at module load — keeps the form prefilled with "today" without
-// calling impure functions during render (react-hooks/purity). If the app stays
-// open across midnight, this snapshot may be from yesterday.
 const TODAY = Date.now();
 
-export function PaymentForm({ onSubmit }: PaymentFormProps) {
+export function PaymentForm({ onSubmit, initialFeeId, initialAmount }: PaymentFormProps) {
     const [formData, setFormData] = useState<PaymentFormData>({
-        amount: 0,
+        amount: initialAmount || 0,
         date: TODAY,
         type: "cash",
-        feeId: null,
+        feeId: (initialFeeId as Id<"fees">) || null,
     });
 
     const [errors, setErrors] = useState({
@@ -32,14 +32,43 @@ export function PaymentForm({ onSubmit }: PaymentFormProps) {
         type: "",
         feeId: "",
     });
+
     const unpaidFees = useQuery(api.fees.queries.getUnpaidFees);
-    // TODO KAREN: si no hay cuotas pendientes el selector queda vacío sin mensaje (todavía no existe flujo de creación de cuotas). Agregar empty-state.
-    // TODO KAREN: unpaidFees ya trae paidAmount: validar/cap el monto contra (totalAmount - paidAmount) antes de enviar, porque hoy los rechazos del servidor no se muestran en la UI.
 
     const formattedFees = unpaidFees?.map((f) => ({
         label: formatFeeLabel(f),
         value: f._id
     })) || [];
+
+    // 💡 EFECTO INTELIGENTE: Si cambian los props iniciales (por ejemplo, al venir desde la tabla de cuotas), 
+    // actualizamos el estado del formulario de manera sincronizada.
+    useEffect(() => {
+        if (initialFeeId) {
+            setFormData(prev => ({
+                ...prev,
+                feeId: initialFeeId as Id<"fees">,
+                amount: initialAmount !== undefined ? initialAmount : prev.amount
+            }));
+        }
+    }, [initialFeeId, initialAmount]);
+
+    const handleFeeChange = (selectedFeeId: string) => {
+        const selectedFee = unpaidFees?.find(f => f._id === selectedFeeId);
+        
+        if (selectedFee) {
+            const remainingBalance = selectedFee.totalAmount - (selectedFee.paidAmount || 0);
+            setFormData(prev => ({
+                ...prev,
+                feeId: selectedFeeId as Id<"fees">, // 👈 Casteo explícito aquí
+                amount: remainingBalance > 0 ? remainingBalance : 0
+            }));
+        } else {
+            setFormData(prev => ({ 
+                ...prev, 
+                feeId: selectedFeeId as Id<"fees"> // 👈 Y aquí también
+            }));
+        }
+    };
 
     const handleSave = () => {
         const newErrors = {
@@ -92,10 +121,7 @@ export function PaymentForm({ onSubmit }: PaymentFormProps) {
             <BaseSelect
                 label="Cuota"
                 value={formData.feeId ?? ""}
-                onChange={(value) => setFormData({
-                    ...formData,
-                    feeId: value
-                })}
+                onChange={handleFeeChange}
                 options={formattedFees}
                 error={errors.feeId}
             />
