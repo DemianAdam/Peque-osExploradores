@@ -47,13 +47,11 @@ export const updateFeeSettings = zTeacherMutation({
             await updateCurrentPeriodFees(ctx, args.feeAmount);
         }
 
-        if (args.partnerPercentage !== undefined) {
-            partnerPercentage = args.partnerPercentage;
-        }
+if (args.partnerPercentage !== undefined) {
+        partnerPercentage = args.partnerPercentage;
+    }
 
-        console.log("test", feeAmount, partnerPercentage);
-
-        const updateData = {
+    const updateData = {
             updatedAt: Date.now(),
             updatedBy: ctx.teacher._id,
             feeAmount: feeAmount,

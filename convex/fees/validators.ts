@@ -3,8 +3,8 @@ import z from "zod";
 import { stateValidator } from "../common/validators";
 
 export const feeValidator = z.object({
-    startedAt: z.string(),
-    closedAt: z.string().nullable(),
+    startedAt: z.number(),
+    closedAt: z.number().nullable(),
     totalAmount: z.number(),
     state: stateValidator,
     childId: zid("children")
