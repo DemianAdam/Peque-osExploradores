@@ -1,3 +1,4 @@
+import { formatPeriod } from "@/shared/utils/dates";
 import { FullPayslip } from "@convex/payslips";
 
 
@@ -29,8 +30,7 @@ export function PayslipsCalendarView({ payslips, onSelect }: PayslipsCalendarVie
                 <div className={`w-6 h-6 sm:w-9 sm:h-9 rounded-lg sm:rounded-xl flex items-center justify-center font-bold text-[10px] sm:text-xs uppercase shrink-0 ${
                   isLatest ? "bg-pink-500 text-white" : "bg-slate-100 text-slate-700"
                 }`}>
-                  //TODO KAREN: formatear periodo
-                  {payslip.startedAt}
+                  {formatPeriod(payslip.startedAt)}
                 </div>
                 <div className="overflow-hidden">
                   <h4 className="font-bold text-slate-800 text-[11px] sm:text-sm truncate">{payslip.startedAt}</h4>

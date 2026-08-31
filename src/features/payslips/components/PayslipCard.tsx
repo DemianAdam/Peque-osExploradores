@@ -1,3 +1,4 @@
+import { formatPeriod } from "@/shared/utils/dates";
 import { FullPayslip } from "@convex/payslips";
 import { Eye, Calendar} from "lucide-react";
 
@@ -26,8 +27,7 @@ export function PayslipCard({ payslip, isLatest, onSelect }: PayslipCardProps) {
           </div>
           <div>
             <span className="text-xs text-gray-400 block font-medium">Período</span>
-            //TODO KAREN: formatear periodo
-            <h4 className="text-base font-bold text-slate-800">{payslip.startedAt}</h4>
+            <h4 className="text-base font-bold text-slate-800">{formatPeriod(payslip.startedAt)}</h4>
           </div>
         </div>
 

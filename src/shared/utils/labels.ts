@@ -1,6 +1,7 @@
 import { FullFee } from "../../../convex/fees/types";
+import { formatPeriod } from "@utils/dates"; 
 
 export function formatFeeLabel(fee: FullFee): string {
-    // TODO KAREN: startedAt se imprime tal cual viene de la BD; definir el formato legible del periodo.
-    return `${fee.startedAt} - (${fee.child.name})`;
+    const periodText = fee.startedAt ? formatPeriod(fee.startedAt) : "Período desconocido";
+    return `${periodText} - (${fee.child.name})`;
 }

@@ -1,6 +1,7 @@
 import { Trash2 } from "lucide-react";
 import { Modal } from "@ui/Modal";
 import { FullPayslip } from "@convex/payslips";
+import { formatPeriod } from "@/shared/utils/dates";
 
 
 
@@ -14,8 +15,7 @@ interface PayslipDetailModalProps {
 export function PayslipDetailModal({ payslip, isOpen, onClose, onOpenDeleteModal }: PayslipDetailModalProps) {
   return (
     <Modal 
-    //TODO KAREN: formatear periodo
-      title={<span className="text-pink-500 font-bold">Liquidación: {payslip.startedAt}</span>} 
+      title={<span className="text-pink-500 font-bold">Liquidación: {formatPeriod(payslip.startedAt)}</span>} 
       isOpen={isOpen} 
       onClose={onClose}
     >
@@ -25,8 +25,7 @@ export function PayslipDetailModal({ payslip, isOpen, onClose, onOpenDeleteModal
         <div className="bg-gray-50 border rounded-xl p-4 flex flex-col gap-3 text-sm text-slate-700">
           <div className="flex justify-between">
             <span className="font-semibold text-gray-500">Período:</span>
-            //TODO KAREN: formatear periodo
-            <span className="font-bold text-slate-800">{payslip.startedAt}</span>
+            <span className="font-bold text-slate-800">{formatPeriod(payslip.startedAt)}</span>
           </div>
           <div className="flex justify-between">
             <span className="font-semibold text-gray-500">Fecha de Inicio:</span>
