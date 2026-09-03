@@ -55,7 +55,7 @@ export function ClosePayslipModal({
   const totalPartner = useMemo(() => {
     if (!currentPayslip) return 0;
     return subtotal * (partnerPercentage / 100);
-  }, [subtotal, partnerPercentage]);
+  }, [subtotal, partnerPercentage, currentPayslip]);
 
   const totalNet = useMemo(() => subtotal - totalPartner, [subtotal, totalPartner]);
 

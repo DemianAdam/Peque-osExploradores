@@ -63,7 +63,12 @@ export default function Fees() {
           );
         }
         // Si ya está cerrado, muestra el rango normal
-        return `${startFormatted} al ${formatDateOnly(fee.payslip.closedAt)}`;
+        const endFormatted = formatDateOnly(fee.payslip.closedAt);
+       return(
+        <span className="bg-gray-100 text-gray-700 px-3 py-1 rounded-full text-xs font-bold inline-flex items-center gap-1.5 shadow-2xs">
+          {startFormatted} - {endFormatted}
+        </span>
+       )
       }
     },
     { header: "Total", accessor: (fee: FullFee) => `$${fee.totalAmount.toLocaleString()}` },
