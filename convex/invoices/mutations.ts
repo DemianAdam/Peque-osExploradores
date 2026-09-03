@@ -1,15 +1,20 @@
 import { zTeacherMutation } from "../zod";
 import { InvoiceData } from "./types";
 import { createInvoiceValidator, updateInvoiceValidator, deleteInvoiceValidator } from "./validators";
+import { getCurrentOpenPayslip } from "../payslips/functions";
 
 export const createInvoice = zTeacherMutation({
     args: createInvoiceValidator,
     handler: async (ctx, args) => {
+        const currentPayslip = await getCurrentOpenPayslip(ctx);
+        if (!currentPayslip) {
+            throw new Error("No open payslip found. Cannot create invoice without a payslip.");
+        }
 
         const newInvoice: InvoiceData = {
             ...args,
             teacherId: ctx.teacher._id,
-            payslipId: null,
+            payslipId: currentPayslip._id,
         };
 
         await ctx.db.insert("invoices", newInvoice);

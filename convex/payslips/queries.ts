@@ -1,32 +1,14 @@
 import { zTeacherQuery } from "../zod";
-import { QueryCtx } from "../_generated/server";
 import { Id } from "../_generated/dataModel";
-import { FullPayslip, Payslip } from "./types";
-import { Payment } from "../payments/types";
-import { Invoice } from "../invoices/types";
-import { Teacher } from "../teachers/types";
+import { FullPayslip } from "./types";
 import z from "zod";
-
-async function toFullPayslip(ctx: QueryCtx, payslip: Payslip): Promise<FullPayslip | null> {
-    const teacher = await ctx.db.get("teachers", payslip.teacherId);
-    if (!teacher) return null;
-
-    const payments = await ctx.db.query("payments")
-        .withIndex("index_payslip", q => q.eq("payslipId", payslip._id))
-        .collect();
-
-    const invoices = await ctx.db.query("invoices")
-        .withIndex("index_payslip", q => q.eq("payslipId", payslip._id))
-        .collect();
-
-    return { ...payslip, teacher, payments, invoices };
-}
+import { getCurrentOpenPayslip, toFullPayslip } from "./functions";
 
 export const getPayslips = zTeacherQuery({
     args: {},
     handler: async (ctx): Promise<FullPayslip[]> => {
         const payslips = await ctx.db.query("payslips")
-            .withIndex("index_teacher", q => q.eq("teacherId", ctx.teacher._id))
+            .withIndex("index_closedByTeacher", q => q.eq("closedByTeacher", ctx.teacher._id))
             .order("desc")
             .collect();
 
@@ -40,14 +22,7 @@ export const getPayslips = zTeacherQuery({
 export const getCurrentPayslip = zTeacherQuery({
     args: {},
     handler: async (ctx): Promise<FullPayslip | null> => {
-
-        const payslip = await ctx.db.query("payslips")
-            .filter(q => q.eq(q.field("closedAt"), null))
-            .first();
-
-        if (!payslip) return null;
-
-        return await toFullPayslip(ctx, payslip);
+        return await getCurrentOpenPayslip(ctx);
     }
 });
 
@@ -65,7 +40,7 @@ export const getPayslipsByTeacher = zTeacherQuery({
     args: { teacherId: z.string() },
     handler: async (ctx, { teacherId }): Promise<FullPayslip[]> => {
         const payslips = await ctx.db.query("payslips")
-            .withIndex("index_teacher", q => q.eq("teacherId", teacherId as Id<"teachers">))
+            .withIndex("index_closedByTeacher", q => q.eq("closedByTeacher", teacherId as Id<"teachers">))
             .order("desc")
             .collect();
 

@@ -77,7 +77,7 @@ export function ChildDetailModal({ child, onClose, initialEditing = false }: Chi
         active: formData.active,
         groupId: formData.groupId
       });
-    } catch (error) {
+    } catch  {
       alert("No se pudo guardar el explorador.");
       return;
     }

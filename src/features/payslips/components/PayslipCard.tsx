@@ -1,4 +1,4 @@
-import { formatPeriod } from "@/shared/utils/dates";
+import { formatPeriod, formatDateOnly } from "@/shared/utils/dates";
 import { FullPayslip } from "@convex/payslips";
 import { Eye, Calendar} from "lucide-react";
 
@@ -40,8 +40,8 @@ export function PayslipCard({ payslip, isLatest, onSelect }: PayslipCardProps) {
 
       {/* Rango de fechas */}
       <div className="text-xs text-slate-500 bg-gray-50 px-3 py-1.5 rounded-xl flex items-center justify-between">
-        <span>Desde: <strong className="text-slate-700">{payslip.startedAt}</strong></span>
-        <span>Hasta: <strong className="text-slate-700">{payslip.closedAt}</strong></span>
+        <span>Desde: <strong className="text-slate-700">{formatDateOnly(payslip.startedAt)}</strong></span>
+        <span>Hasta: <strong className="text-slate-700">{payslip.closedAt ? formatDateOnly(payslip.closedAt) : "Abierto"}</strong></span>
       </div>
 
       {/* Métricas clave en minigrid */}

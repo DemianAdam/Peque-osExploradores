@@ -50,7 +50,7 @@ export function TeacherDetailModal({ teacher, isOpen, onClose }: TeacherDetailMo
         teacherId: teacher._id, 
         groupIds: formData.selectedGroups.map(g => g._id) 
       });
-    } catch (error) {
+    } catch {
       alert("No se pudo guardar los grupos.");
       return;
     }

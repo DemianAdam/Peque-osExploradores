@@ -44,11 +44,13 @@ export function PaymentForm({ onSubmit, initialFeeId, initialAmount }: PaymentFo
     // actualizamos el estado del formulario de manera sincronizada.
     useEffect(() => {
         if (initialFeeId) {
-            setFormData(prev => ({
-                ...prev,
-                feeId: initialFeeId as Id<"fees">,
-                amount: initialAmount !== undefined ? initialAmount : prev.amount
-            }));
+            setTimeout(() => {
+                setFormData(prev => ({
+                    ...prev,
+                    feeId: initialFeeId as Id<"fees">,
+                    amount: initialAmount !== undefined ? initialAmount : prev.amount
+                }));
+            }, 0);
         }
     }, [initialFeeId, initialAmount]);
 

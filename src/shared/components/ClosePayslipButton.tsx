@@ -14,7 +14,7 @@ export default function ClosePayslipButton() {
 
 
 
-    const onCloseClosePayslipModal = (closedPayslip: Boolean) => {
+    const onCloseClosePayslipModal = (closedPayslip: boolean) => {
         //si EFECTIVAMENTE se cerro la liquidacion (no se cancelo), entonces abrimos el modal de definir cuota
         setIsClosePayslipModalOpen(false);
         if (closedPayslip) {

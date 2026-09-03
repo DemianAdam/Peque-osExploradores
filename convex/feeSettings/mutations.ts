@@ -17,20 +17,20 @@ async function getOrCreateFeeSettings(ctx: MutationCtx, teacherId: Id<"teachers"
 
 async function updateCurrentPeriodFees(ctx: MutationCtx, newFeeAmount: number) {
     const currentPayslip = await ctx.db.query("payslips")
-        .filter(q => q.eq(q.field("closedAt"), null))
+        .withIndex("index_closedAt", q => q.eq("closedAt", null))
         .first();
 
     if (!currentPayslip) return;
 
     const fees = await ctx.db.query("fees")
-        .withIndex("index_startedAt", q => q.eq("startedAt", currentPayslip.startedAt))
+        .withIndex("index_payslip", q => q.eq("payslipId", currentPayslip._id))
         .collect();
 
     for (const fee of fees) {
-        if (fee.closedAt === null) {
-            await ctx.db.patch("fees", fee._id, { totalAmount: newFeeAmount });
-        }
+        await ctx.db.patch("fees", fee._id, { totalAmount: newFeeAmount });
     }
+
+    await ctx.db.patch("payslips", currentPayslip._id, { feeAmountUsed: newFeeAmount });
 }
 
 export const updateFeeSettings = zTeacherMutation({
@@ -47,11 +47,11 @@ export const updateFeeSettings = zTeacherMutation({
             await updateCurrentPeriodFees(ctx, args.feeAmount);
         }
 
-if (args.partnerPercentage !== undefined) {
-        partnerPercentage = args.partnerPercentage;
-    }
+        if (args.partnerPercentage !== undefined) {
+            partnerPercentage = args.partnerPercentage;
+        }
 
-    const updateData = {
+        const updateData = {
             updatedAt: Date.now(),
             updatedBy: ctx.teacher._id,
             feeAmount: feeAmount,

@@ -6,12 +6,13 @@ import { PayslipDetailModal } from "@features/payslips/components/PayslipDetailM
 import { PayslipDeleteModal } from "@features/payslips/components/PayslipDeleteModal";
 import { PayslipCard } from "../components/PayslipCard";
 import { PayslipsCalendarView } from "../components/PayslipsCalendarView";
+import { formatPeriod } from "@utils/dates";
 
 
 import { api } from "@convex/_generated/api";
 import { FullPayslip } from "@convex/payslips";
 import ClosePayslipButton from "@/shared/components/ClosePayslipButton";
-import { useQuery } from "convex/react";
+import { useQuery, useMutation } from "convex/react";
 
 
 
@@ -23,21 +24,25 @@ export default function Payslips() {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedPayslip, setSelectedPayslip] = useState<FullPayslip | null>(null);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const deletePayslipMutation = useMutation(api.payslips.mutations.deleteLastPayslip);
 
 
-
-  const handleConfirmDelete = (id: string) => {
-    setPayslips(payslips.filter(p => p._id !== id));
-    setSelectedPayslip(null);
+  const handleConfirmDelete = async (id: string) => {
+    try {
+      await deletePayslipMutation({});
+      setPayslips(payslips.filter(p => p._id !== id));
+      setSelectedPayslip(null);
+    } catch (error) {
+      console.error("Failed to delete payslip:", error);
+    }
   };
-
   /*TODO DEMIAN: search
   const filteredPayslips = payslips.filter(p => 
     p.periodo.toLowerCase().includes(searchTerm.toLowerCase())
   );*/
 
   const columns = [
-    { header: "Período", accessor: (p: FullPayslip) => p.startedAt },
+    { header: "Período", accessor: (p: FullPayslip) => formatPeriod(p.startedAt) },
     { header: "Total Recaudado", accessor: (p: FullPayslip) => `$${p.payments.reduce((sum, payment) => sum + payment.amount, 0).toLocaleString()}` },
     { header: "Total Gastos", accessor: (p: FullPayslip) => `$${p.invoices.reduce((sum, invoice) => sum + invoice.amount, 0).toLocaleString()}` },
     { header: "% Socio", accessor: (p: FullPayslip) => `${p.partnerPercentage}%` },

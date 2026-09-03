@@ -7,5 +7,5 @@ const schema = zodOutputToConvex(feeValidator);
 export const feeSchema = defineTable(schema)
     .index("index_state", ["state"])
     .index("index_child", ["childId"])
-    .index("index_child_state",["childId","state"])
-    .index("index_startedAt", ["startedAt"])
+    .index("index_child_state", ["childId", "state"])
+    .index("index_payslip", ["payslipId"]);

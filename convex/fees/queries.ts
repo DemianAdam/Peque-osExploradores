@@ -1,7 +1,6 @@
 import { zTeacherQuery } from "../zod";
 import { FullFee, Fee } from "./types";
 import { QueryCtx } from "../_generated/server";
-import { zid } from "convex-helpers/server/zod4";
 import z from "zod";
 import { Id } from "../_generated/dataModel";
 

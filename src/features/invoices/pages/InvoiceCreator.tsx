@@ -20,7 +20,7 @@ export default function InvoiceCreator() {
           try {
             await createInvoice(data);
             navigate("/gastos");
-          } catch (error) {
+          } catch {
             alert("No se pudo crear el gasto.");
           }
         }}

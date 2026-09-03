@@ -1,185 +1,110 @@
 import { zTeacherMutation } from "../zod";
-import { MutationCtx, QueryCtx } from "../_generated/server";
-import { Id } from "../_generated/dataModel";
-import { Payslip, FullPayslip } from "./types";
-import { FeeData } from "../fees/types";
-import { PaymentData } from "../payments/types";
-import { InvoiceData } from "../invoices/types";
-import { Child } from "../children/types";
-import z from "zod";
-import { feeSettingsValidator } from "../feeSettings/validators";
-import { create } from "domain";
-import { createFirstPayslipValidator } from "./validators";
-
-const closePayslipValidator = z.object({
-    partnerPercentage: z.number().min(0).max(100),
-});
-
-const deleteLastPayslipValidator = z.object({});
-
-async function getActiveChildren(ctx: MutationCtx): Promise<Child[]> {
-    return await ctx.db.query("children")
-        .withIndex("index_active", q => q.eq("active", true))
-        .collect();
-}
-
-async function getCurrentOpenPayslip(ctx: QueryCtx): Promise<Payslip | null> {
-    return await ctx.db.query("payslips")
-        .filter(q => q.eq(q.field("closedAt"), null))
-        .first();
-}
-
-async function getPaymentsInPeriod(ctx: MutationCtx, startedAt: number, closedAt: number) {
-    return await ctx.db.query("payments")
-        .withIndex("index_date", q => q.gte("date", startedAt).lte("date", closedAt))
-        .filter(q => q.eq(q.field("payslipId"), null))
-        .collect();
-}
-
-async function getInvoicesInPeriod(ctx: MutationCtx, startedAt: number, closedAt: number) {
-    return await ctx.db.query("invoices")
-        .withIndex("index_date", q => q.gte("date", startedAt).lte("date", closedAt))
-        .filter(q => q.eq(q.field("payslipId"), null))
-        .collect();
-}
-
-async function createFeesForPeriod(ctx: MutationCtx, periodStart: number, feeAmount: number) {
-    const activeChildren = await getActiveChildren(ctx);
-
-    for (const child of activeChildren) {
-        await ctx.db.insert("fees", {
-            startedAt: periodStart,
-            closedAt: null,
-            totalAmount: feeAmount,
-            state: "pending",
-            childId: child._id,
-        } as FeeData);
-    }
-}
+import { closePayslipValidator, createFirstPayslipValidator, deleteLastPayslipValidator } from "./validators";
+import { getCurrentOpenPayslip } from "./functions";
+import { recomputeFeeState } from "../payments/functions";
+import { createCurrentFees } from "../fees/functions";
 
 export const closePayslip = zTeacherMutation({
     args: closePayslipValidator,
-    handler: async (ctx, args): Promise<FullPayslip> => {
+    handler: async (ctx, args) => {
         const currentPayslip = await getCurrentOpenPayslip(ctx);
         if (!currentPayslip) {
             throw new Error("No open payslip found to close");
         }
-
-        const now = Date.now();
-        const startedAt = currentPayslip.startedAt;
-        const closedAt = now;
-
-        const payments = await getPaymentsInPeriod(ctx, startedAt, closedAt);
-        const invoices = await getInvoicesInPeriod(ctx, startedAt, closedAt);
-
-        const totalCollected = payments.reduce((sum, p) => sum + p.amount, 0);
-        const totalSpent = invoices.reduce((sum, i) => sum + i.amount, 0);
-
         const feeSettings = await ctx.db.query("feeSettings").first();
 
         if (!feeSettings) {
             throw new Error("Fee settings not found. Please configure fee settings before closing the payslip.");
         }
 
-        const closedPayslipId = await ctx.db.insert("payslips", {
-            startedAt,
-            closedAt,
-            totalCollected,
-            totalSpent,
-            partnerPercentage: args.partnerPercentage,
-            feeAmountUsed: feeSettings?.feeAmount,
-            teacherId: ctx.teacher._id,
-        });
+        const now = Date.now();
 
-        for (const payment of payments) {
-            await ctx.db.patch("payments", payment._id, { payslipId: closedPayslipId });
-        }
+        const { _id, _creationTime, ...fields } = currentPayslip;
 
-        for (const invoice of invoices) {
-            await ctx.db.patch("invoices", invoice._id, { payslipId: closedPayslipId });
-        }
+        fields.partnerPercentage = args.partnerPercentage;
+        fields.closedAt = now;
+        fields.closedByTeacher = ctx.teacher._id;
+        fields.feeAmountUsed = feeSettings.feeAmount;
 
-        const nextPayslipId = await ctx.db.insert("payslips", {
-            startedAt: closedAt,
+        await ctx.db.patch("payslips", currentPayslip._id, fields)
+
+        await ctx.db.insert("payslips", {
+            startedAt: now,
             closedAt: null,
             totalCollected: 0,
             totalSpent: 0,
             partnerPercentage: args.partnerPercentage,
             feeAmountUsed: feeSettings.feeAmount,
-            teacherId: ctx.teacher._id,
+            closedByTeacher: null,
         });
 
-        await createFeesForPeriod(ctx, closedAt, feeSettings.feeAmount);
-
-        const closedPayslip = await ctx.db.get("payslips", closedPayslipId);
-        if (!closedPayslip) throw new Error("Failed to retrieve closed payslip");
-
-        return await (async () => {
-            const teacher = await ctx.db.get("teachers", closedPayslip.teacherId);
-            const paymentsFull = await ctx.db.query("payments")
-                .withIndex("index_payslip", q => q.eq("payslipId", closedPayslipId))
-                .collect();
-            const invoicesFull = await ctx.db.query("invoices")
-                .withIndex("index_payslip", q => q.eq("payslipId", closedPayslipId))
-                .collect();
-
-            return { ...closedPayslip, teacher: teacher!, payments: paymentsFull, invoices: invoicesFull };
-        })();
+        await createCurrentFees(ctx, feeSettings.feeAmount);
     }
 });
 
 export const deleteLastPayslip = zTeacherMutation({
     args: deleteLastPayslipValidator,
-    handler: async (ctx): Promise<void> => {
+    handler: async (ctx) => {
         const payslips = await ctx.db.query("payslips")
             .order("desc")
             .collect();
+        const currentPayslip = await getCurrentOpenPayslip(ctx);
 
-        if (payslips.length < 2) {
+        if (payslips.length == 1 || !currentPayslip) {
             throw new Error("Cannot delete the only payslip or no previous payslip exists");
         }
 
-        const latestPayslip = payslips[0];
-        const previousPayslip = payslips[1];
-
-        if (latestPayslip.closedAt === null) {
-            throw new Error("Cannot delete an open payslip. Only closed payslips can be deleted.");
-        }
-
-        const payments = await ctx.db.query("payments")
-            .withIndex("index_payslip", q => q.eq("payslipId", latestPayslip._id))
+        const invoicesToDelete = await ctx.db.query("invoices")
+            .withIndex("index_payslip", q => q.eq("payslipId", currentPayslip._id))
             .collect();
 
-        for (const payment of payments) {
-            await ctx.db.patch("payments", payment._id, { payslipId: null });
-        }
-
-        const invoices = await ctx.db.query("invoices")
-            .withIndex("index_payslip", q => q.eq("payslipId", latestPayslip._id))
-            .collect();
-
-        for (const invoice of invoices) {
-            await ctx.db.patch("invoices", invoice._id, { payslipId: null });
+        for (const invoice of invoicesToDelete) {
+            await ctx.db.delete("invoices", invoice._id);
         }
 
         const feesToDelete = await ctx.db.query("fees")
-            .withIndex("index_startedAt", q => q.eq("startedAt", latestPayslip.startedAt))
+            .withIndex("index_payslip", q => q.eq("payslipId", currentPayslip._id))
             .collect();
+        const feeIdsToDelete = new Set(
+            feesToDelete.map(fee => fee._id)
+        );
 
-        for (const fee of feesToDelete) {
+        for (const feeId of feeIdsToDelete) {
             const feePayments = await ctx.db.query("payments")
-                .withIndex("index_fee", q => q.eq("feeId", fee._id))
+                .withIndex("index_fee", q => q.eq("feeId", feeId))
                 .collect();
 
             for (const payment of feePayments) {
                 await ctx.db.delete("payments", payment._id);
             }
 
-            await ctx.db.delete("fees", fee._id);
+            await ctx.db.delete("fees", feeId);
         }
 
-        await ctx.db.patch("payslips", previousPayslip._id, { closedAt: null });
-        await ctx.db.delete("payslips", latestPayslip._id);
+        const paymentsToDelete = await ctx.db.query("payments")
+            .withIndex("index_payslip", q => q.eq("payslipId", currentPayslip._id))
+            .collect();
+
+        for (const payment of paymentsToDelete) {
+            await ctx.db.delete("payments", payment._id)
+        }
+
+        // Recompute only fees that still exist (not deleted above)
+        const feeIdsToRecompute = [
+            ...new Set(
+                paymentsToDelete
+                    .map(payment => payment.feeId)
+                    .filter(feeId => !feeIdsToDelete.has(feeId))
+            )
+        ];
+
+        for (const feeId of feeIdsToRecompute) {
+            await recomputeFeeState(ctx, feeId)
+        }
+
+        const previousPayslip = payslips[1];
+
+        await ctx.db.patch("payslips", previousPayslip._id, { closedAt: null, closedByTeacher: null });
     }
 });
 
@@ -193,30 +118,34 @@ export const createFirstPayslip = zTeacherMutation({
 
         const now = Date.now();
 
-        const feeSettings = await ctx.db.query("feeSettings").collect();
-        if (feeSettings.length > 0) {
-            for (const feeSetting of feeSettings) {
-                await ctx.db.delete("feeSettings", feeSetting._id);
-            }
+        const existingFeeSettings = await ctx.db.query("feeSettings").first();
+        if (existingFeeSettings) {
+            await ctx.db.patch("feeSettings", existingFeeSettings._id, {
+                feeAmount: args.feeAmountUsed,
+                partnerPercentage: args.partnerPercentage,
+                updatedAt: now,
+                updatedBy: ctx.teacher._id,
+            });
+        } else {
+            await ctx.db.insert("feeSettings", {
+                feeAmount: args.feeAmountUsed,
+                partnerPercentage: args.partnerPercentage,
+                updatedAt: now,
+                updatedBy: ctx.teacher._id,
+            });
         }
 
 
-        await ctx.db.insert("feeSettings", {
-            feeAmount: args.feeAmountUsed,
-            partnerPercentage: args.partnerPercentage,
-            updatedAt: now,
-            updatedBy: ctx.teacher._id,
-        });
-
-        
-        const firstPayslipId = await ctx.db.insert("payslips", {
+        await ctx.db.insert("payslips", {
             startedAt: now,
             closedAt: null,
             totalCollected: 0,
             totalSpent: 0,
             partnerPercentage: args.partnerPercentage,
             feeAmountUsed: args.feeAmountUsed,
-            teacherId: ctx.teacher._id,
+            closedByTeacher: null,
         });
+
+        await createCurrentFees(ctx, args.feeAmountUsed);
     }
 });

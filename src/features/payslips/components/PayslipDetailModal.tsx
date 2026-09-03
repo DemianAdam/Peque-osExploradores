@@ -1,7 +1,7 @@
 import { Trash2 } from "lucide-react";
 import { Modal } from "@ui/Modal";
 import { FullPayslip } from "@convex/payslips";
-import { formatPeriod } from "@/shared/utils/dates";
+import { formatPeriod, formatDateOnly } from "@/shared/utils/dates";
 
 
 
@@ -29,11 +29,11 @@ export function PayslipDetailModal({ payslip, isOpen, onClose, onOpenDeleteModal
           </div>
           <div className="flex justify-between">
             <span className="font-semibold text-gray-500">Fecha de Inicio:</span>
-            <span className="font-medium text-slate-800">{payslip.startedAt}</span>
+            <span className="font-medium text-slate-800">{formatDateOnly(payslip.startedAt)}</span>
           </div>
           <div className="flex justify-between">
             <span className="font-semibold text-gray-500">Fecha de Cierre:</span>
-            <span className="font-medium text-slate-800">{payslip.closedAt}</span>
+            <span className="font-medium text-slate-800">{payslip.closedAt ? formatDateOnly(payslip.closedAt) : "—"}</span>
           </div>
           <div className="flex justify-between">
             <span className="font-semibold text-gray-500">Total Recaudado:</span>

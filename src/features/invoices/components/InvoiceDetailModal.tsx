@@ -67,7 +67,7 @@ export function InvoiceDetailModal({ invoice, onClose, initialEditing = false }:
         amount: parseFloat(formData.amount) || 0,
         date: newDateTimestamp,
       });
-    } catch (error) {
+    } catch {
       alert("No se pudo guardar el gasto.");
       return;
     }

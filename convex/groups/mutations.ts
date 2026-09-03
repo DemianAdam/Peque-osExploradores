@@ -82,11 +82,6 @@ export const deleteGroup = zTeacherMutation({
             throw new Error(`No Group exists with id ${args.id}`);
         }
 
-        const anyChild = await ctx.db.query("children").withIndex("index_group_active", q => q.eq("groupId", existingGroup._id,)).first();
-
-        if (anyChild) {
-            throw new Error(`Cannot delete a group with associated children`);
-        }
         await ctx.db.delete("groups", args.id);
     }
 });

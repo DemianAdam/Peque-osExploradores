@@ -9,6 +9,7 @@ import { api } from "@convex/_generated/api";
 import { FullFee } from "@shared/types/convex";
 import { ActivePeriodCard } from "../components/ActivePeriodCard";
 import FeeCard from "../components/FeeCard";
+import { formatPeriod, formatDateOnly } from "@utils/dates";
 
 export default function Fees() {
   const fees = useQuery(api.fees.queries.getFees);
@@ -21,7 +22,7 @@ export default function Fees() {
   const [selectedFee, setSelectedFee] = useState<FullFee | null>(null);
   const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
 
-  const activePeriod = fees && fees.length > 0 ? fees[0].startedAt : "Sin período activo";
+  const activePeriod = fees && fees.length > 0 ? formatPeriod(fees[0].startedAt) : "Sin período activo";
   const activeFeeAmount = fees && fees.length > 0 ? fees[0].totalAmount : 0;
   const [editableFeeAmount, setEditableFeeAmount] = useState<number>(activeFeeAmount);
   
@@ -51,17 +52,18 @@ export default function Fees() {
     { 
       header: "Periodo", 
       accessor: (fee: FullFee) => {
+        const startFormatted = formatPeriod(fee.startedAt);
         // Si no tiene fecha de cierre, mostramos un badge destacado "En curso"
         if (!fee.closedAt) {
           return (
             <span className="bg-purple-100 text-purple-700 px-3 py-1 rounded-full text-xs font-bold inline-flex items-center gap-1.5 shadow-2xs">
               <span className="w-2 h-2 rounded-full bg-purple-500 animate-pulse"></span>
-              Desde {fee.startedAt} (En curso)
+              {startFormatted} (En curso)
             </span>
           );
         }
         // Si ya está cerrado, muestra el rango normal
-        return `${fee.startedAt} al ${fee.closedAt}`;
+        return `${startFormatted} al ${formatDateOnly(fee.closedAt)}`;
       }
     },
     { header: "Total", accessor: (fee: FullFee) => `$${fee.totalAmount.toLocaleString()}` },
@@ -186,7 +188,8 @@ export default function Fees() {
             // Creamos un objeto seguro donde adaptamos closedAt usando la misma lógica
             const safeFee = {
               ...fee,
-              closedAt: fee.closedAt ? fee.closedAt : `(En curso)`, 
+              startedAt: formatPeriod(fee.startedAt),
+              closedAt: fee.closedAt ? formatDateOnly(fee.closedAt) : "(En curso)",
             };
 
             return (

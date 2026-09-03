@@ -1,5 +1,4 @@
 import { zTeacherQuery } from "../zod";
-import { QueryCtx } from "../_generated/server";
 import { FeeSettings } from "./types";
 
 export const getFeeSettings = zTeacherQuery({
