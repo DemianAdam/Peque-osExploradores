@@ -1,5 +1,6 @@
 import { X, CheckCircle2, Clock, AlertCircle, Calendar, DollarSign } from "lucide-react";
 import { FullFee } from "@shared/types/convex";
+import { formatPeriod, formatDateOnly } from "@utils/dates";
 
 interface FeeDetailModalProps {
   isOpen: boolean;
@@ -29,8 +30,7 @@ export function FeeDetailModal({ isOpen, onClose, onPay, fee }: FeeDetailModalPr
         <div className="bg-slate-900 text-white px-6 py-4 flex justify-between items-center">
           <div>
             <h3 className="text-lg font-bold">Detalle de Cuota</h3>
-            {/* TODO: Verificar si el periodo viene formateado desde Convex o si requiere formateo adicional */}
-            <span className="text-xs text-slate-400">Período: {fee.startedAt} al {fee.closedAt}</span>
+            <span className="text-xs text-slate-400">Período: {formatPeriod(fee.startedAt)} al {fee.closedAt ? formatDateOnly(fee.closedAt) : "En curso"}</span>
           </div>
           <button 
             onClick={onClose}
@@ -99,7 +99,7 @@ export function FeeDetailModal({ isOpen, onClose, onPay, fee }: FeeDetailModalPr
                         #{index + 1}
                       </div>
                       <div className="flex flex-col">
-                        <span className="text-xs font-bold text-slate-700">Fecha: {payment.date}</span>
+                        <span className="text-xs font-bold text-slate-700">Fecha: {formatDateOnly(payment.date)}</span>
                         <span className="text-[10px] text-gray-400">Método: {payment.type || "Efectivo/Transferencia"}</span>
                       </div>
                     </div>

@@ -81,6 +81,7 @@ export const deleteGroup = zTeacherMutation({
         if (!existingGroup) {
             throw new Error(`No Group exists with id ${args.id}`);
         }
+
         await ctx.db.delete("groups", args.id);
     }
 });

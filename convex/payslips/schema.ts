@@ -5,5 +5,5 @@ import { payslipValidator } from "./validators";
 const schema = zodOutputToConvex(payslipValidator);
 
 export const payslipSchema = defineTable(schema)
-    .index("index_teacher", ["teacherId"])
-    .index("index_startedAt", ["startedAt"])
+    .index("index_closedByTeacher", ["closedByTeacher"])
+    .index("index_closedAt", ["closedAt"])

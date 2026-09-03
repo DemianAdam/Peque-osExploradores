@@ -1,34 +1,8 @@
 import { zTeacherMutation } from "../zod";
-import { MutationCtx } from "../_generated/server";
-import { Id } from "../_generated/dataModel";
 import { PaymentData } from "./types";
 import { createPaymentValidator, updatePaymentValidator, deletePaymentValidator } from "./validators";
-
-async function recomputeFeeState(ctx: MutationCtx, feeId: Id<"fees">) {
-    const fee = await ctx.db.get("fees", feeId);
-    if (!fee) {
-        throw new Error(`No Fee exists with id ${feeId}`);
-    }
-
-    const payments = await ctx.db.query("payments")
-        .withIndex("index_fee", (q) => q.eq("feeId", feeId))
-        .collect();
-
-    const totalPaid = payments.reduce((sum, payment) => sum + payment.amount, 0);
-    const remainingAmount = fee.totalAmount - totalPaid;
-
-    if (remainingAmount < 0) {
-        throw new Error(`The payments exceed the total amount of the Fee by ${-remainingAmount}. Total amount: ${fee.totalAmount}`);
-    }
-
-    const state = remainingAmount === 0
-        ? "paid"
-        : totalPaid > 0 ? "partial" : "pending";
-
-    if (state !== fee.state) {
-        await ctx.db.patch("fees", feeId, { state });
-    }
-}
+import { getCurrentOpenPayslip } from "../payslips/functions";
+import { recomputeFeeState } from "./functions";
 
 export const createPayment = zTeacherMutation({
     args: createPaymentValidator,
@@ -49,10 +23,15 @@ export const createPayment = zTeacherMutation({
             throw new Error("The payment amount must be a positive value.");
         }
 
+        const currentPayslip = await getCurrentOpenPayslip(ctx);
+        if(!currentPayslip){
+            throw new Error("No current payslip to add the payment");
+        }
+
         const newPayment: PaymentData = {
             ...args,
             teacherId: ctx.teacher._id,
-            payslipId: null,
+            payslipId: currentPayslip?._id
         }
 
         await ctx.db.insert("payments", newPayment);

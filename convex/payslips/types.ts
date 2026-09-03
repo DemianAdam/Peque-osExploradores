@@ -1,12 +1,15 @@
 import { Doc } from "../_generated/dataModel";
-import { Teacher } from "../teachers/types";
 import { Payment } from "../payments/types";
 import { Invoice } from "../invoices/types";
+import { Teacher } from "../teachers/types";
+import { TypeData } from "../common/types";
 
 export type Payslip = Doc<"payslips">;
 
+export type PayslipData = TypeData<Payslip>;
+
 export type FullPayslip = Payslip & {
-    teacher: Teacher;
     payments: Payment[];
     invoices: Invoice[];
+    teacher: Teacher | null;
 };

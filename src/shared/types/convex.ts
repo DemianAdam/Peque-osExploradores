@@ -10,4 +10,4 @@ export type { FullTeacher, Teacher } from "@convex/teachers/types";
 export type { FullFee } from "@convex/fees/types";
 export type { FullPayment } from "@convex/payments/types";
 export type { Invoice } from "@convex/invoices/types";
-// Note: FullPayslip type will be added when payslips domain types are created
+export type { FullPayslip } from "@convex/payslips/types";

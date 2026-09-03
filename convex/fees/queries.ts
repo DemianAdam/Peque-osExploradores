@@ -1,7 +1,6 @@
 import { zTeacherQuery } from "../zod";
 import { FullFee, Fee } from "./types";
 import { QueryCtx } from "../_generated/server";
-import { zid } from "convex-helpers/server/zod4";
 import z from "zod";
 import { Id } from "../_generated/dataModel";
 
@@ -15,7 +14,13 @@ export async function toFullFee(db: QueryCtx["db"], fee: Fee): Promise<FullFee |
 
     const paidAmount = payments.reduce((sum, payment) => sum + payment.amount, 0);
 
-    return { ...fee, child, paidAmount, payments };
+    const payslip = await db.query("payslips").withIndex("by_id", (q) => q.eq("_id", fee.payslipId)).first();
+    if (!payslip){
+        throw new Error(`Payslip with ID ${fee.payslipId} not found for fee ${fee._id}`);
+    }
+    
+
+    return { ...fee, child, paidAmount, payments, payslip };
 }
 
 export const getFees = zTeacherQuery({

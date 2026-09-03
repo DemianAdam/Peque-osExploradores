@@ -9,7 +9,7 @@ export const paymentValidator = z.object({
     type: z.union([z.literal("cash"), z.literal("transfer")]),
     feeId: zid("fees"),
     teacherId: zid("teachers"),
-    payslipId: zid("payslips").nullable()
+    payslipId: zid("payslips")
 });
 
 export const createPaymentValidator = z.object({

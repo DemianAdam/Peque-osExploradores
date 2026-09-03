@@ -69,7 +69,7 @@ export function GroupDetailModal({ group, onClose, initialEditing = false }: Gro
         name: formData.name,
         teacherIds: formData.selectedTeachers.map(t => t._id),
       });
-    } catch (error) {
+    } catch {
       alert("No se pudo guardar el grupo.");
       return;
     }
@@ -77,15 +77,15 @@ export function GroupDetailModal({ group, onClose, initialEditing = false }: Gro
   };
 
   return (
-    <Modal 
+    <Modal
       title={
         isEditing ? (
           <span className="text-emerald-600 font-bold">Editar Grupo</span>
         ) : (
           <span className="text-blue-500 font-bold">Detalle del Grupo</span>
         )
-      } 
-      isOpen={!!group} 
+      }
+      isOpen={!!group}
       onClose={onClose}
     >
       <div className="flex flex-col gap-6">
@@ -161,18 +161,17 @@ export function GroupDetailModal({ group, onClose, initialEditing = false }: Gro
 
         {/* Botón de Acción */}
         <button
-            onClick={() => isEditing ? handleSave() : setIsEditing(true)}
-            className={`flex items-center justify-center gap-2 w-full py-2 rounded-lg text-sm font-semibold transition ${
-                isEditing 
-                ? "bg-emerald-600 text-white hover:bg-emerald-700 shadow-sm"
-                : "bg-blue-100 text-blue-700 hover:bg-blue-200"
+          onClick={() => isEditing ? handleSave() : setIsEditing(true)}
+          className={`flex items-center justify-center gap-2 w-full py-2 rounded-lg text-sm font-semibold transition ${isEditing
+              ? "bg-emerald-600 text-white hover:bg-emerald-700 shadow-sm"
+              : "bg-blue-100 text-blue-700 hover:bg-blue-200"
             }`}
         >
-            {isEditing ? (
-                <><Check size={16}/> Finalizar Edición</>
-            ) : (
-                <><Pencil size={16}/> Editar Grupo</>
-            )}
+          {isEditing ? (
+            <><Check size={16} /> Finalizar Edición</>
+          ) : (
+            <><Pencil size={16} /> Editar Grupo</>
+          )}
         </button>
 
       </div>

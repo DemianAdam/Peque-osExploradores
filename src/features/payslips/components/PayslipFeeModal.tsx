@@ -15,7 +15,7 @@ export function PayslipFeeModal({ isOpen, onClose }: PayslipFeeModalProps) {
   const updateFee = useMutation(api.feeSettings.mutations.updateFeeSettings);
 
   const handleConfirm = async () => {
-    updateFee({ feeAmount: newFee });
+    await updateFee({ feeAmount: newFee });
     onClose();
   }
 
@@ -36,7 +36,7 @@ export function PayslipFeeModal({ isOpen, onClose }: PayslipFeeModalProps) {
               type="radio"
               name="feeOption"
               checked={option === "same"}
-              onChange={(e) => {
+              onChange={() => {
                 setOption("same");
                 setNewFee(previousFee);
               }}
@@ -55,7 +55,7 @@ export function PayslipFeeModal({ isOpen, onClose }: PayslipFeeModalProps) {
                 type="radio"
                 name="feeOption"
                 checked={option === "update"}
-                onChange={(e) => {
+                onChange={() => {
                   setOption("update");
                 }}
                 className="accent-pink-500"

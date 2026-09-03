@@ -1,4 +1,5 @@
 import { format, parse } from "date-fns";
+import { es } from "date-fns/locale";
 
 export function formatDateForInput(timestamp: number): string {
     return format(new Date(timestamp), "yyyy-MM-dd");
@@ -12,19 +13,10 @@ export function formatDate(timestamp: number): string {
     return new Date(timestamp).toLocaleDateString();
 }
 
-export function formatPeriod(dateString: string): string {
-    if (!dateString) return "";
+export function formatPeriod(dateString: number): string {
+    return format(new Date(dateString), "LLLL yyyy", { locale: es }).toUpperCase();
+}
 
-    // Parseamos la fecha "YYYY-MM-DD" evitando problemas de zona horaria
-    const [year, month, day] = dateString.split("-").map(Number);
-    const date = new Date(year, month - 1, day || 1);
-
-    // Formateamos para obtener mes y año (ej: "agosto de 2026")
-    const formatted = date.toLocaleDateString('es-ES', { 
-        month: 'long', 
-        year: 'numeric' 
-    });
-
-    // Capitalizamos la primera letra ("Agosto de 2026")
-    return formatted.charAt(0).toUpperCase() + formatted.slice(1);
+export function formatDateOnly(timestamp: number): string {
+    return format(new Date(timestamp), "dd/MM/yyyy", { locale: es });
 }
