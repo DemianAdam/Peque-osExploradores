@@ -18,12 +18,16 @@ export async function toFullPayslip(ctx: QueryCtx, payslip: Payslip): Promise<Fu
 
     const totalCollected = payments.reduce((sum, p) => sum + p.amount, 0);
 
-
     const invoices = await ctx.db.query("invoices")
         .withIndex("index_payslip", q => q.eq("payslipId", payslip._id))
         .collect();
 
     const totalSpent = invoices.reduce((sum, i) => sum + i.amount, 0);
+
+    let teacher = null;
+    if (payslip.closedByTeacher) {
+        teacher = await ctx.db.get("teachers", payslip.closedByTeacher);
+    }
 
 
     const fullPayslip: FullPayslip = {
@@ -31,7 +35,8 @@ export async function toFullPayslip(ctx: QueryCtx, payslip: Payslip): Promise<Fu
         payments,
         invoices,
         totalCollected,
-        totalSpent
+        totalSpent,
+        teacher
     };
 
     return fullPayslip;

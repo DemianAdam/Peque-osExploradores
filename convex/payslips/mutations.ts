@@ -3,6 +3,7 @@ import { closePayslipValidator, createFirstPayslipValidator, deleteLastPayslipVa
 import { getCurrentOpenPayslip } from "./functions";
 import { recomputeFeeState } from "../payments/functions";
 import { createCurrentFees } from "../fees/functions";
+import { PayslipData } from ".";
 
 export const closePayslip = zTeacherMutation({
     args: closePayslipValidator,
@@ -19,14 +20,17 @@ export const closePayslip = zTeacherMutation({
 
         const now = Date.now();
 
-        const { _id, _creationTime, ...fields } = currentPayslip;
+        const updatedPayslip: PayslipData = {
+            startedAt: currentPayslip.startedAt,
+            closedAt: now,
+            totalCollected: currentPayslip.totalCollected,
+            totalSpent: currentPayslip.totalSpent,
+            partnerPercentage: args.partnerPercentage,
+            feeAmountUsed: feeSettings.feeAmount,
+            closedByTeacher: ctx.teacher._id,
+        }
 
-        fields.partnerPercentage = args.partnerPercentage;
-        fields.closedAt = now;
-        fields.closedByTeacher = ctx.teacher._id;
-        fields.feeAmountUsed = feeSettings.feeAmount;
-
-        await ctx.db.patch("payslips", currentPayslip._id, fields)
+        await ctx.db.patch("payslips", currentPayslip._id, updatedPayslip)
 
         await ctx.db.insert("payslips", {
             startedAt: now,
@@ -136,7 +140,7 @@ export const createFirstPayslip = zTeacherMutation({
         }
 
 
-        await ctx.db.insert("payslips", {
+        const payslipId = await ctx.db.insert("payslips", {
             startedAt: now,
             closedAt: null,
             totalCollected: 0,
@@ -145,6 +149,14 @@ export const createFirstPayslip = zTeacherMutation({
             feeAmountUsed: args.feeAmountUsed,
             closedByTeacher: null,
         });
+
+        const invoicesWithoutPayslip = await ctx.db.query("invoices")
+            .withIndex("index_payslip", q => q.eq("payslipId", null))
+            .collect();
+
+        for (const invoice of invoicesWithoutPayslip) {
+            await ctx.db.patch("invoices", invoice._id, { payslipId: payslipId });
+        }
 
         await createCurrentFees(ctx, args.feeAmountUsed);
     }

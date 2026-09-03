@@ -23,7 +23,7 @@ export function ActivePeriodCard({
             Período Abierto Actual
           </span>
           <h4 className="text-xl font-bold text-slate-800">
-            Inicia el: <span className="text-blue-600">{startedAt}</span>
+            <span className="text-blue-600">{startedAt}</span>
           </h4>
         </div>
       </div>

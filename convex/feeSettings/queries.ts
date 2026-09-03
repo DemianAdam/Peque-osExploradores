@@ -1,9 +1,15 @@
 import { zTeacherQuery } from "../zod";
 import { FeeSettings } from "./types";
+import { getCurrentFeeSettings } from "./functions";
 
 export const getFeeSettings = zTeacherQuery({
     args: {},
-    handler: async ({ db }): Promise<FeeSettings | null> => {
-        return await db.query("feeSettings").first();
+    handler: async (ctx): Promise<FeeSettings | null> => {  
+        try {
+            return await getCurrentFeeSettings(ctx);
+        } catch (error) {
+            console.error(error);
+            return null;
+        }
     }
 });

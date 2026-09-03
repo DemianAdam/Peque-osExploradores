@@ -7,14 +7,12 @@ export const createInvoice = zTeacherMutation({
     args: createInvoiceValidator,
     handler: async (ctx, args) => {
         const currentPayslip = await getCurrentOpenPayslip(ctx);
-        if (!currentPayslip) {
-            throw new Error("No open payslip found. Cannot create invoice without a payslip.");
-        }
+
 
         const newInvoice: InvoiceData = {
             ...args,
             teacherId: ctx.teacher._id,
-            payslipId: currentPayslip._id,
+            payslipId: currentPayslip?._id ?? null,
         };
 
         await ctx.db.insert("invoices", newInvoice);

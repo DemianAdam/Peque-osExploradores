@@ -14,7 +14,7 @@ export function formatDate(timestamp: number): string {
 }
 
 export function formatPeriod(dateString: number): string {
-    return format(new Date(dateString), "LLLL yyyy", { locale: es });
+    return format(new Date(dateString), "LLLL yyyy", { locale: es }).toUpperCase();
 }
 
 export function formatDateOnly(timestamp: number): string {

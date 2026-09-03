@@ -1,6 +1,9 @@
 import { ConvexError } from "convex/values";
 import { zTeacherMutation } from "../zod";
 import { createChildValidator, deleteChildValidator, updateChildValidator } from "./validators";
+import { getCurrentOpenPayslip } from "../payslips/functions";
+import { getCurrentFeeSettings } from "../feeSettings/functions";
+
 
 export const createChild = zTeacherMutation({
     args: createChildValidator,
@@ -13,7 +16,19 @@ export const createChild = zTeacherMutation({
             ...args,
             active: true
         }
-        await ctx.db.insert("children", newChild);
+        const id = await ctx.db.insert("children", newChild);
+
+        const currentPayslip = await getCurrentOpenPayslip(ctx);
+        const feeSettings = await getCurrentFeeSettings(ctx);
+
+        if (currentPayslip) {
+            await ctx.db.insert("fees", {
+                totalAmount: feeSettings.feeAmount,
+                state: "pending",
+                childId: id,
+                payslipId: currentPayslip._id
+            });
+        }
     }
 })
 

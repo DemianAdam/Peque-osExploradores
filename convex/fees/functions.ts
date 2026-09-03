@@ -3,6 +3,7 @@ import { getActiveChildren } from "../children/functions";
 import { getCurrentOpenPayslip } from "../payslips/functions";
 
 
+
 export async function createCurrentFees(ctx: MutationCtx, feeAmount: number) {
     const activeChildren = await getActiveChildren(ctx);
     const currentPayslip = await getCurrentOpenPayslip(ctx);
@@ -15,7 +16,7 @@ export async function createCurrentFees(ctx: MutationCtx, feeAmount: number) {
             totalAmount: feeAmount,
             state: "pending",
             childId: child._id,
-            payslipId: currentPayslip?._id
+            payslipId: currentPayslip._id
         });
     }
 }
