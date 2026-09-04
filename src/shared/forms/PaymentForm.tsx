@@ -3,27 +3,27 @@ import { FormLayout } from "./FormLayout";
 import { BaseInput } from "@ui/BaseInput";
 import { PaymentFormData } from "@shared/types/forms";
 import { BaseSelect } from "@ui/BaseSelect";
-import { useQuery } from "convex/react";
+import { useQuery, useMutation } from "convex/react";
 import { api } from "../../../convex/_generated/api";
-import { formatDateForInput, parseInputDate } from "@utils/dates";
+import { formatDate, formatDateForInput, parseInputDate } from "@utils/dates";
 import { formatFeeLabel } from "@utils/labels";
 import { Id } from "@convex/_generated/dataModel";
 
-
 interface PaymentFormProps {
-    onSubmit: (data: PaymentFormData) => void;
+    onSuccess?: () => void;
     initialFeeId?: string;
-    initialAmount?: number;
 }
+
+type CreatePaymentInput = Omit<PaymentFormData, "feeId"> & { feeId: Id<"fees"> };
 
 const TODAY = Date.now();
 
-export function PaymentForm({ onSubmit, initialFeeId, initialAmount }: PaymentFormProps) {
+export function PaymentForm({ onSuccess, initialFeeId }: PaymentFormProps) {
     const [formData, setFormData] = useState<PaymentFormData>({
-        amount: initialAmount || 0,
+        amount: 0,
         date: TODAY,
         type: "cash",
-        feeId: (initialFeeId as Id<"fees">) || null,
+        feeId: null,
     });
 
     const [errors, setErrors] = useState({
@@ -33,6 +33,12 @@ export function PaymentForm({ onSubmit, initialFeeId, initialAmount }: PaymentFo
         feeId: "",
     });
 
+    const [selectedFeeId, setSelectedFeeId] = useState<string | null>(null);
+    const [isSubmitting, setIsSubmitting] = useState(false);
+    const [submitError, setSubmitError] = useState("");
+
+    const createPayment = useMutation(api.payments.mutations.createPayment);
+
     const unpaidFees = useQuery(api.fees.queries.getUnpaidFees);
 
     const formattedFees = unpaidFees?.map((f) => ({
@@ -40,39 +46,37 @@ export function PaymentForm({ onSubmit, initialFeeId, initialAmount }: PaymentFo
         value: f._id
     })) || [];
 
-    // 💡 EFECTO INTELIGENTE: Si cambian los props iniciales (por ejemplo, al venir desde la tabla de cuotas), 
-    // actualizamos el estado del formulario de manera sincronizada.
     useEffect(() => {
-        if (initialFeeId) {
+        if (initialFeeId && unpaidFees?.some(f => f._id === initialFeeId)) {
+            setTimeout(() => setSelectedFeeId(initialFeeId), 0);
+        } else if (!selectedFeeId && unpaidFees?.[0]) {
+            setTimeout(() => setSelectedFeeId(unpaidFees[0]._id), 0);
+        }
+    }, [initialFeeId, unpaidFees, selectedFeeId]);
+
+    useEffect(() => {
+        const fee = unpaidFees?.find(f => f._id === selectedFeeId);
+        if (fee) {
+            const remaining = fee.totalAmount - (fee.paidAmount || 0);
             setTimeout(() => {
                 setFormData(prev => ({
                     ...prev,
-                    feeId: initialFeeId as Id<"fees">,
-                    amount: initialAmount !== undefined ? initialAmount : prev.amount
+                    feeId: selectedFeeId as Id<"fees">,
+                    amount: remaining > 0 ? remaining : 0
                 }));
             }, 0);
-        }
-    }, [initialFeeId, initialAmount]);
-
-    const handleFeeChange = (selectedFeeId: string) => {
-        const selectedFee = unpaidFees?.find(f => f._id === selectedFeeId);
-        
-        if (selectedFee) {
-            const remainingBalance = selectedFee.totalAmount - (selectedFee.paidAmount || 0);
-            setFormData(prev => ({
-                ...prev,
-                feeId: selectedFeeId as Id<"fees">, // 👈 Casteo explícito aquí
-                amount: remainingBalance > 0 ? remainingBalance : 0
-            }));
         } else {
-            setFormData(prev => ({ 
-                ...prev, 
-                feeId: selectedFeeId as Id<"fees"> // 👈 Y aquí también
-            }));
+            setTimeout(() => {
+                setFormData(prev => ({ ...prev, feeId: null, amount: 0 }));
+            }, 0);
         }
+    }, [selectedFeeId, unpaidFees]);
+
+    const handleFeeChange = (feeId: string) => {
+        setSelectedFeeId(feeId);
     };
 
-    const handleSave = () => {
+    const handleSave = async () => {
         const newErrors = {
             amount: "",
             date: "",
@@ -103,50 +107,86 @@ export function PaymentForm({ onSubmit, initialFeeId, initialAmount }: PaymentFo
         }
 
         setErrors(newErrors);
+        setSubmitError("");
 
         if (!isValid) return;
 
-        onSubmit(formData);
+        setIsSubmitting(true);
+        try {
+            const paymentInput: CreatePaymentInput = {
+                ...formData,
+                feeId: formData.feeId!,
+            };
+            await createPayment(paymentInput);
+            onSuccess?.();
+        } catch {
+            setSubmitError("No se pudo crear el pago. Intente nuevamente.");
+        } finally {
+            setIsSubmitting(false);
+        }
     };
 
+    const selectedFee = unpaidFees?.find(f => f._id === selectedFeeId);
+    const remainingAmount = selectedFee ? selectedFee.totalAmount - (selectedFee.paidAmount || 0) : 0;
+
     return (
-        <FormLayout onSubmit={handleSave}>
-            <BaseInput
-                label="Monto"
-                type="number"
-                value={formData.amount || ""}
-                onChange={(e) => setFormData({ ...formData, amount: Number(e.target.value) })}
-                error={errors.amount}
-            />
+        <>
+            {selectedFee && (
+                <div className="mb-4 mx-auto w-full max-w-lg bg-white/80 p-4 rounded-xl shadow-sm text-sm text-slate-700 flex justify-between items-center">
+                    <div className="flex w-full text-xl gap-6">
+                        <span className="font-bold text-slate-500">Saldo pendiente a cubrir:</span>
+                        <span className="font-bold text-emerald-600 ">${remainingAmount.toLocaleString()}</span>
+                    </div>
+                </div>
+            )}
+            <FormLayout onSubmit={handleSave}>
 
-            {/* Selector de Cuota */}
-            <BaseSelect
-                label="Cuota"
-                value={formData.feeId ?? ""}
-                onChange={handleFeeChange}
-                options={formattedFees}
-                error={errors.feeId}
-            />
 
-            {/* Tipo de Pago */}
-            <BaseSelect<"cash" | "transfer">
-                label="Tipo de Pago"
-                value={formData.type}
-                onChange={(type) => setFormData({ ...formData, type })}
-                options={[
-                    { label: "Efectivo", value: "cash" },
-                    { label: "Transferencia", value: "transfer" },
-                ]}
-                error={errors.type}
-            />
+                {submitError && (
+                    <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm">
+                        {submitError}
+                    </div>
+                )}
 
-            <BaseInput
-                label="Fecha"
-                type="date"
-                value={formData.date ? formatDateForInput(formData.date) : ""}
-                onChange={(e) => setFormData({ ...formData, date: parseInputDate(e.target.value) })}
-                error={errors.date}
-            />
-        </FormLayout>
+                <BaseInput
+                    label="Monto"
+                    type="number"
+                    value={formData.amount || ""}
+                    onChange={(e) => setFormData({ ...formData, amount: Number(e.target.value) })}
+                    error={errors.amount}
+                />
+
+                {/* Selector de Cuota */}
+                <BaseSelect
+                    label="Cuota"
+                    value={formData.feeId ?? ""}
+                    onChange={handleFeeChange}
+                    options={formattedFees}
+                    error={errors.feeId}
+                />
+
+                {/* Tipo de Pago */}
+                <BaseSelect<"cash" | "transfer">
+                    label="Tipo de Pago"
+                    value={formData.type}
+                    onChange={(type) => setFormData({ ...formData, type })}
+                    options={[
+                        { label: "Efectivo", value: "cash" },
+                        { label: "Transferencia", value: "transfer" },
+                    ]}
+                    error={errors.type}
+                />
+
+                <BaseInput
+                    label="Fecha"
+                    type="date"
+                    value={formData.date ? formatDateForInput(formData.date) : ""}
+                    onChange={(e) => setFormData({ ...formData, date: parseInputDate(e.target.value) })}
+                    error={errors.date}
+                />
+
+               
+            </FormLayout>
+        </>
     );
 }
