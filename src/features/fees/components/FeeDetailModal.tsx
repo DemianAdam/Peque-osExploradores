@@ -30,7 +30,7 @@ export function FeeDetailModal({ isOpen, onClose, onPay, fee }: FeeDetailModalPr
         <div className="bg-slate-900 text-white px-6 py-4 flex justify-between items-center">
           <div>
             <h3 className="text-lg font-bold">Detalle de Cuota</h3>
-            <span className="text-xs text-slate-400">Período: {formatPeriod(fee.startedAt)} al {fee.closedAt ? formatDateOnly(fee.closedAt) : "En curso"}</span>
+            <span className="text-xs text-slate-400">Período: {formatPeriod(fee.payslip.startedAt)} al {fee.payslip.closedAt ? formatDateOnly(fee.payslip.closedAt) : "En curso"}</span>
           </div>
           <button 
             onClick={onClose}
