@@ -1,20 +1,10 @@
+import { FullFee } from "@/shared/types/convex";
+import { formatDateOnly, formatPeriod } from "@/shared/utils/dates";
 import { Eye, DollarSign } from "lucide-react";
 
-interface FeeItem {
-  _id: string;
-  state: "paid" | "partial" | "pending";
-  child: {
-    name: string;
-    dni: string;
-  };
-  startedAt: string;
-  closedAt: string;
-  totalAmount: number;
-  paidAmount: number;
-}
 
 interface FeeCardProps {
-  fee: FeeItem;
+  fee: FullFee;
   onViewDetail?: () => void;
   onPay?: () => void;
 }
@@ -59,7 +49,7 @@ export function FeeCard({ fee, onViewDetail, onPay }: FeeCardProps) {
       {/* DNI y Periodo */}
       <div className="text-xs text-gray-500 flex justify-between pl-2">
         <span>DNI: {fee.child.dni}</span>
-        <span>Periodo: {fee.startedAt} al {fee.closedAt}</span>
+        <span>Periodo: {formatPeriod(fee.payslip.startedAt)} al {fee.payslip.closedAt ? formatDateOnly(fee.payslip.closedAt) : "En curso"}</span>
       </div>
 
       <hr className="border-gray-100 my-0.5 ml-2" />
