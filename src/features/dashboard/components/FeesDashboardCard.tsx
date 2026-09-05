@@ -25,7 +25,7 @@ export function FeesDashboardCard() {
   };
 
   return (
-    <DashboardCard title="PAGOS Y CUOTAS">
+    <DashboardCard title="CUOTAS">
       <div className="flex flex-col gap-4">
         
         {/* Cabecera informativa */}
@@ -64,7 +64,6 @@ export function FeesDashboardCard() {
                       </span>
                     </div>
 
-                    {/* BOTÓN DE DETALLE (El clásico botón con icono que me mencionaste) */}
                     <button
                       onClick={() => handleOpenDetail(fee)}
                       className="p-1.5 bg-gray-100 hover:bg-blue-500 hover:text-white text-slate-600 rounded-lg transition-colors cursor-pointer"
@@ -87,15 +86,6 @@ export function FeesDashboardCard() {
           className="text-xs font-bold text-blue-600 hover:text-blue-700 flex items-center gap-1 self-end transition-colors pt-1 cursor-pointer"
         >
           Ver listado completo de cuotas <ArrowRight size={14} />
-        </button>
-
-      
-      {/* Enlace general para ver todas las pagos */}
-        <button 
-          onClick={() => navigate("/pagos")}
-          className="text-xs font-bold text-green-600 hover:text-green-700 flex items-center gap-1 self-end transition-colors pt-1 cursor-pointer"
-        >
-          Ver listado completo de pagos <ArrowRight size={14} />
         </button>
 
       </div>
