@@ -48,7 +48,7 @@ export default function Children() {
 
                 return (
                     <button
-                        onClick={() => navigate(`/groups/${groupId}`)}
+                        onClick={() => navigate(`/grupos?groupId=${groupId}`)}
                         className="bg-sky-500 text-white px-4 py-2 rounded-full shadow-md hover:bg-sky-600 transition text-sm font-semibold"
                     >
                         {groupName}
