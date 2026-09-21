@@ -19,9 +19,9 @@ export const createChild = zTeacherMutation({
         const id = await ctx.db.insert("children", newChild);
 
         const currentPayslip = await getCurrentOpenPayslip(ctx);
-        const feeSettings = await getCurrentFeeSettings(ctx);
 
         if (currentPayslip) {
+            const feeSettings = await getCurrentFeeSettings(ctx);
             await ctx.db.insert("fees", {
                 totalAmount: feeSettings.feeAmount,
                 state: "pending",

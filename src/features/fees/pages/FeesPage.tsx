@@ -22,10 +22,6 @@ export default function Fees() {
   const [selectedFee, setSelectedFee] = useState<FullFee | null>(null);
   const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
 
-  const activePeriod = fees && fees.length > 0 ? formatPeriod(fees[0].payslip.startedAt) : "Sin período activo";
-  const activeFeeAmount = fees && fees.length > 0 ? fees[0].totalAmount : 0;
-  const [editableFeeAmount, setEditableFeeAmount] = useState<number>(activeFeeAmount);
-
   // Extracción de períodos únicos
   const availablePeriods = Array.from(
     new Map(
@@ -143,11 +139,7 @@ export default function Fees() {
       <h2 className="font-angkor text-[40px] text-[#1E293B] font-normal mb-2 text-left">LISTA</h2>
       <h3 className="text-4xl font-bold text-blue-500 mb-6 drop-shadow-sm text-left">Cuotas</h3>
 
-      <ActivePeriodCard 
-        startedAt={activePeriod}
-        feeAmount={editableFeeAmount || activeFeeAmount}
-        onFeeChange={setEditableFeeAmount}
-      />
+      <ActivePeriodCard />
 
       {/* Componente Modular de Filtros y Búsqueda */}
       <FeesFilters

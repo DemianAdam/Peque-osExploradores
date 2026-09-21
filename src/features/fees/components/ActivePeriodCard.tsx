@@ -2,27 +2,35 @@
 import { BaseInput } from "@/shared/ui/BaseInput";
 import { Calendar, Check, Edit3, X } from "lucide-react";
 import { useState } from "react";
+import { useQuery, useMutation } from "convex/react";
+import { api } from "@convex/_generated/api";
+import { formatPeriod } from "@utils/dates";
 
-interface ActivePeriodCardProps {
-  startedAt: string;
-  feeAmount: number;
-  onFeeChange: (value: number) => void;
-}
+export function ActivePeriodCard() {
+  const currentPayslip = useQuery(api.payslips.queries.getCurrentPayslip);
+  const feeSettings = useQuery(api.feeSettings.queries.getFeeSettings);
+  const updateFeeSettings = useMutation(api.feeSettings.mutations.updateFeeSettings);
 
-export function ActivePeriodCard({
-  startedAt,
-  feeAmount,
-  onFeeChange,
-}: ActivePeriodCardProps) {
+  const startedAt = currentPayslip ? formatPeriod(currentPayslip.startedAt) : "Sin período activo";
+  const feeAmount = feeSettings?.feeAmount ?? 0;
+
   const [isEditing, setIsEditing] = useState(false);
-  const [tempValue, setTempValue] = useState(feeAmount);
+  const [tempValue, setTempValue] = useState<number | null>(null);
 
-  const handleSave = () => {
-    onFeeChange(tempValue);
-    setIsEditing(false);
+  const displayValue = isEditing && tempValue !== null ? tempValue : feeAmount;
+
+  const handleSave = async () => {
+    try {
+      await updateFeeSettings({ feeAmount: displayValue });
+      setIsEditing(false);
+      setTempValue(null);
+    } catch (error) {
+      console.error("Failed to update fee amount:", error);
+    }
   };
+
   const handleCancel = () => {
-    setTempValue(feeAmount);
+    setTempValue(null);
     setIsEditing(false);
   };
 
@@ -48,7 +56,7 @@ export function ActivePeriodCard({
           <BaseInput
             type="number"
             label="Valor de Cuota"
-            value={isEditing ? tempValue : feeAmount}
+            value={displayValue}
             disabled={!isEditing}
             onChange={(e) => setTempValue(Number(e.target.value))}
             className={`w-full bg-gray-50 border border-gray-100 rounded-2xl px-4 py-2.5 text-sm font-bold text-slate-800 outline-none transition-all shadow-sm 
@@ -67,14 +75,14 @@ export function ActivePeriodCard({
             <>
               <button
                 onClick={handleSave}
-                className="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-3 rounded-xl font-bold text-sm transition flex items-center justify-center gap-1 shadow-sm"
+                className="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-3 rounded-xl font-bold text-sm transition flex items-center justify-center gap-1 shadow-sm cursor-pointer"
               >
                 <Check size={18} />
                 Guardar
               </button>
               <button
                 onClick={handleCancel}
-                className="bg-gray-200 hover:bg-gray-300 text-slate-600 px-3 py-3 rounded-xl transition flex items-center justify-center"
+                className="bg-gray-200 hover:bg-gray-300 text-slate-600 px-3 py-3 rounded-xl transition flex items-center justify-center cursor-pointer"
                 title="Cancelar"
               >
                 <X size={18} />
@@ -86,7 +94,7 @@ export function ActivePeriodCard({
                 setTempValue(feeAmount); // Sincronizamos por las dudas
                 setIsEditing(true);      // Activamos la edición
               }}
-              className="bg-blue-600 hover:bg-blue-700 text-white px-5 py-3 rounded-xl font-bold text-sm transition flex items-center justify-center gap-2 shadow-sm"
+              className="bg-blue-600 hover:bg-blue-700 text-white px-5 py-3 rounded-xl font-bold text-sm transition flex items-center justify-center gap-2 shadow-sm cursor-pointer"
             >
               <Edit3 size={18} />
               Editar valor

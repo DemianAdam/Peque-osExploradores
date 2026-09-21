@@ -20,6 +20,10 @@
     "convex-db-assistant": {
       "description": "Manages Convex database schema design, relational indexes, triggers, sharded counters, and database seeding across backend domains.",
       "mode": "subagent"
+    },
+    "convex-architect": {
+      "description": "Universal Convex architect agent for modular backend domains, Zod v4 validation, zodOutputToConvex schemas, custom query/mutation wrappers, relational triggers, and sharded counters.",
+      "mode": "subagent"
     }
   }
 }
