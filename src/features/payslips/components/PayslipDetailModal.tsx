@@ -49,7 +49,7 @@ export function PayslipDetailModal({ payslip, isOpen, onClose, onOpenDeleteModal
           </div>
           <div className="flex justify-between">
             <span className="font-semibold text-gray-500">Seño Encargada:</span>
-            <span className="font-medium text-slate-800">{payslip.teacherId}</span>
+            <span className="font-medium text-slate-800">{payslip.teacher?.name ?? "N/A"}</span>
           </div>
         </div>
 

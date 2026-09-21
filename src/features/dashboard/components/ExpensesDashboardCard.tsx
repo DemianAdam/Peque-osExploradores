@@ -2,34 +2,26 @@ import { useState } from "react";
 import { DashboardCard } from "@shared/components/DashboardCard";
 import { useNavigate } from "react-router";
 import { PieChart, BarChart3, ArrowRight } from "lucide-react";
-
-// TODO: Socio, conectar con la query real de gastos de Convex.
-// 1. Datos para el ciclo abierto actual (ej: Desglose por categorías para la torta / barras de progreso)
-const MOCK_CURRENT_EXPENSES = {
-  periodo: "Agosto 2026 (Abierto)",
-  total: 45000,
-  categories: [
-    { name: "Materiales Didácticos", amount: 20000, percentage: 44, color: "bg-pink-500" },
-    { name: "Refrigerio / Comida", amount: 15000, percentage: 33, color: "bg-amber-400" },
-    { name: "Mantenimiento / Varios", amount: 10000, percentage: 23, color: "bg-blue-400" },
-  ]
-};
-
-// 2. Datos para el histórico anual (para el gráfico de barras por mes)
-const MOCK_ANNUAL_EXPENSES = [
-  { month: "Abr", total: 30000 },
-  { month: "May", total: 35000 },
-  { month: "Jun", total: 28000 },
-  { month: "Jul", total: 42000 },
-  { month: "Ago", total: 45000 },
-];
+import { useQuery } from "convex/react";
+import { api } from "@convex/_generated/api";
 
 export function ExpensesDashboardCard() {
   const navigate = useNavigate();
-  // Estado para alternar entre vista mensual (ciclo abierto) y anual (histórico)
   const [viewMode, setViewMode] = useState<"monthly" | "annual">("monthly");
+  const stats = useQuery(api.invoices.queries.getDashboardStats);
 
-  const maxAnnualExpense = Math.max(...MOCK_ANNUAL_EXPENSES.map(e => e.total), 50000);
+  const colors = ["bg-pink-500", "bg-amber-400", "bg-blue-400", "bg-purple-400", "bg-emerald-400"];
+
+  const capitalizedPeriod = stats?.periodLabel ?? "Cargando...";
+  const currentTotal = stats?.currentTotal ?? 0;
+  
+  const categories = (stats?.categories ?? []).map((cat, index) => ({
+    ...cat,
+    color: colors[index % colors.length]
+  }));
+
+  const annualData = stats?.annualData ?? [];
+  const maxAnnualExpense = Math.max(...annualData.map(e => e.total), 1000);
 
   return (
     <DashboardCard title="GASTOS">
@@ -38,7 +30,7 @@ export function ExpensesDashboardCard() {
         {/* Cabecera y Botón de Alternancia (Toggle) */}
         <div className="flex justify-between items-center">
           <span className="text-xs bg-rose-50 text-rose-600 px-2.5 py-1 rounded-full font-bold">
-            {viewMode === "monthly" ? MOCK_CURRENT_EXPENSES.periodo : "Histórico Anual"}
+            {viewMode === "monthly" ? capitalizedPeriod : "Histórico Anual"}
           </span>
 
           <div className="flex bg-gray-100 p-1 rounded-xl">
@@ -70,15 +62,15 @@ export function ExpensesDashboardCard() {
           <div className="bg-gray-50/80 p-4 rounded-2xl border border-gray-100 flex flex-col gap-3 h-36 justify-center">
             <div className="flex justify-between items-center">
               <span className="text-xs text-slate-500 font-semibold">Total Acumulado</span>
-              <span className="text-sm font-bold text-rose-600">${MOCK_CURRENT_EXPENSES.total.toLocaleString()}</span>
+              <span className="text-sm font-bold text-rose-600">${currentTotal.toLocaleString()}</span>
             </div>
 
             {/* Barras de progreso por categoría (Simulando distribución de torta/porcentajes) */}
-            <div className="flex flex-col gap-2">
-              {MOCK_CURRENT_EXPENSES.categories.map((cat) => (
+            <div className="flex flex-col gap-2 overflow-y-auto max-h-24 pr-1">
+              {categories.map((cat) => (
                 <div key={cat.name} className="flex flex-col gap-1">
                   <div className="flex justify-between text-[11px]">
-                    <span className="text-slate-600 font-medium">{cat.name}</span>
+                    <span className="text-slate-600 font-medium truncate max-w-[120px]" title={cat.name}>{cat.name}</span>
                     <span className="text-slate-500 font-bold">${cat.amount.toLocaleString()}</span>
                   </div>
                   <div className="w-full bg-gray-200 h-2 rounded-full overflow-hidden">
@@ -94,9 +86,9 @@ export function ExpensesDashboardCard() {
         ) : (
           /* CONTENIDO 2: Vista Anual (Gráfico de barras por mes) */
           <div className="bg-gray-50/80 p-4 rounded-2xl border border-gray-100 flex items-end justify-between gap-2 h-36 pt-6">
-            {MOCK_ANNUAL_EXPENSES.map((item, index) => {
+            {annualData.map((item, index) => {
               const heightPercentage = (item.total / maxAnnualExpense) * 100;
-              const isLatest = index === MOCK_ANNUAL_EXPENSES.length - 1;
+              const isLatest = index === annualData.length - 1;
 
               return (
                 <div key={item.month} className="flex flex-col items-center flex-1 gap-1.5 h-full justify-end">

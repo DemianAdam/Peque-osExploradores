@@ -12,6 +12,7 @@ export const COUNTER_KEYS = {
 export const CounterKeysBuilders = {
   childrenInGroup: (id: Id<"groups">) => `children:group:${id}` as const,
   teachersInGroup: (id: Id<"groups">) => `teachers:group:${id}` as const,
+  activeChildren: () => `children:active` as const,
 } as const;
 
 type DynamicKey = ReturnType<(typeof CounterKeysBuilders)[keyof typeof CounterKeysBuilders]>;

@@ -86,7 +86,7 @@ export function FeeDetailModal({ isOpen, onClose, onPay, fee }: FeeDetailModalPr
               Historial de Pagos Registrados
             </h4>
 
-            {/* TODO: Mapear con la subcolección o array real de pagos asociados a esta cuota en Convex */}
+            {/* Historial de Pagos de la Cuota */}
             {fee.payments && fee.payments.length > 0 ? (
               <div className="flex flex-col gap-2">
                 {fee.payments.map((payment: any, index: number) => (

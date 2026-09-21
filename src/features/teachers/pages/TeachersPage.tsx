@@ -10,7 +10,13 @@ import { FullTeacher } from "@shared/types/convex";
 
 export default function Teachers() {
   const [selectedTeacher, setSelectedTeacher] = useState<FullTeacher | null>(null);
+  const [searchTerm, setSearchTerm] = useState("");
   const teachers = useQuery(api.teachers.queries.getTeachers);
+
+  const filteredTeachers = teachers?.filter(teacher => {
+    const term = searchTerm.toLowerCase();
+    return teacher.name.toLowerCase().includes(term);
+  });
 
   
   const columns = [
@@ -37,9 +43,9 @@ export default function Teachers() {
         <h2 className="font-angkor text-[40px] text-[#1E293B] font-normal mb-2 text-left">LISTA</h2>
         <h3 className="text-4xl font-bold text-pink-500 mb-8 drop-shadow-sm text-left">Señoritas</h3>
         <List<FullTeacher>
-          data={teachers ?? []}
+          data={filteredTeachers ?? []}
           columns={columns}
-          onSearch={(term) => console.log(term)}
+          onSearch={setSearchTerm}
         />
       
         {selectedTeacher && (

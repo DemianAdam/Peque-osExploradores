@@ -13,10 +13,16 @@ import { InvoiceDetailModal } from "@features/invoices/components/InvoiceDetailM
 export default function Invoices() {
     const [selectedInvoice, setSelectedInvoice] = useState<Invoice | null>(null);
     const [isEditingMode, setIsEditingMode] = useState(false);
+    const [searchTerm, setSearchTerm] = useState("");
     const invoices = useQuery(api.invoices.queries.getInvoices);
     const [invoiceToDelete, setInvoiceToDelete] = useState<Invoice | null>(null);
     const navigate = useNavigate();
     const deleteInvoiceMutation = useMutation(api.invoices.mutations.deleteInvoice);
+
+    const filteredInvoices = invoices?.filter(invoice => {
+        const term = searchTerm.toLowerCase();
+        return invoice.description.toLowerCase().includes(term);
+    });
     const handleDeleteConfirm = async () => {
         if (!invoiceToDelete) return;
 
@@ -67,9 +73,9 @@ export default function Invoices() {
             <h3 className="text-4xl font-bold text-blue-500 mb-8 drop-shadow-sm text-left">Gastos</h3>
 
             <List<Invoice>
-                data={invoices ?? []}
+                data={filteredInvoices ?? []}
                 columns={columns}
-                onSearch={(term) => console.log("Searching:", term)}
+                onSearch={setSearchTerm}
                 onAdd={() => navigate("/gastos/nuevo")}
                 buttonLabel=""
             />

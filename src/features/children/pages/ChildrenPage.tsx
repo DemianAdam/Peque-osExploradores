@@ -13,6 +13,15 @@ export default function Children() {
 
     const [selectedChild, setSelectedChild] = useState<FullChild | null>(null);
     const [isEditingMode, setIsEditingMode] = useState(false);
+    const [searchTerm, setSearchTerm] = useState("");
+
+    const filteredChildren = children?.filter(child => {
+        const term = searchTerm.toLowerCase();
+        return (
+            child.name.toLowerCase().includes(term) ||
+            child.dni.includes(term)
+        );
+    });
 
     const columns = [
         { header: "N°", accessor: (_: FullChild, index: number) => index + 1 },
@@ -93,9 +102,9 @@ export default function Children() {
             <h3 className="text-4xl font-bold text-blue-500 mb-8 drop-shadow-sm text-left">Exploradores</h3>
 
             <List<FullChild>
-                data={children ?? []}
+                data={filteredChildren ?? []}
                 columns={columns}
-                onSearch={(term) => console.log("Searching:", term)}
+                onSearch={setSearchTerm}
                 onAdd={() => navigate("/chicos/nuevo")}
                 buttonLabel=""
             />

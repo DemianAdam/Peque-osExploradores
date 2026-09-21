@@ -215,7 +215,23 @@ export function PaymentDetailModal({ payment, onClose, initialEditing = false }:
           </div>
         </div>
 
-        {/* TODO KAREN: el pago tiene payslipId pero nunca se muestra; InvoiceDetailModal renderiza el badge 'Vinculado a liquidación'/'Sin liquidación' (InvoiceDetailModal.tsx:168-181). Replicar ese bloque acá cuando exista vinculación. */}
+        {/* Información de Liquidación */}
+        <div className="flex flex-col gap-2 mb-2">
+          <label className="text-sm font-semibold text-gray-500">Liquidación Relacionada</label>
+          <div className="bg-gray-50 border border-gray-300 rounded-xl p-3">
+            <p className="text-sm font-medium text-slate-700">
+              {payment.payslipId ? (
+                <span className="bg-emerald-100 text-emerald-700 px-3 py-1 rounded-full text-xs font-semibold inline-block">
+                  Vinculado a liquidación
+                </span>
+              ) : (
+                <span className="bg-amber-100 text-amber-700 px-3 py-1 rounded-full text-xs font-semibold inline-block">
+                  Sin liquidación (Ciclo abierto)
+                </span>
+              )}
+            </p>
+          </div>
+        </div>
 
         {/* Botón de Acción */}
         <button

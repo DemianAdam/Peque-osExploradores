@@ -1,0 +1,25 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "instructions": [
+    "AGENTS.md"
+  ],
+  "skills": {
+    "paths": [
+      ".opencode/skills"
+    ]
+  },
+  "agent": {
+    "frontend-creator": {
+      "description": "Scaffolds and updates self-contained React 19 frontend features, pages, modals, and forms following project conventions and Convex hooks.",
+      "mode": "subagent"
+    },
+    "convex-domain": {
+      "description": "Scaffolds and updates Convex backend domains enforcing strict Zod v4 validation, zodOutputToConvex schemas, zid helpers, and trigger-backed mutations.",
+      "mode": "subagent"
+    },
+    "convex-db-assistant": {
+      "description": "Manages Convex database schema design, relational indexes, triggers, sharded counters, and database seeding across backend domains.",
+      "mode": "subagent"
+    }
+  }
+}

@@ -5,7 +5,7 @@ import { PaymentFormData } from "@shared/types/forms";
 import { BaseSelect } from "@ui/BaseSelect";
 import { useQuery, useMutation } from "convex/react";
 import { api } from "../../../convex/_generated/api";
-import { formatDate, formatDateForInput, parseInputDate } from "@utils/dates";
+import { formatDateForInput, parseInputDate } from "@utils/dates";
 import { formatFeeLabel } from "@utils/labels";
 import { Id } from "@convex/_generated/dataModel";
 
@@ -34,7 +34,6 @@ export function PaymentForm({ onSuccess, initialFeeId }: PaymentFormProps) {
     });
 
     const [selectedFeeId, setSelectedFeeId] = useState<string | null>(null);
-    const [isSubmitting, setIsSubmitting] = useState(false);
     const [submitError, setSubmitError] = useState("");
 
     const createPayment = useMutation(api.payments.mutations.createPayment);
@@ -111,7 +110,6 @@ export function PaymentForm({ onSuccess, initialFeeId }: PaymentFormProps) {
 
         if (!isValid) return;
 
-        setIsSubmitting(true);
         try {
             const paymentInput: CreatePaymentInput = {
                 ...formData,
@@ -121,8 +119,6 @@ export function PaymentForm({ onSuccess, initialFeeId }: PaymentFormProps) {
             onSuccess?.();
         } catch {
             setSubmitError("No se pudo crear el pago. Intente nuevamente.");
-        } finally {
-            setIsSubmitting(false);
         }
     };
 

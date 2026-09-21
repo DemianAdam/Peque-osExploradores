@@ -13,10 +13,16 @@ export default function Groups() {
   const [selectedGroup, setSelectedGroup] = useState<FullGroup | null>(null);
   const [isEditingMode, setIsEditingMode] = useState(false);
   const [groupToDelete, setGroupToDelete] = useState<FullGroup | null>(null);
+  const [searchTerm, setSearchTerm] = useState("");
   const navigate = useNavigate();
   
   const groups = useQuery(api.groups.queries.getFullGroups);
   const deleteGroupMutation = useMutation(api.groups.mutations.deleteGroup);
+
+  const filteredGroups = groups?.filter(group => {
+    const term = searchTerm.toLowerCase();
+    return group.name.toLowerCase().includes(term);
+  });
 
   const handleDeleteConfirm = async () => {
     if (!groupToDelete) return;
@@ -84,9 +90,9 @@ export default function Groups() {
         <h3 className="text-4xl font-bold text-blue-500 mb-8 drop-shadow-sm text-left">Grupos</h3>
 
       <List<FullGroup>
-        data={groups ?? []}
+        data={filteredGroups ?? []}
         columns={columns}
-        onSearch={(term) => console.log("Buscando:", term)}
+        onSearch={setSearchTerm}
         onAdd={() => navigate("/grupos/nuevo")}
         buttonLabel=""
       />

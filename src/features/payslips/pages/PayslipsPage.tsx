@@ -19,7 +19,6 @@ import { useQuery, useMutation } from "convex/react";
 
 export default function Payslips() {
   const payslipsData = useQuery(api.payslips.queries.getPayslips) || [];
-  const [payslips, setPayslips] = useState<FullPayslip[]>(payslipsData);
   const [viewMode, setViewMode] = useState<"list" | "calendar">("list");
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedPayslip, setSelectedPayslip] = useState<FullPayslip | null>(null);
@@ -27,19 +26,18 @@ export default function Payslips() {
   const deletePayslipMutation = useMutation(api.payslips.mutations.deleteLastPayslip);
 
 
-  const handleConfirmDelete = async (id: string) => {
+  const handleConfirmDelete = async () => {
     try {
       await deletePayslipMutation({});
-      setPayslips(payslips.filter(p => p._id !== id));
       setSelectedPayslip(null);
     } catch (error) {
       console.error("Failed to delete payslip:", error);
     }
   };
-  /*TODO DEMIAN: search
-  const filteredPayslips = payslips.filter(p => 
-    p.periodo.toLowerCase().includes(searchTerm.toLowerCase())
-  );*/
+
+  const filteredPayslips = payslipsData.filter(p => 
+    formatPeriod(p.startedAt).toLowerCase().includes(searchTerm.toLowerCase())
+  );
 
   const columns = [
     { header: "Período", accessor: (p: FullPayslip) => formatPeriod(p.startedAt) },
@@ -59,7 +57,7 @@ export default function Payslips() {
     }
   ];
 
-  const isLatestPayslip = selectedPayslip && payslips.length > 0 && payslips[0]._id === selectedPayslip._id;
+  const isLatestPayslip = selectedPayslip && payslipsData.length > 0 && payslipsData[0]._id === selectedPayslip._id;
 
   return (
     <>
@@ -97,9 +95,8 @@ export default function Payslips() {
           <div>
             {/* 🖥️ ESCRITORIO: Renderiza la tabla oficial de <List /> */}
             <div className="hidden md:block">
-              //TODO DEMIAN: filtrar
               <List<FullPayslip>
-                data={payslips}
+                data={filteredPayslips}
                 columns={columns}
                 onSearch={(term) => setSearchTerm(term)}
                 searchPlaceholder="Buscar liquidación..."
@@ -117,7 +114,7 @@ export default function Payslips() {
                 className="w-full bg-white border border-gray-200 rounded-xl px-4 py-2.5 text-sm outline-none focus:border-blue-400 transition shadow-sm mb-2"
               />
 
-              {payslips.map((payslip: FullPayslip, index: number) => (
+              {filteredPayslips.map((payslip: FullPayslip, index: number) => (
                 <PayslipCard 
                   key={payslip._id}
                   payslip={payslip} 
@@ -130,7 +127,7 @@ export default function Payslips() {
         ) : (
           /* Vista Calendario (aplica tanto para PC como móvil o según cómo lo maneje tu componente) */
           <PayslipsCalendarView 
-            payslips={payslips} 
+            payslips={filteredPayslips} 
             onSelect={(p) => setSelectedPayslip(p)} 
           />
         )}
@@ -155,7 +152,7 @@ export default function Payslips() {
             isOpen={isDeleteModalOpen}
             onClose={() => setIsDeleteModalOpen(false)}
             payslipId={selectedPayslip._id}
-            onConfirm={() => handleConfirmDelete(selectedPayslip._id)}
+            onConfirm={handleConfirmDelete}
           />
         )}
 

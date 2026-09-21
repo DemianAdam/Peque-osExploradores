@@ -1,20 +1,16 @@
 import { Users, ArrowRight } from "lucide-react";
 import { DashboardCard } from "@shared/components/DashboardCard";
 import { useNavigate } from "react-router";
-
-// TODO: Socio, reemplazar MOCK_CHILDREN_CARD con la query real de Convex.
-const MOCK_CHILDREN_CARD = [
-  { month: "Abr", count: 10 },
-  { month: "May", count: 12 },
-  { month: "Jun", count: 11 },
-  { month: "Jul", count: 14 },
-  { month: "Ago", count: 15 },
-];
+import { useQuery } from "convex/react";
+import { api } from "@convex/_generated/api";
 
 export function ChildrenDashboardCard() {
   const navigate = useNavigate();
-  // TODO: Obtener este valor real del mes en curso desde tu base de datos o estado global
-  const maxCount = Math.max(...MOCK_CHILDREN_CARD.map(s => s.count), 15);
+  const stats = useQuery(api.children.queries.getDashboardStats);
+
+  const activeCount = stats?.activeCount ?? 0;
+  const monthsData = stats?.monthsData ?? [];
+  const maxCount = Math.max(...monthsData.map(s => s.count), activeCount, 1);
 
   return (
     <DashboardCard title="ESTADÍSTICA CHICOS">
@@ -25,15 +21,15 @@ export function ChildrenDashboardCard() {
             <span>Evolución de matrícula activa</span>
           </div>
           <span className="text-xs bg-pink-50 text-pink-600 px-2.5 py-1 rounded-full font-bold">
-            Actual: 15 alumnos
+            Actual: {activeCount} alumnos
           </span>
         </div>
 
         {/* Gráfico de barras */}
         <div className="bg-gray-50/80 p-4 rounded-2xl border border-gray-100 flex items-end justify-between gap-2 h-36 pt-6">
-          {MOCK_CHILDREN_CARD.map((stat, index) => {
+          {monthsData.map((stat, index) => {
             const heightPercentage = (stat.count / maxCount) * 100;
-            const isLatest = index === MOCK_CHILDREN_CARD.length - 1;
+            const isLatest = index === monthsData.length - 1;
 
             return (
               <div key={stat.month} className="flex flex-col items-center flex-1 gap-1.5 h-full justify-end">
