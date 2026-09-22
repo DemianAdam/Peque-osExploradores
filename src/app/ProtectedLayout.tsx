@@ -12,7 +12,7 @@ export function ProtectedLayout() {
   if (!teacher) return <AuthErrorScreen error={new Error("No teacher found")} />;
 
   return (
-    <div className="min-h-screen bg-[#F8FAFC]">
+    <div className="min-h-screen">
       <Header />
       <main>
         <Outlet context={teacher} />

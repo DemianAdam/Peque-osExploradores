@@ -3,6 +3,7 @@ import { Navigate, Route, Routes } from "react-router";
 import { ProtectedLayout } from "./app/ProtectedLayout";
 import { AuthProvider } from "./app/AuthProvider";
 import LoginPage from "./features/auth/pages/LoginPage";
+import LandingPage from "./features/landing/pages/LandingPage";
 import DashboardPage from "./features/dashboard/pages/DashboardPage";
 import ChildrenPage from "./features/children/pages/ChildrenPage";
 import ChildrenCreator from "./features/children/pages/ChildrenCreator";
@@ -16,42 +17,55 @@ import InvoicesPage from "./features/invoices/pages/InvoicesPage";
 import InvoiceCreator from "./features/invoices/pages/InvoiceCreator";
 import PayslipsPage from "./features/payslips/pages/PayslipsPage";
 import { AuthLoadingScreen } from "./shared/components/AuthLoadingScreen";
+import rainbowBg from "@/assets/images/rainbow.avif";
 
 function RoutesContent() {
   const { isAuthenticated, isLoading } = useConvexAuth();
 
   if (isLoading) {
-    return <AuthLoadingScreen />;
+    return (
+      <div 
+        className="min-h-screen w-full bg-cover bg-center overflow-y-auto"
+        style={{ backgroundImage: `url(${rainbowBg})` }}
+      >
+        <AuthLoadingScreen />
+      </div>
+    );
   }
 
   return (
-    <Routes>
-      <Route
-        path="/login"
-        element={!isAuthenticated ? <LoginPage /> : <Navigate to="/" replace />}
-      />
+    <div 
+      className="min-h-screen w-full bg-cover bg-center overflow-y-auto"
+      style={{ backgroundImage: `url(${rainbowBg})` }}
+    >
+      <Routes>
+        <Route
+          path="/login"
+          element={!isAuthenticated ? <LoginPage /> : <Navigate to="/" replace />}
+        />
 
-      {isAuthenticated ? (
-        <Route path="/" element={<ProtectedLayout />}>
-          <Route index element={<DashboardPage />} />
-          <Route path="chicos" element={<ChildrenPage />} />
-          <Route path="chicos/nuevo" element={<ChildrenCreator />} />
-          <Route path="cuotas" element={<FeesPage />} />
-          <Route path="pagos" element={<PaymentsPage />} />
-          <Route path="pagos/nuevo" element={<PaymentCreator />} />
-          <Route path="seños" element={<TeachersPage />} />
-          <Route path="gastos" element={<InvoicesPage />} />
-          <Route path="gastos/nuevo" element={<InvoiceCreator />} />
-          <Route path="liquidaciones" element={<PayslipsPage />} />
-          <Route path="grupos" element={<GroupsPage />} />
-          <Route path="grupos/nuevo" element={<GroupCreator />} />
-        </Route>
-      ) : (
-        <Route path="*" element={<Navigate to="/login" replace />} />
-      )}
+        {isAuthenticated ? (
+          <Route path="/" element={<ProtectedLayout />}>
+            <Route index element={<DashboardPage />} />
+            <Route path="chicos" element={<ChildrenPage />} />
+            <Route path="chicos/nuevo" element={<ChildrenCreator />} />
+            <Route path="cuotas" element={<FeesPage />} />
+            <Route path="pagos" element={<PaymentsPage />} />
+            <Route path="pagos/nuevo" element={<PaymentCreator />} />
+            <Route path="seños" element={<TeachersPage />} />
+            <Route path="gastos" element={<InvoicesPage />} />
+            <Route path="gastos/nuevo" element={<InvoiceCreator />} />
+            <Route path="liquidaciones" element={<PayslipsPage />} />
+            <Route path="grupos" element={<GroupsPage />} />
+            <Route path="grupos/nuevo" element={<GroupCreator />} />
+          </Route>
+        ) : (
+          <Route path="/" element={<LandingPage />} />
+        )}
 
-      {isAuthenticated && <Route path="*" element={<Navigate to="/" replace />} />}
-    </Routes>
+        <Route path="*" element={<Navigate to="/" replace />} />
+      </Routes>
+    </div>
   );
 }
 

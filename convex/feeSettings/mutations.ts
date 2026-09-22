@@ -2,6 +2,7 @@ import { zTeacherMutation } from "../zod";
 import { MutationCtx } from "../_generated/server";
 import { Id } from "../_generated/dataModel";
 import { updateFeeSettingsValidator, feeSettingsValidator } from "./validators";
+import { recomputeFeeState } from "../payments/functions";
 
 async function getOrCreateFeeSettings(ctx: MutationCtx, teacherId: Id<"teachers">): Promise<Id<"feeSettings">> {
     const existing = await ctx.db.query("feeSettings").first();
@@ -28,6 +29,7 @@ async function updateCurrentPeriodFees(ctx: MutationCtx, newFeeAmount: number) {
 
     for (const fee of fees) {
         await ctx.db.patch("fees", fee._id, { totalAmount: newFeeAmount });
+        await recomputeFeeState(ctx, fee._id);
     }
 
     await ctx.db.patch("payslips", currentPayslip._id, { feeAmountUsed: newFeeAmount });
