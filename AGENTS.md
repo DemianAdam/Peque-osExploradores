@@ -14,7 +14,8 @@
 - **Convex / Backend Tasks:** Whenever user requests involve Convex backend, database schema, queries, mutations, validators, triggers, or sharded counters, proactively dispatch or utilize the `convex-domain` and `convex-db-assistant` subagents.
 - **Frontend Tasks:** Whenever user requests involve React components, pages, modals, forms, Tailwind CSS styling, or UI development, proactively dispatch or utilize the `frontend-creator` subagent.
 
-- **Agents (`.opencode/agents/`):**
+- **Agents (`.opencode/agents/` / `opencode.json`):**
+  - `convex-architect`: Universal Convex architect agent for modular backend domains, Zod v4 validation, custom wrappers, and relational triggers.
   - `frontend-creator`: Scaffolds self-contained React 19 feature pages, modals, and forms.
   - `convex-domain`: Scaffolds Convex backend domains (schema, validators, queries, mutations, triggers).
   - `convex-db-assistant`: Manages database schema design, relational indexes, triggers, and sharded counters.

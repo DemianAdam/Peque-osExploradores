@@ -11,6 +11,7 @@ import { feeSchema } from "./fees/schema";
 import { childrenSchema } from "./children/schema";
 import { feeSettingsSchema } from "./feeSettings/schema";
 
+
 export default defineSchema({
   ...authTables,
   users: userSchema,
