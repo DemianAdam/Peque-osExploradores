@@ -21,7 +21,7 @@ export function ChildrenDashboardCard() {
             <span>Evolución de matrícula activa</span>
           </div>
           <span className="text-xs bg-pink-50 text-pink-600 px-2.5 py-1 rounded-full font-bold">
-            Actual: {activeCount} alumnos
+            Actual: {activeCount}
           </span>
         </div>
 

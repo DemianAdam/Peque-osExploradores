@@ -6,7 +6,6 @@ import pan4 from "@/assets/images/pepics/pan4.jpg";
 import dino1 from "@/assets/images/pepics/dino1.jpg";
 import dino2 from "@/assets/images/pepics/dino2.jpg";
 import general1 from "@/assets/images/pepics/general1.jpg";
-import flyer from "@/assets/images/pepics/flyer.jpg";
 
 interface Photo {
   src: string;

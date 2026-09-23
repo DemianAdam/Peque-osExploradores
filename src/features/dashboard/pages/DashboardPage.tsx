@@ -54,9 +54,9 @@ export default function Dashboard() {
 
       {/* Grid con las 3 tarjetas específicas */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 w-full max-w-6xl mx-auto">
-        <ChildrenDashboardCard />
-        <ExpensesDashboardCard />
         <FeesDashboardCard />
+        <ExpensesDashboardCard />
+        <ChildrenDashboardCard />
       </div>
 
      
