@@ -6,6 +6,7 @@ import { useNavigate } from "react-router";
 import { Pencil, Eye } from "lucide-react";
 import { useState } from "react";
 import { ChildDetailModal } from "@features/children/components/ChildDetailModal";
+import rainbowBg from '@/assets/images/rainbow.avif';
 
 export default function Children() {
     const children = useQuery(api.children.queries.getChildren);
@@ -97,7 +98,8 @@ export default function Children() {
     ];
 
     return (
-        <div className="w-full flex flex-col p-8 px-6">
+        <div className="min-h-screen w-full flex flex-col items-stretch justify-start px-4 py-8 bg-cover bg-center overflow-y-auto"
+        style={{ backgroundImage: `url(${rainbowBg})` }}>
             <h2 className="font-angkor text-[40px] text-[#1E293B] font-normal mb-2 text-left">LISTA</h2>
             <h3 className="text-4xl font-bold text-blue-500 mb-8 drop-shadow-sm text-left">Exploradores</h3>
 

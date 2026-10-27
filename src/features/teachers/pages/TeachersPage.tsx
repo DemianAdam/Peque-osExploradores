@@ -3,10 +3,10 @@ import { useState } from "react";
 import { List } from "@ui/List";
 import { api } from "@convex/_generated/api";
 import { useQuery } from "convex/react";
-
 import { Eye } from "lucide-react";
 import { TeacherDetailModal } from "@features/teachers/components/TeacherDetailModal";
 import { FullTeacher } from "@shared/types/convex";
+import rainbowBg from '@/assets/images/rainbow.avif';
 
 export default function Teachers() {
   const [selectedTeacher, setSelectedTeacher] = useState<FullTeacher | null>(null);
@@ -39,7 +39,8 @@ export default function Teachers() {
 
   return (
     <>
-      <div className="w-full flex flex-col p-8 px-6">
+      <div className="min-h-screen w-full flex flex-col items-stretch justify-start px-4 py-8 bg-cover bg-center overflow-y-auto"
+    style={{ backgroundImage: `url(${rainbowBg})` }}>
         <h2 className="font-angkor text-[40px] text-[#1E293B] font-normal mb-2 text-left">LISTA</h2>
         <h3 className="text-4xl font-bold text-pink-500 mb-8 drop-shadow-sm text-left">Seños</h3>
         <List<FullTeacher>

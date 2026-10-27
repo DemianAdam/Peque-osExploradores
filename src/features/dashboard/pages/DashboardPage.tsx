@@ -2,6 +2,7 @@
 import { useOutletContext, useNavigate } from "react-router";
 import { Teacher } from "@shared/types/convex";
 import { CreditCard, Receipt, Plus } from "lucide-react";
+import rainbowBg from '@/assets/images/rainbow.avif';
 
 
 // Importamos las tres tarjetas específicas
@@ -16,7 +17,11 @@ export default function Dashboard() {
 
 
   return (
-    <div className="w-full flex flex-col pt-8 px-6 pb-12">
+    <div 
+      className="min-h-screen w-full flex flex-col items-center justify-start px-4 py-8 bg-cover bg-center overflow-y-auto"
+      style={{ backgroundImage: `url(${rainbowBg})` }}
+    >
+    
       {/* Saludo */}
       <h3 className="text-xl font-bold text-pink-500 mb-1 drop-shadow-sm text-left">
         Bienvenida, {teacher.name}
