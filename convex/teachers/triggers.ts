@@ -1,6 +1,8 @@
-import { subscribeTrigger } from "../triggers";
+import { DeleteOperation } from "../triggers";
 
-subscribeTrigger("teachers", {
+export const teacherTriggers: {
+  delete: DeleteOperation<"teachers">;
+} = {
   delete: async (ctx, { oldDoc }) => {
     const groupTeachersQuery = ctx.db.query("group_teachers")
       .withIndex("index_teacher", (q) => q.eq("teacherId", oldDoc._id));
@@ -9,4 +11,5 @@ subscribeTrigger("teachers", {
       await ctx.db.delete("group_teachers", gt._id);
     }
   },
-});
+};
+  

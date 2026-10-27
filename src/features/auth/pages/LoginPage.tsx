@@ -1,5 +1,5 @@
 import InputField from '@ui/InputField';
-import logo from '@/assets/images/logo_pequenos.png';
+import logo from '@/assets/images/newLogo.png';
 import rainbowBg from '@/assets/images/rainbow.avif';
 import { useAuthActions } from '@convex-dev/auth/react';
 

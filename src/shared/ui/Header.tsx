@@ -1,5 +1,5 @@
 import { useState } from "react";
-import logo from "@/assets/images/Logo.png"
+import logo from "@/assets/images/newLogo.png"
 import { Link } from "react-router";
 import { LogOut } from "lucide-react";
 import { useAuthActions } from "@convex-dev/auth/react";
@@ -30,7 +30,7 @@ export const Header = () => {
           </button>
 
         {/* Logo (Centrado) */}
-        <Link to="/" className="w-24 h-24">
+        <Link to="/" className="w-20 h-20 p-2">
           <img 
             src={logo} 
             alt="Pequeños Exploradores" 
@@ -102,7 +102,7 @@ export const Header = () => {
               onClick={() => setIsMenuOpen(false)} 
               className={menuLinkClass}
             >
-              Señoritas
+              Seños
             </Link>
 
             <Link 

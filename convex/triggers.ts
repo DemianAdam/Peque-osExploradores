@@ -1,14 +1,13 @@
 import { Change, Triggers } from "convex-helpers/server/triggers";
 import { DataModel, TableNames } from "./_generated/dataModel";
 
-const triggers = new Triggers<DataModel>();
+const triggersInstance = new Triggers<DataModel>();
 
-type TriggerFunction = Parameters<typeof triggers.register>[1];
+export const triggersDB = triggersInstance.wrapDB;
+
+type TriggerFunction = Parameters<typeof triggersInstance.register>[1];
 type TriggerCtx = Parameters<TriggerFunction>[0];
 
-export const triggersDB = triggers.wrapDB;
-
-// 🔑 Keep table generic all the way through
 type ChangeByOperation<
   T extends TableNames,
   Op extends Change<DataModel, T>["operation"]
@@ -29,7 +28,6 @@ export type DeleteOperation<T extends TableNames> = (
   args: ChangeByOperation<T, "delete">
 ) => Promise<void>;
 
-// 🚀 Main helper (inference happens here)
 export function subscribeTrigger<T extends TableNames>(
   tableName: T,
   events: Partial<{
@@ -38,17 +36,29 @@ export function subscribeTrigger<T extends TableNames>(
     delete: DeleteOperation<T>;
   }>
 ) {
-  triggers.register(tableName, async (ctx, change) => {
+  triggersInstance.register(tableName, async (ctx, change) => {
     if (change.operation === "insert") {
       await events.insert?.(ctx, change);
     }
-
     if (change.operation === "update") {
       await events.update?.(ctx, change);
     }
-
     if (change.operation === "delete") {
       await events.delete?.(ctx, change);
     }
   });
 }
+
+import { childTriggers } from "./children/triggers";
+import { groupTriggers } from "./groups/triggers";
+import { teacherTriggers } from "./teachers/triggers";
+import { groupTeacherTriggers } from "./group_teachers/triggers";
+
+subscribeTrigger("children", childTriggers);
+subscribeTrigger("groups", groupTriggers);
+subscribeTrigger("teachers", teacherTriggers);
+subscribeTrigger("group_teachers", groupTeacherTriggers);
+
+
+
+

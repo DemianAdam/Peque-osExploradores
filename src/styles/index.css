@@ -1,10 +1,44 @@
-@import url('https://fonts.googleapis.com/css2?family=Angkor&family=Matemasie&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Angkor&family=Matemasie&family=Outfit:wght@400;600;700;800;900&display=swap');
 @import "tailwindcss";
 
+@theme {
+  --font-sans: 'Outfit', sans-serif;
+  --color-peque-pink: #ff65a3;
+  --color-peque-orange: #f47718;
+  --color-peque-yellow: #f7cf3d;
+  --color-peque-green: #70b83b;
+  --color-peque-blue: #38bdf8;
+  --color-peque-purple: #c6b7ff;
+  --color-peque-bg: #fffaf0;
+  --color-peque-dark: #0b3159;
+}
 
 .font-angkor {
   font-family: "Angkor", serif;
   font-weight: 400;
   font-style: normal;
 }
+
+@keyframes marquee {
+  0% { transform: translateX(0%); }
+  100% { transform: translateX(-50%); }
+}
+
+@keyframes marquee-reverse {
+  0% { transform: translateX(-50%); }
+  100% { transform: translateX(0%); }
+}
+
+.animate-marquee {
+  display: flex;
+  width: max-content;
+  animation: marquee 35s linear infinite;
+}
+
+.animate-marquee-reverse {
+  display: flex;
+  width: max-content;
+  animation: marquee-reverse 40s linear infinite;
+}
+
 

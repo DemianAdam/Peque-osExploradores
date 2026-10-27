@@ -25,13 +25,15 @@ export const triggersDB = triggers.wrapDB;
 
 ## 2. Domain Trigger Implementation (`convex/{domain}/triggers.ts`)
 
-When creating triggers for a domain, create a `triggers.ts` file in the domain folder and import `subscribeTrigger` from `../triggers`.
+When creating triggers for a domain, create a `triggers.ts` file in the domain folder, define and export a typed trigger object, and import/register it in `convex/triggers.ts` to prevent ES module hoisting and circular dependency issues.
 
 ### Example: Relational Integrity & Cascading Deletes (`convex/groups/triggers.ts`):
 ```ts
-import { subscribeTrigger } from "../triggers";
+import { DeleteOperation } from "../triggers";
 
-subscribeTrigger("groups", {
+export const groupTriggers: {
+    delete: DeleteOperation<"groups">;
+} = {
     delete: async (ctx, { oldDoc }) => {
         // 1. Guard check: prevent deletion if active dependencies exist
         const anyActiveChildrenInGroup = await ctx.db.query("children")
@@ -51,7 +53,14 @@ subscribeTrigger("groups", {
             await ctx.db.delete("group_teachers", groupTeacher._id);
         }
     }
-});
+};
+```
+
+### 3. Central Registration (`convex/triggers.ts`)
+Register domain triggers at the bottom of `convex/triggers.ts` after `triggersInstance` and `subscribeTrigger` are defined:
+```ts
+import { groupTriggers } from "./groups/triggers";
+subscribeTrigger("groups", groupTriggers);
 ```
 
 ## 3. Best Practices for Triggers

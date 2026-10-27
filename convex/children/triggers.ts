@@ -1,8 +1,13 @@
-import { subscribeTrigger } from "../triggers";
+import { InsertOperation, UpdateOperation, DeleteOperation } from "../triggers";
 import { incrementCount, decrementCount, CounterKeysBuilders } from "../counter";
 
-subscribeTrigger("children", {
+export const childTriggers: {
+  insert: InsertOperation<"children">;
+  update: UpdateOperation<"children">;
+  delete: DeleteOperation<"children">;
+} = {
   insert: async (ctx, { newDoc }) => {
+    console.log("Trigger insert children: newDoc:", newDoc);
     if (newDoc.active) {
       await incrementCount(ctx, CounterKeysBuilders.activeChildren());
     }
@@ -14,6 +19,8 @@ subscribeTrigger("children", {
     const wasActive = oldDoc.active;
     const isActive = newDoc.active;
 
+    console.log("Trigger update children: wasActive:", wasActive, "isActive:", isActive);
+
     if (!wasActive && isActive) {
       await incrementCount(ctx, CounterKeysBuilders.activeChildren());
     } else if (wasActive && !isActive) {
@@ -24,12 +31,20 @@ subscribeTrigger("children", {
     const isCounted = newDoc.active && newDoc.groupId;
 
     if (wasCounted && !isCounted) {
-      await decrementCount(ctx, CounterKeysBuilders.childrenInGroup(oldDoc.groupId!));
+      if (oldDoc.groupId) {
+        await decrementCount(ctx, CounterKeysBuilders.childrenInGroup(oldDoc.groupId));
+      }
     } else if (!wasCounted && isCounted) {
-      await incrementCount(ctx, CounterKeysBuilders.childrenInGroup(newDoc.groupId!));
+      if (newDoc.groupId) {
+        await incrementCount(ctx, CounterKeysBuilders.childrenInGroup(newDoc.groupId));
+      }
     } else if (wasCounted && isCounted && oldDoc.groupId !== newDoc.groupId) {
-      await decrementCount(ctx, CounterKeysBuilders.childrenInGroup(oldDoc.groupId!));
-      await incrementCount(ctx, CounterKeysBuilders.childrenInGroup(newDoc.groupId!));
+      if (oldDoc.groupId) {
+        await decrementCount(ctx, CounterKeysBuilders.childrenInGroup(oldDoc.groupId));
+      }
+      if (newDoc.groupId) {
+        await incrementCount(ctx, CounterKeysBuilders.childrenInGroup(newDoc.groupId));
+      }
     }
   },
   delete: async (ctx, { oldDoc }) => {
@@ -40,4 +55,4 @@ subscribeTrigger("children", {
       await decrementCount(ctx, CounterKeysBuilders.childrenInGroup(oldDoc.groupId));
     }
   },
-});
+};
