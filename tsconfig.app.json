@@ -23,7 +23,6 @@
     "noUncheckedSideEffectImports": true,
 
     /* Import paths */
-    "baseUrl": ".",
     "paths": {
       "@/*": ["./src/*"],
       "@features/*": ["./src/features/*"],
