@@ -1,4 +1,4 @@
-import { formatMonth, formatPeriod } from "@/shared/utils/dates";
+import { formatMonth } from "@/shared/utils/dates";
 import { FullPayslip } from "@convex/payslips";
 
 
