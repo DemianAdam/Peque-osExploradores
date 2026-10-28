@@ -66,6 +66,7 @@ export const deleteLastPayslip = zTeacherMutation({
             await ctx.db.delete("invoices", invoice._id);
         }
 
+
         const feesToDelete = await ctx.db.query("fees")
             .withIndex("index_payslip", q => q.eq("payslipId", currentPayslip._id))
             .collect();
@@ -109,6 +110,8 @@ export const deleteLastPayslip = zTeacherMutation({
         const previousPayslip = payslips[1];
 
         await ctx.db.patch("payslips", previousPayslip._id, { closedAt: null, closedByTeacher: null });
+
+        await ctx.db.delete("payslips", currentPayslip._id);
     }
 });
 

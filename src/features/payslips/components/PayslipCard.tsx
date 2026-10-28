@@ -33,7 +33,7 @@ export function PayslipCard({ payslip, isLatest, onSelect }: PayslipCardProps) {
 
         {isLatest && (
           <span className="bg-pink-500 text-white text-[10px] font-bold px-3 py-1 rounded-full shadow-sm">
-            Actual
+            Ultima
           </span>
         )}
       </div>

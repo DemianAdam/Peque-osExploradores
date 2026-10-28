@@ -1,4 +1,4 @@
-import { formatPeriod } from "@/shared/utils/dates";
+import { formatMonth, formatPeriod } from "@/shared/utils/dates";
 import { FullPayslip } from "@convex/payslips";
 
 
@@ -26,15 +26,14 @@ export function PayslipsCalendarView({ payslips, onSelect }: PayslipsCalendarVie
           >
             {/* Cabecera del "Bloque Mes" */}
             <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-1">
-              <div className="flex items-center gap-1.5 sm:gap-2">
-                <div className={`w-6 h-6 sm:w-9 sm:h-9 rounded-lg sm:rounded-xl flex items-center justify-center font-bold text-[10px] sm:text-xs uppercase shrink-0 ${
+              <div className="flex flex-col gap-1.5 sm:gap-2">
+                <div className={` h-6 sm:w-9 sm:h-9 rounded-lg sm:rounded-xl flex items-center justify-center font-bold text-[10px] sm:text-xs uppercase shrink-0 ${
                   isLatest ? "bg-pink-500 text-white" : "bg-slate-100 text-slate-700"
                 }`}>
-                  {formatPeriod(payslip.startedAt)}
+                  {formatMonth(payslip.startedAt)}
                 </div>
                 <div className="overflow-hidden">
-                  <h4 className="font-bold text-slate-800 text-[11px] sm:text-sm truncate">{payslip.startedAt}</h4>
-                  <span className="text-[9px] sm:text-[10px] text-gray-400 truncate block">Socio: {payslip.partnerPercentage}%</span>
+                  <span className="text-[9px] text-center sm:text-[10px] text-gray-400 truncate block">Socio: {payslip.partnerPercentage}%</span>
                 </div>
               </div>
 
